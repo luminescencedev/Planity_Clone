@@ -11,8 +11,13 @@ const pool = new Pool({
 
 class Categorie {
   static async getCategories() {
-    const result = await pool.query("SELECT * FROM Categorie");
+    const result = await pool.query("SELECT * FROM categories");
     return result.rows;
+  }
+
+  static async getCategorieById(id) {
+    const result = await pool.query("SELECT * FROM Categorie WHERE id_categorie = $1", [id]);
+    return result.rows[0] || null
   }
 
   static async createCategorie({ nom, picture, description }) {

@@ -12,6 +12,7 @@ const app = express();
 app.use(express.json());
 
 const cors = require('cors');
+const Categorie = require('./models/categorie');
 const corsOptions = {
   origin: '*',
   methods: ['POST', 'GET', 'PATCH', 'DELETE'],
@@ -42,6 +43,9 @@ app.get('/books', authenticate, async (req, res) => {
         res.status(500).json({ error: error.message })
     }
 })
+
+
+
 
 // GET SPECIFIC
 app.get('/books/:id', authenticate, async (req, res) => {
@@ -115,6 +119,67 @@ app.post("/register", async (req, res) => {
     }
   });
 
+// CATEGORIES
+//GET
+app.get('/allCategories', authenticate, async (req, res) => {
+  try {
+    const categories = await Categorie.getCategories();
+    if (categories && categories.length > 0) {
+      res.status(200).json(categories);
+    } else {
+      res.status(404).json({ message: "Pas trouvé" });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+//POST
+app.post("/createCategorie", async (req, res) => {
+  try {
+    const { nom, picture, description } = req.body;
+
+    if (!nom || !picture || !description) {
+      return res.status(400).json({ message: "Tous les champs sont obligatoires" });
+    }
+
+    const categorie = await Categorie.createCategorie({ nom, picture, description });
+    res.status(201).json({ message: "Catégorie créée", categorie });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+//PUT
+app.put('/updateCategorie/:id', authenticate, async (req, res) => {
+  try {
+    const updatedCategorie = await Categorie.updateCategorie(req.params.id, req.body);
+    if (!updatedCategorie) {
+      return res.status(404).json({ message: "Catégorie non trouvée" });
+    }
+    res.status(200).json(updatedCategorie);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+//DELETE
+app.delete('/deleteCategorie/:id', authenticate, async (req, res) => {
+  try {
+    const categorie = await Categorie.getCategorieById(req.params.id);
+    if (!categorie) {
+      return res.status(404).json({ message: "Catégorie non trouvée" });
+    }
+
+    await Categorie.deleteCategorie(req.params.id);
+    res.status(204).send();
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
+  
 const PORT = process.env.PORT || 3001;
 
 app.listen(PORT, () => {

@@ -15,6 +15,11 @@ class Categorie {
     return result.rows;
   }
 
+  static async getCategorieById(id) {
+    const result = await pool.query("SELECT * FROM Categorie WHERE id_categorie = $1", [id]);
+    return result.rows[0] || null
+  }
+
   static async createCategorie({ nom, picture, description }) {
     const result = await pool.query(
       "INSERT INTO Categorie (Nom, Picture, Description, Created_at, Updated_at) VALUES ($1, $2, $3, NOW(), NOW()) RETURNING *",

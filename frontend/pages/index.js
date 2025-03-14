@@ -16,7 +16,7 @@ export default function Home() {
 
   useEffect(() => {
     if (token) {
-      fetch("http://localhost:3001/categories", {
+      fetch("http://localhost:3001/allCategories", {
         headers: { Authorization: `Bearer ${token}` }, // Envoi du token JWT
       })
         .then((res) => res.json())

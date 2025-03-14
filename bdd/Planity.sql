@@ -132,7 +132,7 @@ CREATE TABLE public.Users(
 INSERT INTO public.Users (role, first_name, last_name, age, mail, phone, zip, password, created_at, updated_at, id_salon)
 VALUES
 ('Admin', 'John', 'Doe', 30, 'john.doe@example.com', 1234567890, '75000', 'password123', current_date, current_date, 1),
-('User', 'Jane', 'Smith', 25, 'jane.smith@example.com', 0987654321, '69000', 'password456', current_date, current_date, 2, 2, 2);
+('User', 'Jane', 'Smith', 25, 'jane.smith@example.com', 0987654321, '69000', 'password456', current_date, current_date, 2);
 
 ------------------------------------------------------------
 -- Table: Rendez_vous

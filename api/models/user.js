@@ -23,7 +23,6 @@ class User {
     return result.rows[0];
   }
 
-
     static async getAllUsers() {
         const result = await pool.query('SELECT * FROM Users');
         return result.rows;

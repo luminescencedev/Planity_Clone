@@ -11,7 +11,7 @@ const pool = new Pool({
 
 class Categorie {
   static async getCategories() {
-    const result = await pool.query("SELECT * FROM Categorie");
+    const result = await pool.query("SELECT * FROM categories");
     return result.rows;
   }
 

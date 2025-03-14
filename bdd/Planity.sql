@@ -38,12 +38,12 @@ ALTER SEQUENCE public.Notifications_id_notification_seq RESTART WITH 1;
 -- Table: Categories
 ------------------------------------------------------------
 CREATE TABLE public.Categories(
-    id_category   SERIAL NOT NULL ,
-    name          VARCHAR (50) NOT NULL ,
-    picture       VARCHAR (2000)  NOT NULL ,
-    description   VARCHAR (2000)  NOT NULL ,
-    created_at    DATE  NOT NULL ,
-    updated_at    DATE  NOT NULL  ,
+    id_category   SERIAL NOT NULL,
+    name          VARCHAR (50) NOT NULL UNIQUE,
+    picture       VARCHAR (2000) NOT NULL,
+    description   VARCHAR (2000) NOT NULL,
+    created_at    DATE NOT NULL,
+    updated_at    DATE NOT NULL,
     CONSTRAINT Categories_PK PRIMARY KEY (id_category)
 )WITHOUT OIDS;
 
@@ -58,18 +58,17 @@ VALUES
 -- Table: Salons
 ------------------------------------------------------------
 CREATE TABLE public.Salons(
-    id_salon      SERIAL NOT NULL ,
-    name          VARCHAR (50) NOT NULL ,
-    adress        VARCHAR (50) NOT NULL ,
-    zip           VARCHAR (10) NOT NULL ,
-    picture       VARCHAR (2000)  NOT NULL ,
-    description   VARCHAR (2000)  NOT NULL ,
-    created_at    DATE  NOT NULL ,
-    updated_at    DATE  NOT NULL ,
-    id_category   INT  NOT NULL  ,
-    CONSTRAINT Salons_PK PRIMARY KEY (id_salon)
-
-    ,CONSTRAINT Salons_Categories_FK FOREIGN KEY (id_category) REFERENCES public.Categories(id_category)
+    id_salon      SERIAL NOT NULL,
+    name          VARCHAR (50) NOT NULL UNIQUE,
+    adress        VARCHAR (50) NOT NULL,
+    zip           VARCHAR (10) NOT NULL,
+    picture       VARCHAR (2000) NOT NULL,
+    description   VARCHAR (2000) NOT NULL,
+    created_at    DATE NOT NULL,
+    updated_at    DATE NOT NULL,
+    id_category   INT NOT NULL,
+    CONSTRAINT Salons_PK PRIMARY KEY (id_salon),
+    CONSTRAINT Salons_Categories_FK FOREIGN KEY (id_category) REFERENCES public.Categories(id_category)
 )WITHOUT OIDS;
 
 -- Insert data into Salons
@@ -82,16 +81,15 @@ VALUES
 -- Table: Services
 ------------------------------------------------------------
 CREATE TABLE public.Services(
-    id_service    SERIAL NOT NULL ,
-    price         DECIMAL (10,2)  NOT NULL ,
-    time          INT  NOT NULL ,
-    description   VARCHAR (2000)  NOT NULL ,
-    created_at    DATE  NOT NULL ,
-    updated_at    DATE  NOT NULL ,
-    id_salon      INT  NOT NULL  ,
-    CONSTRAINT Services_PK PRIMARY KEY (id_service)
-
-    ,CONSTRAINT Services_Salons_FK FOREIGN KEY (id_salon) REFERENCES public.Salons(id_salon)
+    id_service    SERIAL NOT NULL,
+    price         DECIMAL (10,2) NOT NULL,
+    time          INT NOT NULL,
+    description   VARCHAR (2000) NOT NULL,
+    created_at    DATE NOT NULL,
+    updated_at    DATE NOT NULL,
+    id_salon      INT NOT NULL,
+    CONSTRAINT Services_PK PRIMARY KEY (id_service),
+    CONSTRAINT Services_Salons_FK FOREIGN KEY (id_salon) REFERENCES public.Salons(id_salon)
 )WITHOUT OIDS;
 
 -- Insert data into Services
@@ -104,15 +102,14 @@ VALUES
 -- Table: Rates
 ------------------------------------------------------------
 CREATE TABLE public.Rates(
-    id_rate       SERIAL NOT NULL ,
-    rating        INT  NOT NULL ,
-    description   VARCHAR (2000)  NOT NULL ,
-    created_at    DATE  NOT NULL ,
-    updated_at    DATE  NOT NULL ,
-    id_salon      INT  NOT NULL  ,
-    CONSTRAINT Rates_PK PRIMARY KEY (id_rate)
-
-    ,CONSTRAINT Rates_Salons_FK FOREIGN KEY (id_salon) REFERENCES public.Salons(id_salon)
+    id_rate       SERIAL NOT NULL,
+    rating        INT NOT NULL,
+    description   VARCHAR (2000) NOT NULL,
+    created_at    DATE NOT NULL,
+    updated_at    DATE NOT NULL,
+    id_salon      INT NOT NULL,
+    CONSTRAINT Rates_PK PRIMARY KEY (id_rate),
+    CONSTRAINT Rates_Salons_FK FOREIGN KEY (id_salon) REFERENCES public.Salons(id_salon)
 )WITHOUT OIDS;
 
 -- Insert data into Rates
@@ -125,10 +122,10 @@ VALUES
 -- Table: Cookies
 ------------------------------------------------------------
 CREATE TABLE public.Cookies(
-    id_cookie    SERIAL NOT NULL ,
-    choice       BOOL  NOT NULL ,
-    created_at   DATE  NOT NULL ,
-    updated_at   DATE  NOT NULL  ,
+    id_cookie    SERIAL NOT NULL,
+    choice       BOOL NOT NULL,
+    created_at   DATE NOT NULL,
+    updated_at   DATE NOT NULL,
     CONSTRAINT Cookies_PK PRIMARY KEY (id_cookie)
 )WITHOUT OIDS;
 
@@ -142,10 +139,10 @@ VALUES
 -- Table: Privacy_Policy
 ------------------------------------------------------------
 CREATE TABLE public.Privacy_Policy(
-    id_privacy   SERIAL NOT NULL ,
-    link         VARCHAR (2000)  NOT NULL ,
-    created_at   DATE  NOT NULL ,
-    updated_at   DATE  NOT NULL  ,
+    id_privacy   SERIAL NOT NULL,
+    link         VARCHAR (2000) NOT NULL,
+    created_at   DATE NOT NULL,
+    updated_at   DATE NOT NULL,
     CONSTRAINT Privacy_Policy_PK PRIMARY KEY (id_privacy)
 )WITHOUT OIDS;
 
@@ -159,25 +156,24 @@ VALUES
 -- Table: Users
 ------------------------------------------------------------
 CREATE TABLE public.Users(
-    id_user      SERIAL NOT NULL ,
-    role         VARCHAR (50) NOT NULL ,
-    first_name   VARCHAR (50) NOT NULL ,
-    last_name    VARCHAR (50) NOT NULL ,
-    age          INT  NOT NULL ,
-    mail         VARCHAR (80) NOT NULL ,
-    phone        INT  NOT NULL ,
-    zip          VARCHAR (10) NOT NULL ,
-    password     VARCHAR (50) NOT NULL ,
-    created_at   DATE  NOT NULL ,
-    updated_at   DATE  NOT NULL ,
-    id_cookie    INT  NOT NULL ,
-    id_privacy   INT  NOT NULL ,
-    id_salon     INT    ,
-    CONSTRAINT Users_PK PRIMARY KEY (id_user)
-
-    ,CONSTRAINT Users_Cookies_FK FOREIGN KEY (id_cookie) REFERENCES public.Cookies(id_cookie)
-    ,CONSTRAINT Users_Privacy_Policy0_FK FOREIGN KEY (id_privacy) REFERENCES public.Privacy_Policy(id_privacy)
-    ,CONSTRAINT Users_Salons1_FK FOREIGN KEY (id_salon) REFERENCES public.Salons(id_salon)
+    id_user      SERIAL NOT NULL,
+    role         VARCHAR (50) NOT NULL,
+    first_name   VARCHAR (50) NOT NULL,
+    last_name    VARCHAR (50) NOT NULL,
+    age          INT NOT NULL,
+    mail         VARCHAR (80) NOT NULL UNIQUE,
+    phone        INT NOT NULL UNIQUE,
+    zip          VARCHAR (10) NOT NULL,
+    password     VARCHAR (50) NOT NULL,
+    created_at   DATE NOT NULL,
+    updated_at   DATE NOT NULL,
+    id_cookie    INT NOT NULL,
+    id_privacy   INT NOT NULL,
+    id_salon     INT,
+    CONSTRAINT Users_PK PRIMARY KEY (id_user),
+    CONSTRAINT Users_Cookies_FK FOREIGN KEY (id_cookie) REFERENCES public.Cookies(id_cookie),
+    CONSTRAINT Users_Privacy_Policy0_FK FOREIGN KEY (id_privacy) REFERENCES public.Privacy_Policy(id_privacy),
+    CONSTRAINT Users_Salons1_FK FOREIGN KEY (id_salon) REFERENCES public.Salons(id_salon)
 )WITHOUT OIDS;
 
 -- Insert data into Users
@@ -190,16 +186,15 @@ VALUES
 -- Table: Rendez_vous
 ------------------------------------------------------------
 CREATE TABLE public.Rendez_vous(
-    id_rendezvous   SERIAL NOT NULL ,
-    date            DATE  NOT NULL ,
-    created_at      DATE  NOT NULL ,
-    updated_at      DATE  NOT NULL ,
-    id_salon        INT  NOT NULL ,
-    id_user         INT  NOT NULL  ,
-    CONSTRAINT Rendez_vous_PK PRIMARY KEY (id_rendezvous)
-
-    ,CONSTRAINT Rendez_vous_Salons_FK FOREIGN KEY (id_salon) REFERENCES public.Salons(id_salon)
-    ,CONSTRAINT Rendez_vous_Users0_FK FOREIGN KEY (id_user) REFERENCES public.Users(id_user)
+    id_rendezvous   SERIAL NOT NULL,
+    date            DATE NOT NULL,
+    created_at      DATE NOT NULL,
+    updated_at      DATE NOT NULL,
+    id_salon        INT NOT NULL,
+    id_user         INT NOT NULL,
+    CONSTRAINT Rendez_vous_PK PRIMARY KEY (id_rendezvous),
+    CONSTRAINT Rendez_vous_Salons_FK FOREIGN KEY (id_salon) REFERENCES public.Salons(id_salon),
+    CONSTRAINT Rendez_vous_Users0_FK FOREIGN KEY (id_user) REFERENCES public.Users(id_user)
 )WITHOUT OIDS;
 
 -- Insert data into Rendez_vous
@@ -212,15 +207,14 @@ VALUES
 -- Table: Notifications
 ------------------------------------------------------------
 CREATE TABLE public.Notifications(
-    id_notification   SERIAL NOT NULL ,
-    description       VARCHAR (2000)  NOT NULL ,
-    name              VARCHAR (50) NOT NULL ,
-    created_at        DATE  NOT NULL ,
-    updated_at        DATE  NOT NULL ,
-    id_user           INT  NOT NULL ,
-    CONSTRAINT Notifications_PK PRIMARY KEY (id_notification)
-
-    ,CONSTRAINT Notifications_Users_FK FOREIGN KEY (id_user) REFERENCES public.Users(id_user)
+    id_notification   SERIAL NOT NULL,
+    description       VARCHAR (2000) NOT NULL,
+    name              VARCHAR (50) NOT NULL,
+    created_at        DATE NOT NULL,
+    updated_at        DATE NOT NULL,
+    id_user           INT NOT NULL,
+    CONSTRAINT Notifications_PK PRIMARY KEY (id_notification),
+    CONSTRAINT Notifications_Users_FK FOREIGN KEY (id_user) REFERENCES public.Users(id_user)
 )WITHOUT OIDS;
 
 -- Insert data into Notifications

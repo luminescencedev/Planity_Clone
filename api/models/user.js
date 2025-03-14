@@ -10,6 +10,19 @@ const pool = new Pool ({
 });
 
 class User {
+    static async createUser({ role, first_name, last_name, age, mail, phone, zip, password }) {
+    const created_at = new Date();
+    const updated_at = new Date();
+    const hashedPassword = await bcrypt.hash(password, 10); 
+    const result = await pool.query(
+      `INSERT INTO users (role, first_name, last_name, age, mail, phone, zip, password, created_at, updated_at) 
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING *`,
+      [role, first_name, last_name, age, mail, phone, zip, hashedPassword, created_at, updated_at]
+    );
+    return result.rows[0];
+  }
+
+
     static async getAllUsers() {
         const result = await pool.query('SELECT * FROM Users');
         return result.rows;
@@ -43,14 +56,6 @@ class User {
     static async getCoiffeursBySalon(id_salon) {
         const result = await pool.query('SELECT * FROM Users WHERE id_salon = $1', [id_salon]);
         return result.rows;
-    }
-
-    static async createUser({ role, first_name, last_name, age, mail, phone, zip, password, created_at, updated_at, id_cookie, id_privacy, id_salon }) {
-        const result = await pool.query(
-            'INSERT INTO Users (role, first_name, last_name, age, mail, phone, zip, password, created_at, updated_at, id_cookie, id_privacy, id_salon) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING *',
-            [role, first_name, last_name, age, mail, phone, zip, password, created_at, updated_at, id_cookie, id_privacy, id_salon]
-        );
-        return result.rows[0];
     }
 
     static async createCoiffeurInSalon({ role, first_name, last_name, age, mail, phone, zip, password, created_at, updated_at, id_cookie, id_privacy, id_salon }) {

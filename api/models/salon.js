@@ -10,8 +10,8 @@ const pool = new Pool ({
 });
 
 class Salon {
-    static async getNomSalon(id) {
-        const result = await pool.query("SELECT Nom FROM Salon WHERE id_salon = $1", [id]);
+    static async getNameSalon(id) {
+        const result = await pool.query("SELECT Name FROM Salon WHERE id_salon = $1", [id]);
         return result.rows[0] || null;
       }
     
@@ -20,8 +20,8 @@ class Salon {
         return result.rows[0] || null;
       }
     
-      static async getAdresseSalon(id) {
-        const result = await pool.query("SELECT Adresse FROM Salon WHERE id_salon = $1", [id]);
+      static async getAdressSalon(id) {
+        const result = await pool.query("SELECT Adress FROM Salon WHERE id_salon = $1", [id]);
         return result.rows[0] || null;
       }
     
@@ -30,38 +30,38 @@ class Salon {
         return result.rows[0] || null;
       }
     
-      static async getPhotosSalon(id) {
-        const result = await pool.query("SELECT photos FROM Salon WHERE id_salon = $1", [id]);
+      static async getPictureSalon(id) {
+        const result = await pool.query("SELECT Picture FROM Salon WHERE id_salon = $1", [id]);
         return result.rows[0] || null;
       }
     
-      static async getAvisSalon(id) {
-        const result = await pool.query("SELECT * FROM Avis WHERE id_salon = $1", [id]);
+      static async getReviewSalon(id) {
+        const result = await pool.query("SELECT * FROM Review WHERE id_salon = $1", [id]);
         return result.rows;
       }
     
-      static async getTousLesSalons() {
+      static async getAllSalons() {
         const result = await pool.query("SELECT * FROM Salon");
         return result.rows;
       }
     
-      static async getTousLesSalonsParLocalisation(zip) {
+      static async getAllSalonsByLocalisation(zip) {
         const result = await pool.query("SELECT * FROM Salon WHERE ZIP = $1", [zip]);
         return result.rows;
       }
     
-      static async getSalonDunCoiffeur(id_coiffeur) {
-        const result = await pool.query("SELECT * FROM Salon WHERE id_coiffeur = $1", [id_coiffeur]);
+      static async getHairdresserSalon(id_hairdresser) {
+        const result = await pool.query("SELECT * FROM Salon WHERE id_hairdresser = $1", [id_hairdresser]);
         return result.rows;
       }
     
-      static async getSalonParCategories(id_categorie) {
-        const result = await pool.query("SELECT * FROM Salon WHERE id_categorie = $1", [id_categorie]);
+      static async getSalonByCategories(id_category) {
+        const result = await pool.query("SELECT * FROM Salon WHERE id_category = $1", [id_category]);
         return result.rows;
       }
     
-      static async getSalonParCategoriesParLocalisation(id_categorie, zip) {
-        const result = await pool.query("SELECT * FROM Salon WHERE id_categorie = $1 AND ZIP = $2", [id_categorie, zip]);
+      static async getSalonByCategoriesByLocalisation(id_category, zip) {
+        const result = await pool.query("SELECT * FROM Salon WHERE id_category = $1 AND ZIP = $2", [id_category, zip]);
         return result.rows;
       }
     
@@ -96,8 +96,8 @@ class Salon {
         return result.rows[0] || null;
       }
     
-      static async updateSalonPhotos(id, photos) {
-        const result = await pool.query("UPDATE Salon SET photos = $1, Updated_at = NOW() WHERE id_salon = $2 RETURNING *", [photos, id]);
+      static async updateSalonPictures(id, pictures) {
+        const result = await pool.query("UPDATE Salon SET Pictures = $1, Updated_at = NOW() WHERE id_salon = $2 RETURNING *", [photos, id]);
         return result.rows[0] || null;
       }
     
@@ -106,8 +106,8 @@ class Salon {
         return result.rows[0] || null;
       }
     
-      static async deleteSalonPhotos(id) {
-        const result = await pool.query("UPDATE Salon SET photos = NULL, Updated_at = NOW() WHERE id_salon = $1 RETURNING *", [id]);
+      static async deleteSalonPicture(id) {
+        const result = await pool.query("UPDATE Salon SET Pictures = NULL, Updated_at = NOW() WHERE id_salon = $1 RETURNING *", [id]);
         return result.rows[0] || null;
       }
     

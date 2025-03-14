@@ -1,12 +1,13 @@
-const { Pool } = require('pg');
-require('dotenv').config();
+const { Pool } = require("pg");
+const bcrypt = require("bcrypt");
 
-const pool = new Pool ({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-    port: process.env.DB_PORT,
+require("dotenv").config();
+const pool = new Pool({
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  port: process.env.DB_PORT,
 });
 
 class User {
@@ -16,7 +17,7 @@ class User {
     const hashedPassword = await bcrypt.hash(password, 10); 
     const result = await pool.query(
       `INSERT INTO users (role, first_name, last_name, age, mail, phone, zip, password, created_at, updated_at) 
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING *`,
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *`,
       [role, first_name, last_name, age, mail, phone, zip, hashedPassword, created_at, updated_at]
     );
     return result.rows[0];

@@ -78,14 +78,14 @@ app.delete('/books/:id', authenticate, async (req, res) => {
 
 // ROUTE : Inscription
 app.post("/register", async (req, res) => {
-    try {
-      const { username, password } = req.body;
-      const user = await User.createUser({ username, password });
-      res.status(201).json({ message: "Utilisateur créé", user });
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-  });
+  try {
+    const { role, first_name, last_name, age, mail, phone, zip, password } = req.body;
+    const user = await User.createUser({ role, first_name, last_name, age, mail, phone, zip, password });
+    res.status(201).json({ message: "Utilisateur créé", user });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
   
   // ROUTE : Connexion
   app.post("/login", async (req, res) => {

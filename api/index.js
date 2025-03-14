@@ -7,8 +7,17 @@ const jwt = require('jsonwebtoken');
 
 const SECRET_KEY = process.env.SECRET_KEY;
 
+
 const app = express();
 app.use(express.json());
+
+const cors = require('cors');
+const corsOptions = {
+  origin: '*',
+  methods: ['POST', 'GET', 'PATCH', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}
+app.use(cors(corsOptions));
 
 // Middleware de protection des routes
 const authenticate = (req, res, next) => {
@@ -90,18 +99,17 @@ app.post("/register", async (req, res) => {
   // ROUTE : Connexion
   app.post("/login", async (req, res) => {
     try {
-      const { username, password } = req.body;
-      const user = await User.getUserByUsername(username);
-  
+      const { mail, password } = req.body;
+      const user = await User.getUserByMail(mail);
       if (!user || !(await bcrypt.compare(password, user.password))) {
         return res.status(401).json({ error: "Identifiants invalides" });
       }
-  
-      const token = jwt.sign({ id: user.id, username: user.username }, SECRET_KEY, {
+
+      const token = jwt.sign({ id: user.id, mail: user.mail }, SECRET_KEY, {
         expiresIn: "2h",
       });
-  
-      res.json({ token });
+
+      res.json({ message: "Connexion réussie", token });
     } catch (error) {
       res.status(500).json({ error: error.message });
     }

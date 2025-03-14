@@ -4,7 +4,7 @@ import AuthContext from "../context/AuthContext";
 
 export default function Login() {
   const { login } = useContext(AuthContext);
-  const [username, setUsername] = useState("");
+  const [mail, setMail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
 
@@ -13,13 +13,16 @@ export default function Login() {
     const response = await fetch("http://localhost:3001/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password }),
+      body: JSON.stringify({ mail, password }),
     });
 
     if (response.ok) {
       const data = await response.json();
       login(data.token);
       router.push("/");
+    } else {
+      // Handle login error
+      console.error("Login failed");
     }
   };
 
@@ -29,7 +32,7 @@ export default function Login() {
       <a href="/register">Créer un compte</a>
       <br />
       <br />
-      <input type="text" placeholder="Nom" value={username} onChange={(e) => setUsername(e.target.value)} />
+      <input type="email" placeholder="Email" value={mail} onChange={(e) => setMail(e.target.value)} />
       <input type="password" placeholder="Mot de passe" value={password} onChange={(e) => setPassword(e.target.value)} />
       <button type="submit">Se connecter</button>
     </form>

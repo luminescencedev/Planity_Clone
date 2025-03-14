@@ -29,7 +29,7 @@ class User {
         return result.rows;
     }
 
-    static async getUserByEmail(mail) {
+    static async getUserByMail(mail) {
         const result = await pool.query('SELECT * FROM Users WHERE mail = $1', [mail]);
         return result.rows[0];
     }

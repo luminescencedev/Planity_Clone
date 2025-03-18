@@ -5,7 +5,7 @@
 -- Drop tables if they exist
 DROP TABLE IF EXISTS public.Rendez_vous CASCADE;
 DROP TABLE IF EXISTS public.Users CASCADE;
-DROP TABLE IF EXISTS public.Rates CASCADE;
+DROP TABLE IF EXISTS public.Reviews CASCADE;
 DROP TABLE IF EXISTS public.Services CASCADE;
 DROP TABLE IF EXISTS public.Salons CASCADE;
 DROP TABLE IF EXISTS public.Categories CASCADE;
@@ -13,14 +13,14 @@ DROP TABLE IF EXISTS public.Categories CASCADE;
 CREATE SEQUENCE public.Categories_id_category_seq;
 CREATE SEQUENCE public.Salons_id_salon_seq;
 CREATE SEQUENCE public.Services_id_service_seq;
-CREATE SEQUENCE public.Rates_id_rate_seq;
+CREATE SEQUENCE public.Reviews_id_review_seq;
 CREATE SEQUENCE public.Users_id_user_seq;
 CREATE SEQUENCE public.Rendez_vous_id_rendezvous_seq;
 
 ALTER SEQUENCE public.Categories_id_category_seq RESTART WITH 1;
 ALTER SEQUENCE public.Salons_id_salon_seq RESTART WITH 1;
 ALTER SEQUENCE public.Services_id_service_seq RESTART WITH 1;
-ALTER SEQUENCE public.Rates_id_rate_seq RESTART WITH 1;
+ALTER SEQUENCE public.Reviews_id_review_seq RESTART WITH 1;
 ALTER SEQUENCE public.Users_id_user_seq RESTART WITH 1;
 ALTER SEQUENCE public.Rendez_vous_id_rendezvous_seq RESTART WITH 1;
 
@@ -89,21 +89,21 @@ VALUES
 (20.00, 45, 'Rasage de barbe', current_date, current_date, 2);
 
 ------------------------------------------------------------
--- Table: Rates
+-- Table: Reviews
 ------------------------------------------------------------
-CREATE TABLE public.Rates(
-    id_rate       SERIAL NOT NULL,
+CREATE TABLE public.Reviews(
+    id_review       SERIAL NOT NULL,
     rating        INT NOT NULL,
     description   VARCHAR (2000) NOT NULL,
     created_at    DATE NOT NULL,
     updated_at    DATE NOT NULL,
     id_salon      INT NOT NULL,
-    CONSTRAINT Rates_PK PRIMARY KEY (id_rate),
-    CONSTRAINT Rates_Salons_FK FOREIGN KEY (id_salon) REFERENCES public.Salons(id_salon)
+    CONSTRAINT reviews_PK PRIMARY KEY (id_review),
+    CONSTRAINT reviews_Salons_FK FOREIGN KEY (id_salon) REFERENCES public.Salons(id_salon)
 )WITHOUT OIDS;
 
--- Insert data into Rates
-INSERT INTO public.Rates (rating, description, created_at, updated_at, id_salon)
+-- Insert data into reviews
+INSERT INTO public.reviews (rating, description, created_at, updated_at, id_salon)
 VALUES
 (5, 'Excellent service!', current_date, current_date, 1),
 (4, 'Très bon mais peut s''améliorer', current_date, current_date, 2);

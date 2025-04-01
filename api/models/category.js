@@ -9,7 +9,7 @@ const pool = new Pool({
   port: process.env.DB_PORT,
 });
 
-class Categorie {
+class Category {
   // GET /category (Public, Admin, User)
   static async getCategoryById(id) {
     const result = await pool.query("SELECT * FROM Categorie WHERE id_categorie = $1", [id]);
@@ -47,4 +47,4 @@ class Categorie {
   }
 }
 
-module.exports = Categorie;
+module.exports = Category;

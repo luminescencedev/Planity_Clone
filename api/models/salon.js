@@ -25,8 +25,8 @@ class Salon {
         return result.rows[0] || null;
       }
     
-      static async getZIPSalon(id) {
-        const result = await pool.query("SELECT ZIP FROM Salon WHERE id_salon = $1", [id]);
+      static async getcitySalon(id) {
+        const result = await pool.query("SELECT city FROM Salon WHERE id_salon = $1", [id]);
         return result.rows[0] || null;
       }
     
@@ -45,8 +45,8 @@ class Salon {
         return result.rows;
       }
     
-      static async getAllSalonsByLocalisation(zip) {
-        const result = await pool.query("SELECT * FROM Salon WHERE ZIP = $1", [zip]);
+      static async getAllSalonsByLocalisation(city) {
+        const result = await pool.query("SELECT * FROM Salon WHERE city = $1", [city]);
         return result.rows;
       }
     
@@ -60,23 +60,23 @@ class Salon {
         return result.rows;
       }
     
-      static async getSalonByCategoriesByLocalisation(id_category, zip) {
-        const result = await pool.query("SELECT * FROM Salon WHERE id_category = $1 AND ZIP = $2", [id_category, zip]);
+      static async getSalonByCategoriesByLocalisation(id_category, city) {
+        const result = await pool.query("SELECT * FROM Salon WHERE id_category = $1 AND city = $2", [id_category, city]);
         return result.rows;
       }
     
-      static async createSalon({ nom, adresse, zip, photos, date, description, id_categorie }) {
+      static async createSalon({ nom, adresse, city, photos, date, description, id_categorie }) {
         const result = await pool.query(
-          "INSERT INTO Salon (Nom, Adresse, ZIP, photos, Date, Description, id_categorie, Created_at, Updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW()) RETURNING *",
-          [nom, adresse, zip, photos, date, description, id_categorie]
+          "INSERT INTO Salon (Nom, Adresse, city, photos, Date, Description, id_categorie, Created_at, Updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW()) RETURNING *",
+          [nom, adresse, city, photos, date, description, id_categorie]
         );
         return result.rows[0];
       }
     
-      static async updateSalon(id, { nom, adresse, zip, photos, description }) {
+      static async updateSalon(id, { nom, adresse, city, photos, description }) {
         const result = await pool.query(
-          "UPDATE Salon SET Nom = $1, Adresse = $2, ZIP = $3, photos = $4, Description = $5, Updated_at = NOW() WHERE id_salon = $6 RETURNING *",
-          [nom, adresse, zip, photos, description, id]
+          "UPDATE Salon SET Nom = $1, Adresse = $2, city = $3, photos = $4, Description = $5, Updated_at = NOW() WHERE id_salon = $6 RETURNING *",
+          [nom, adresse, city, photos, description, id]
         );
         return result.rows[0] || null;
       }
@@ -91,8 +91,8 @@ class Salon {
         return result.rows[0] || null;
       }
     
-      static async updateSalonZIP(id, zip) {
-        const result = await pool.query("UPDATE Salon SET ZIP = $1, Updated_at = NOW() WHERE id_salon = $2 RETURNING *", [zip, id]);
+      static async updateSaloncity(id, city) {
+        const result = await pool.query("UPDATE Salon SET city = $1, Updated_at = NOW() WHERE id_salon = $2 RETURNING *", [city, id]);
         return result.rows[0] || null;
       }
     

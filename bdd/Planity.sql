@@ -51,7 +51,7 @@ CREATE TABLE public.Salons(
     id_salon      SERIAL NOT NULL,
     name          VARCHAR (50) NOT NULL UNIQUE,
     adress        VARCHAR (50) NOT NULL,
-    zip           VARCHAR (10) NOT NULL,
+    city           VARCHAR (50) NOT NULL,
     picture       VARCHAR (2000) NOT NULL,
     description   VARCHAR (2000) NOT NULL,
     created_at    DATE NOT NULL,
@@ -64,8 +64,8 @@ CREATE TABLE public.Salons(
 -- Insert data into Salons
 INSERT INTO public.Salons (name, adress, zip, picture, description, created_at, updated_at, id_category)
 VALUES
-('Salon de Paris', '123 Rue de Paris', '75000', 'url_to_image', 'Description du salon de Paris', current_date, current_date, 1),
-('Salon de Lyon', '456 Rue de Lyon', '69000', 'url_to_image', 'Description du salon de Lyon', current_date, current_date, 2);
+('Salon de Paris', '123 Rue de Paris', 'Paris', 'url_to_image', 'Description du salon de Paris', current_date, current_date, 1),
+('Salon de Lyon', '456 Rue de Lyon', 'Paris', 'url_to_image', 'Description du salon de Lyon', current_date, current_date, 2);
 
 ------------------------------------------------------------
 -- Table: Services
@@ -119,7 +119,7 @@ CREATE TABLE public.Users(
     age          INT NOT NULL,
     mail         VARCHAR (80) NOT NULL UNIQUE,
     phone        INT NOT NULL UNIQUE,
-    zip          VARCHAR (10) NOT NULL,
+    city          VARCHAR (50) NOT NULL,
     password     VARCHAR (255) NOT NULL,
     created_at   DATE NOT NULL,
     updated_at   DATE NOT NULL,
@@ -131,8 +131,8 @@ CREATE TABLE public.Users(
 -- Insert data into Users
 INSERT INTO public.Users (role, first_name, last_name, age, mail, phone, zip, password, created_at, updated_at, id_salon)
 VALUES
-('Admin', 'John', 'Doe', 30, 'john.doe@example.com', 1234567890, '75000', 'password123', current_date, current_date, 1),
-('User', 'Jane', 'Smith', 25, 'jane.smith@example.com', 0987654321, '69000', 'password456', current_date, current_date, 2);
+('Admin', 'John', 'Doe', 30, 'john.doe@example.com', 1234567890, 'Paris', 'password123', current_date, current_date, 1),
+('User', 'Jane', 'Smith', 25, 'jane.smith@example.com', 0987654321, 'Paris', 'password456', current_date, current_date, 2);
 
 ------------------------------------------------------------
 -- Table: Rendez_vous

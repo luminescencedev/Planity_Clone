@@ -10,22 +10,28 @@ const pool = new Pool({
 });
 
 class Category {
-  // GET /category (Public, Admin, User)
+  // GET /categoryById (Public, Admin, User)
   static async getCategoryById(id) {
-    const result = await pool.query("SELECT * FROM Categorie WHERE id_categorie = $1", [id]);
+    const result = await pool.query("SELECT * FROM Categories WHERE id_category = $1", [id]);
     return result.rows[0] || null;
   }
 
+    // GET /categoryByName (Public, Admin, User)
+    static async getCategoryByName(name) {
+      const result = await pool.query("SELECT * FROM Categories WHERE name = $1", [name]);
+      return result.rows[0] || null;
+    }
+
   // GET /allCategories (Public, Admin, User)
   static async getAllCategories() {
-    const result = await pool.query("SELECT * FROM Categorie");
+    const result = await pool.query("SELECT * FROM Categories");
     return result.rows;
   }
 
   // POST /createCategory (Admin)
   static async createCategory({ nom, picture, description }) {
     const result = await pool.query(
-      "INSERT INTO Categorie (Nom, Picture, Description, Created_at, Updated_at) VALUES ($1, $2, $3, NOW(), NOW()) RETURNING *",
+      "INSERT INTO Categories (Nom, Picture, Description, Created_at, Updated_at) VALUES ($1, $2, $3, NOW(), NOW()) RETURNING *",
       [nom, picture, description]
     );
     return result.rows[0];
@@ -34,7 +40,7 @@ class Category {
   // PUT /updateCategory (Admin)
   static async updateCategory(id, { nom, picture, description }) {
     const result = await pool.query(
-      "UPDATE Categorie SET Nom = $1, Picture = $2, Description = $3, Updated_at = NOW() WHERE id_categorie = $4 RETURNING *",
+      "UPDATE Categories SET Nom = $1, Picture = $2, Description = $3, Updated_at = NOW() WHERE id_category = $4 RETURNING *",
       [nom, picture, description, id]
     );
     return result.rows[0] || null;
@@ -42,7 +48,7 @@ class Category {
 
   // DEL /deleteCategory (Admin)
   static async deleteCategory(id) {
-    const result = await pool.query("DELETE FROM Categorie WHERE id_categorie = $1 RETURNING *", [id]);
+    const result = await pool.query("DELETE FROM Categories WHERE id_category = $1 RETURNING *", [id]);
     return result.rows[0] || null;
   }
 }

@@ -1,5 +1,5 @@
 const express = require('express');
-const Book = require('./models/book');
+const Category = require('./models/category');
 const User = require('./models/user');
 const Salon = require('./models/salon');
 require('dotenv').config();
@@ -284,13 +284,16 @@ app.delete('/deleteSalon/:id', authenticate, async (req, res) => {
 // ROUTE : Inscription
 app.post("/register", async (req, res) => {
   try {
+    console.log("Données reçues :", req.body); // Ajout pour debug
     const { role, first_name, last_name, age, mail, phone, city, password } = req.body;
     const user = await User.createUser({ role, first_name, last_name, age, mail, phone, city, password });
     res.status(201).json({ message: "Utilisateur créé", user });
   } catch (error) {
+    console.error("Erreur dans /register :", error.message); // Ajout pour voir l'erreur
     res.status(500).json({ error: error.message });
   }
 });
+
   
   // ROUTE : Connexion
 app.post("/login", async (req, res) => {
@@ -315,7 +318,7 @@ app.post("/login", async (req, res) => {
 //GET
 app.get('/allCategories', authenticate, async (req, res) => {
   try {
-    const categories = await Categorie.getCategories();
+    const categories = await Category.getAllCategories();
     if (categories && categories.length > 0) {
       res.status(200).json(categories);
     } else {
@@ -326,18 +329,45 @@ app.get('/allCategories', authenticate, async (req, res) => {
   }
 });
 
-//GET by ID
-app.get('/categorie/:id', authenticate, async (req, res) => {
+//GET by name
+app.get('/categories/:name', authenticate, async (req, res) => {
   try {
-    const categorie = await Categorie.getCategorieById(req.params.id);
-    if (!categorie) {
+    const category = await Category.getCategoryByName(req.params.name);
+    if (!category) {
       return res.status(404).json({ message: "Catégorie non trouvée" });
     }
-    res.status(200).json(categorie);
+    res.status(200).json(category);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
+
+// GET salons par catégorie
+app.get('/categories/:name/salons', authenticate, async (req, res) => {
+  try {
+    const category = await Category.getCategoryByName(req.params.name);
+    
+    // Vérifiez si la catégorie existe
+    if (!category) {
+      return res.status(404).json({ message: "Catégorie non trouvée" });
+    }
+
+    // Logique pour récupérer les salons avec l'ID de catégorie
+    const salons = await Salon.getSalonsByCategoryId(category.id_category);
+    
+    // Si aucun salon n'est trouvé pour cette catégorie
+    if (salons.length === 0) {
+      return res.status(404).json({ message: "Aucun salon trouvé pour cette catégorie" });
+    }
+
+    // Renvoi des salons associés à la catégorie
+    res.status(200).json(salons);
+  } catch (error) {
+    console.error("Erreur serveur : ", error.message);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 
 //POST
 app.post("/createCategorie", async (req, res) => {
@@ -348,8 +378,8 @@ app.post("/createCategorie", async (req, res) => {
       return res.status(400).json({ message: "Tous les champs sont obligatoires" });
     }
 
-    const categorie = await Categorie.createCategorie({ nom, picture, description });
-    res.status(201).json({ message: "Catégorie créée", categorie });
+    const category = await Category.createCategory({ nom, picture, description });
+    res.status(201).json({ message: "Catégorie créée", category });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -358,7 +388,7 @@ app.post("/createCategorie", async (req, res) => {
 //PUT
 app.put('/updateCategorie/:id', authenticate, async (req, res) => {
   try {
-    const updatedCategorie = await Categorie.updateCategorie(req.params.id, req.body);
+    const updatedCategorie = await Category.updateCategory(req.params.id, req.body);
     if (!updatedCategorie) {
       return res.status(404).json({ message: "Catégorie non trouvée" });
     }
@@ -371,12 +401,12 @@ app.put('/updateCategorie/:id', authenticate, async (req, res) => {
 //DELETE
 app.delete('/deleteCategorie/:id', authenticate, async (req, res) => {
   try {
-    const categorie = await Categorie.getCategorieById(req.params.id);
-    if (!categorie) {
+    const category = await Category.getCategoryById(req.params.id);
+    if (!category) {
       return res.status(404).json({ message: "Catégorie non trouvée" });
     }
 
-    await Categorie.deleteCategorie(req.params.id);
+    await Category.deleteCategorie(req.params.id);
     res.status(204).send();
   } catch (error) {
     res.status(500).json({ error: error.message });

@@ -33,7 +33,7 @@ export default function Register() {
       <input type="number" placeholder="Âge" value={age} onChange={(e) => setAge(e.target.value)} />
       <input type="email" placeholder="Email" value={mail} onChange={(e) => setMail(e.target.value)} />
       <input type="text" placeholder="Téléphone" value={phone} onChange={(e) => setPhone(e.target.value)} />
-      <input type="text" placeholder="Code postal" value={city} onChange={(e) => setcity(e.target.value)} />
+      <input type="text" placeholder="City" value={city} onChange={(e) => setcity(e.target.value)} />
       <input type="password" placeholder="Mot de passe" value={password} onChange={(e) => setPassword(e.target.value)} />
       <button type="submit">S'inscrire</button>
     </form>

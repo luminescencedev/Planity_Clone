@@ -28,6 +28,14 @@ class User {
         return result.rows;
     }
 
+    static async getUserById(id) {
+        const result = await pool.query('SELECT * FROM Users WHERE id_user = $1', [id]);
+        if (result.rows.length === 0) {
+            throw new Error('User not found');
+        }
+        return result.rows;
+    }
+
     static async getUserByMail(mail) {
         const result = await pool.query('SELECT * FROM Users WHERE mail = $1', [mail]);
         return result.rows[0];

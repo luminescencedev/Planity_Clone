@@ -9,18 +9,21 @@ const pool = new Pool({
   port: process.env.DB_PORT,
 });
 
-class Categorie {
-  static async getCategories() {
-    const result = await pool.query("SELECT * FROM categories");
+class Category {
+  // GET /category (Public, Admin, User)
+  static async getCategoryById(id) {
+    const result = await pool.query("SELECT * FROM Categorie WHERE id_categorie = $1", [id]);
+    return result.rows[0] || null;
+  }
+
+  // GET /allCategories (Public, Admin, User)
+  static async getAllCategories() {
+    const result = await pool.query("SELECT * FROM Categorie");
     return result.rows;
   }
 
-  static async getCategorieById(id) {
-    const result = await pool.query("SELECT * FROM Categorie WHERE id_categorie = $1", [id]);
-    return result.rows[0] || null
-  }
-
-  static async createCategorie({ nom, picture, description }) {
+  // POST /createCategory (Admin)
+  static async createCategory({ nom, picture, description }) {
     const result = await pool.query(
       "INSERT INTO Categorie (Nom, Picture, Description, Created_at, Updated_at) VALUES ($1, $2, $3, NOW(), NOW()) RETURNING *",
       [nom, picture, description]
@@ -28,7 +31,8 @@ class Categorie {
     return result.rows[0];
   }
 
-  static async updateCategorie(id, { nom, picture, description }) {
+  // PUT /updateCategory (Admin)
+  static async updateCategory(id, { nom, picture, description }) {
     const result = await pool.query(
       "UPDATE Categorie SET Nom = $1, Picture = $2, Description = $3, Updated_at = NOW() WHERE id_categorie = $4 RETURNING *",
       [nom, picture, description, id]
@@ -36,10 +40,11 @@ class Categorie {
     return result.rows[0] || null;
   }
 
-  static async deleteCategorie(id) {
+  // DEL /deleteCategory (Admin)
+  static async deleteCategory(id) {
     const result = await pool.query("DELETE FROM Categorie WHERE id_categorie = $1 RETURNING *", [id]);
     return result.rows[0] || null;
   }
 }
 
-module.exports = Categorie;
+module.exports = Category;

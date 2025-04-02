@@ -10,11 +10,17 @@ const pool = new Pool({
 });
 
 class Category {
-  // GET /category (Public, Admin, User)
+  // GET /categoryById (Public, Admin, User)
   static async getCategoryById(id) {
     const result = await pool.query("SELECT * FROM Categories WHERE id_category = $1", [id]);
     return result.rows[0] || null;
   }
+
+    // GET /categoryByName (Public, Admin, User)
+    static async getCategoryByName(name) {
+      const result = await pool.query("SELECT * FROM Categories WHERE name = $1", [name]);
+      return result.rows[0] || null;
+    }
 
   // GET /allCategories (Public, Admin, User)
   static async getAllCategories() {

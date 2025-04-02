@@ -51,7 +51,7 @@ CREATE TABLE public.Salons(
     id_salon      SERIAL NOT NULL,
     name          VARCHAR (50) NOT NULL UNIQUE,
     adress        VARCHAR (50) NOT NULL,
-    zip           VARCHAR (10) NOT NULL,
+    city           VARCHAR (50) NOT NULL,
     picture       VARCHAR (2000) NOT NULL,
     description   VARCHAR (2000) NOT NULL,
     created_at    DATE NOT NULL,

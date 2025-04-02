@@ -11,7 +11,7 @@ export default function Categorie() {
       fetch(`http://localhost:3001/categories/${id}`)
         .then((res) => res.json())
         .then((data) => {
-          console.log("Données reçues du backend :", data); // 🔍 Debug ici
+          console.log("Données reçues du backend :", data); // Debug ici
           setCategory(data);
         })
         .catch((err) => console.error("Erreur API :", err));

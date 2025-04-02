@@ -16,6 +16,8 @@ export default function Home() {
 
   useEffect(() => {
     if (token) {
+      console.log(localStorage.getItem('token'));
+
       fetch("http://localhost:3001/allCategories", {
         headers: { Authorization: `Bearer ${token}` },
       })

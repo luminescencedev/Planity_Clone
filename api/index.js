@@ -1,5 +1,5 @@
 const express = require('express');
-const Book = require('./models/book');
+const Category = require('./models/category');
 const User = require('./models/user');
 const Salon = require('./models/salon');
 require('dotenv').config();
@@ -318,7 +318,7 @@ app.post("/login", async (req, res) => {
 //GET
 app.get('/allCategories', authenticate, async (req, res) => {
   try {
-    const categories = await Category.getCategories();
+    const categories = await Category.getAllCategories();
     if (categories && categories.length > 0) {
       res.status(200).json(categories);
     } else {

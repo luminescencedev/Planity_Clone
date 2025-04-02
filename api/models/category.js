@@ -9,7 +9,7 @@ const pool = new Pool({
   port: process.env.DB_PORT,
 });
 
-class Categories {
+class Category {
   // GET /category (Public, Admin, User)
   static async getCategoryById(id) {
     const result = await pool.query("SELECT * FROM Categories WHERE id_category = $1", [id]);

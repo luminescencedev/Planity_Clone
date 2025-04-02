@@ -284,13 +284,16 @@ app.delete('/deleteSalon/:id', authenticate, async (req, res) => {
 // ROUTE : Inscription
 app.post("/register", async (req, res) => {
   try {
+    console.log("Données reçues :", req.body); // Ajout pour debug
     const { role, first_name, last_name, age, mail, phone, city, password } = req.body;
     const user = await User.createUser({ role, first_name, last_name, age, mail, phone, city, password });
     res.status(201).json({ message: "Utilisateur créé", user });
   } catch (error) {
+    console.error("Erreur dans /register :", error.message); // Ajout pour voir l'erreur
     res.status(500).json({ error: error.message });
   }
 });
+
   
   // ROUTE : Connexion
 app.post("/login", async (req, res) => {
@@ -315,7 +318,7 @@ app.post("/login", async (req, res) => {
 //GET
 app.get('/allCategories', authenticate, async (req, res) => {
   try {
-    const categories = await Categorie.getCategories();
+    const categories = await Category.getCategories();
     if (categories && categories.length > 0) {
       res.status(200).json(categories);
     } else {
@@ -327,17 +330,18 @@ app.get('/allCategories', authenticate, async (req, res) => {
 });
 
 //GET by ID
-app.get('/categorie/:id', authenticate, async (req, res) => {
+app.get('/categories/:id', authenticate, async (req, res) => {
   try {
-    const categorie = await Categorie.getCategorieById(req.params.id);
-    if (!categorie) {
+    const category = await Category.getCategorieById(req.params.id);
+    if (!category) {
       return res.status(404).json({ message: "Catégorie non trouvée" });
     }
-    res.status(200).json(categorie);
+    res.status(200).json(category);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
+
 
 //POST
 app.post("/createCategorie", async (req, res) => {
@@ -348,8 +352,8 @@ app.post("/createCategorie", async (req, res) => {
       return res.status(400).json({ message: "Tous les champs sont obligatoires" });
     }
 
-    const categorie = await Categorie.createCategorie({ nom, picture, description });
-    res.status(201).json({ message: "Catégorie créée", categorie });
+    const category = await Category.createCategorie({ nom, picture, description });
+    res.status(201).json({ message: "Catégorie créée", category });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -358,7 +362,7 @@ app.post("/createCategorie", async (req, res) => {
 //PUT
 app.put('/updateCategorie/:id', authenticate, async (req, res) => {
   try {
-    const updatedCategorie = await Categorie.updateCategorie(req.params.id, req.body);
+    const updatedCategorie = await Category.updateCategorie(req.params.id, req.body);
     if (!updatedCategorie) {
       return res.status(404).json({ message: "Catégorie non trouvée" });
     }
@@ -371,12 +375,12 @@ app.put('/updateCategorie/:id', authenticate, async (req, res) => {
 //DELETE
 app.delete('/deleteCategorie/:id', authenticate, async (req, res) => {
   try {
-    const categorie = await Categorie.getCategorieById(req.params.id);
-    if (!categorie) {
+    const category = await Category.getCategorieById(req.params.id);
+    if (!category) {
       return res.status(404).json({ message: "Catégorie non trouvée" });
     }
 
-    await Categorie.deleteCategorie(req.params.id);
+    await Category.deleteCategorie(req.params.id);
     res.status(204).send();
   } catch (error) {
     res.status(500).json({ error: error.message });

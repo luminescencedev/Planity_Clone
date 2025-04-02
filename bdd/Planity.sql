@@ -62,7 +62,7 @@ CREATE TABLE public.Salons(
 )WITHOUT OIDS;
 
 -- Insert data into Salons
-INSERT INTO public.Salons (name, adress, zip, picture, description, created_at, updated_at, id_category)
+INSERT INTO public.Salons (name, adress, city, picture, description, created_at, updated_at, id_category)
 VALUES
 ('Salon de Paris', '123 Rue de Paris', 'Paris', 'url_to_image', 'Description du salon de Paris', current_date, current_date, 1),
 ('Salon de Lyon', '456 Rue de Lyon', 'Paris', 'url_to_image', 'Description du salon de Lyon', current_date, current_date, 2);
@@ -129,7 +129,7 @@ CREATE TABLE public.Users(
 )WITHOUT OIDS;
 
 -- Insert data into Users
-INSERT INTO public.Users (role, first_name, last_name, age, mail, phone, zip, password, created_at, updated_at, id_salon)
+INSERT INTO public.Users (role, first_name, last_name, age, mail, phone, city, password, created_at, updated_at, id_salon)
 VALUES
 ('Admin', 'John', 'Doe', 30, 'john.doe@example.com', 1234567890, 'Paris', 'password123', current_date, current_date, 1),
 ('User', 'Jane', 'Smith', 25, 'jane.smith@example.com', 0987654321, 'Paris', 'password456', current_date, current_date, 2);

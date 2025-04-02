@@ -47,7 +47,7 @@ export default function Account() {
       <p><strong>Email:</strong> {user.mail}</p>
       <p><strong>Téléphone:</strong> {user.phone}</p>
       <p><strong>Âge:</strong> {user.age}</p>
-      <p><strong>Code Postal:</strong> {user.zip}</p>
+      <p><strong>Code Postal:</strong> {user.city}</p>
       <button onClick={logout}>Déconnexion</button>
     </div>
   );

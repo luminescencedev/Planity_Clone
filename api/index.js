@@ -97,11 +97,11 @@ app.get('/adressSalon', authenticate, async (req,res) =>{
   }
 })
 
-// /ZIPSalon (Public, Admin, User) 
+// /citySalon (Public, Admin, User) 
 
-app.get('/ZIPSalon', authenticate, async (req,res) =>{
+app.get('/citySalon', authenticate, async (req,res) =>{
     try {
-      const salon = await Salon.getZIPSalon(req.params.id);
+      const salon = await Salon.getcitySalon(req.params.id);
       salon ? res.status(200).json(salon) : res.status(404).json({
         message: "Pas trouvé"
     });
@@ -284,8 +284,8 @@ app.delete('/deleteSalon/:id', authenticate, async (req, res) => {
 // ROUTE : Inscription
 app.post("/register", async (req, res) => {
   try {
-    const { role, first_name, last_name, age, mail, phone, zip, password } = req.body;
-    const user = await User.createUser({ role, first_name, last_name, age, mail, phone, zip, password });
+    const { role, first_name, last_name, age, mail, phone, city, password } = req.body;
+    const user = await User.createUser({ role, first_name, last_name, age, mail, phone, city, password });
     res.status(201).json({ message: "Utilisateur créé", user });
   } catch (error) {
     res.status(500).json({ error: error.message });

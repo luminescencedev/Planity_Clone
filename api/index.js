@@ -74,16 +74,17 @@ app.get('/account', authenticate, async (req, res) => {
 // In your backend routes
 app.get('/admin/users', async (req, res) => {
   try {
-    const users = await User.getAllUsers({
-      attributes: ['id_user', 'first_name', 'last_name', 'mail', 'phone','city', 'role'],
-      order: [['createdAt', 'DESC']]
-    });
-    res.json(users);
+    // Call your existing model method
+    const users = await User.getAllUsers(req, res);
+    // No need for res.json() here since getAllUsers already sends the response
   } catch (error) {
-    res.status(500).json({ message: "Error fetching users" });
+    console.error('Route handler error:', error);
+    // Fallback error if model doesn't handle it
+    if (!res.headersSent) {
+      res.status(500).json({ error: 'Erreur serveur' });
+    }
   }
 });
-
 
 
 

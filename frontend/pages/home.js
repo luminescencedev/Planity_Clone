@@ -68,16 +68,16 @@ export default function Register() {
             </div>
           </div>
         </article>
-        <article class="black">
-          <span class="grey">PRESSE</span>
+        <article className="black">
+          <span className="grey">PRESSE</span>
           <h2>Ils parlent de nous</h2>
           <img src="/vogue.png"></img>
           <img src="/grazia.png"></img>
           <img src="/elle.png"></img>
           <img src="/marie_claire.png"></img>
         </article>
-        <article class="stats">
-          <span class="grey">UNE FORTE CROISSANCE</span>
+        <article className="stats">
+          <span className="grey">UNE FORTE CROISSANCE</span>
           <h2>Vous êtes un professionnel de la beauté ? Découvrez la prise de RDV en ligne !</h2>
           <section>
             <div>
@@ -106,17 +106,17 @@ export default function Register() {
             </div>
           </section>
         </article>
-        <article class="articlegrey">
+        <article className="articlegrey">
           <img src="/planity_groupe.jpeg"></img>
           <div>
-          <span class="grey">PROFESSIONNEL</span>
+          <span className="grey">PROFESSIONNEL</span>
           <h2>Planity recherche des profils dans toute la France pour digitaliser le secteur de la beauté</h2>
           <p>Antoine Puymirat - CEO</p>
           <a href="https://careers.planity.com/">Découvrir nos offres</a>
           </div>
         </article>
-        <article class="stats">
-          <span class="grey">PARTOUT EN FRANCE</span>
+        <article className="stats">
+          <span className="grey">PARTOUT EN FRANCE</span>
           <h2>Trouvez votre établissement beauté partout en France</h2>
           <section id="saloncity">
             <div>

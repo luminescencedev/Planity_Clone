@@ -1,31 +1,21 @@
-import { useState, useContext } from "react";
+import { useState } from "react";
 import { useRouter } from "next/router";
 import Header from '../component/header.js';
 import Footer from '../component/footer';
 
 export default function Register() {
-    const [nameSearch, setNameSearch] = useState("");
-    const [localisation, setLocalisation] = useState("");
-    const router = useRouter();
+  const [nameSearch, setNameSearch] = useState("");
+  const [localisation, setLocalisation] = useState("");
+  const router = useRouter();
   
-    const handleHome = async (e) => {
-      e.preventDefault();
-      const response = await fetch("http://localhost:3001/home", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nameSearch: nom, localisation: city}),
-      });
-  
-      if (response.ok) router.push("/login");
-    };
-  
-
-
-    return (
-        <>
-        <main id="home">
-        <Header></Header>
-        
+  const handleHome = async (e) => {
+    e.preventDefault();
+    router.push(`/categories/${nameSearch}/${localisation}`);
+  }
+  return (
+    <>
+      <main id="home">
+        <Header />
         <h1>Réservez en beauté</h1>
         <span>Simple • Immédiat • 24h/24</span>
         
@@ -40,7 +30,7 @@ export default function Register() {
             </label>
             <button type="submit">Rechercher</button>
         </form>
-        </main>
+      </main>
         <article id="discover">
           <div>
             <img src="/beauty_salon.webp"></img>

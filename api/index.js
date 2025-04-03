@@ -2,6 +2,7 @@ const express = require('express');
 const Category = require('./models/category');
 const User = require('./models/user');
 const Salon = require('./models/salon');
+const Service = require('./models/service');
 require('dotenv').config();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -234,9 +235,66 @@ app.get('/salonByCategoriesByLocalisation', authenticate, async (req,res) =>{
   }
 })
 
+app.get('/service-details/:serviceId', authenticate, async (req, res) => {
+  try {
+    const serviceId = req.params.serviceId;
+    console.log("Tentative de récupération du service avec ID:", serviceId); // Ajoute un log
+
+    const serviceDetails = await Service.getServiceById(serviceId);
+
+    if (!serviceDetails) {
+      return res.status(404).json({ error: "Service non trouvé" });
+    }
+
+    console.log("Détails du service récupérés :", serviceDetails); // Log les détails du service récupérés
+    res.status(200).json(serviceDetails);
+  } catch (error) {
+    console.error("Erreur lors de la récupération du service:", error);  // Log détaillé de l'erreur
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
+
+
+
 //POST
 
 // /createSalon (Admin, Salon Owner) 
+
+// backend.js (ou un fichier de routes dans ton backend Node.js)
+app.post('/reservation', authenticate, async (req, res) => {
+  try {
+    const { serviceId, userId, salonId, date } = req.body; // Récupère les données nécessaires
+    if (!serviceId || !userId || !salonId || !date) {
+      return res.status(400).json({ error: "Tous les paramètres sont nécessaires" });
+    }
+
+    // Vérifie si le service et le salon existent
+    const salon = await Salon.findById(salonId);
+    const service = await Service.findById(serviceId);
+    const user = await User.findById(userId);
+
+    if (!salon || !service || !user) {
+      return res.status(404).json({ error: "Service, salon ou utilisateur non trouvé" });
+    }
+
+    // Crée un nouveau rendez-vous
+    const newRendezvous = await Rendezvous.createRendezVousClient({
+      date,
+      salonId,
+      userId,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+
+    return res.status(201).json(newRendezvous);
+  } catch (error) {
+    console.error("Erreur lors de la création du rendez-vous:", error);
+    return res.status(500).json({ error: "Erreur interne du serveur" });
+  }
+});
+
 
 app.post('/createSalon', authenticate, async (req, res) => {
   try {

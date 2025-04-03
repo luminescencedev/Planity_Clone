@@ -17,7 +17,7 @@ class Service {
   }
 
   static async findById(id) {
-    const result = await pool.query("SELECT * FROM Services WHERE id_salon = $1", [id]);
+    const result = await pool.query("SELECT * FROM Services WHERE id_service = $1", [id]);
     return result.rows[0] || null;
   }
 
@@ -40,6 +40,23 @@ class Service {
   static async getDescriptionService(id) {
     const result = await pool.query("SELECT description FROM Services WHERE id_Service = $1", [id]);
     return result.rows[0] || null;
+  }
+
+  static async getServiceByDescription(description) {
+    try {
+      console.log("Recherche du service avec la description:", description);  // Log pour vérifier la description reçue
+
+      const result = await pool.query("SELECT * FROM Services WHERE description = $1", [description]);
+      if (result.rows.length === 0) {
+        console.log("Aucun service trouvé avec cette description");
+        return null; // Aucun service trouvé
+      }
+
+      return result.rows[0]; // Retourne le premier service trouvé
+    } catch (error) {
+      console.error("Erreur lors de la récupération du service:", error);  // Log de l'erreur
+      throw new Error("Erreur lors de la récupération du service par description");
+    }
   }
 
   static async getServicesBySalon(id_salon) {

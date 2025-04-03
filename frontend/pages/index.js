@@ -13,7 +13,7 @@ export default function Home() {
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
     if (!storedToken) {
-      router.push("/login");
+      router.push("/home");
     } else {
       setLoading(false);
     }

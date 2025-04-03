@@ -52,7 +52,7 @@ app.get('/account', authenticate, async (req, res) => {
       last_name: user.last_name,
       email: user.mail,
       phone: user.phone,
-      zip: user.zip,
+      city: user.city,
       role: user.role
     });
   } catch (error) {

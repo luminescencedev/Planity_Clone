@@ -22,16 +22,16 @@ app.use(cors(corsOptions));
 
 // Middleware de protection des routes
 const authenticate = (req, res, next) => {
-    const token = req.headers.authorization?.split(" ")[1]; // Récupérer le token
-    if (!token) return res.status(401).json({ error: "Accès non autorisé" });
-  
-    try {
-      const decoded = jwt.verify(token, SECRET_KEY);
-      req.user = decoded; // Ajouter les infos du user à la requête
-      next();
-    } catch (error) {
-      res.status(403).json({ error: "Token invalide" });
-    }
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) return res.status(401).json({ error: "Unauthorized" });
+
+  try {
+    const decoded = jwt.verify(token, SECRET_KEY);
+    req.user = { id: decoded.id }; // Make sure this matches what you put in the token
+    next();
+  } catch (error) {
+    res.status(403).json({ error: "Invalid token" });
+  }
 }
 
 // Endpoints 
@@ -41,15 +41,28 @@ const authenticate = (req, res, next) => {
 
 //User Endpoints
 
+app.get('/account', authenticate, async (req, res) => {
+  try {
+    const user = await User.getUserById(req.user.id);
+    if (!user) return res.status(404).json({ error: "User not found" });
 
-
-
-
-
-
-
-
-
+    res.json({
+      id: user.id_user,
+      first_name: user.first_name,
+      last_name: user.last_name,
+      email: user.mail,
+      phone: user.phone,
+      zip: user.zip,
+      role: user.role
+    });
+  } catch (error) {
+    console.error('Account endpoint error:', error);
+    res.status(500).json({ 
+      error: "Internal server error",
+      ...(process.env.NODE_ENV === 'development' && { details: error.message })
+    });
+  }
+});
 
 
 
@@ -57,6 +70,27 @@ const authenticate = (req, res, next) => {
 //Salon Endpoints
 
 // GET
+
+app.get('/salon/:salon', authenticate, async (req, res) => {
+  try {
+    const salonName = req.params.salon;
+    const salon = await Salon.getSalonByName(salonName); // Assurez-vous que getSalonById existe
+    
+    if (!salon) {
+      return res.status(404).json({ message: "Salon non trouvé" });
+    }
+    console.log("Données du salon récupérées :", salon); // Log pour vérifier les données récupérées
+    res.status(200).json(salon);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
+
+
+
 
 // /nameSalon (Public, Admin, User) 
 
@@ -296,19 +330,24 @@ app.post("/register", async (req, res) => {
 
   
   // ROUTE : Connexion
-app.post("/login", async (req, res) => {
+  app.post("/login", async (req, res) => {
     try {
       const { mail, password } = req.body;
       const user = await User.getUserByMail(mail);
+      
       if (!user || !(await bcrypt.compare(password, user.password))) {
-        return res.status(401).json({ error: "Identifiants invalides" });
+        return res.status(401).json({ error: "Invalid credentials" });
       }
-
-      const token = jwt.sign({ id: user.id, mail: user.mail }, SECRET_KEY, {
+  
+      // Make sure to include the user ID in the token
+      const token = jwt.sign({ 
+        id: user.id_user, // or whatever your ID field is called
+        mail: user.mail 
+      }, SECRET_KEY, {
         expiresIn: "2h",
       });
-
-      res.json({ message: "Connexion réussie", token });
+  
+      res.json({ message: "Login successful", token });
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
@@ -342,31 +381,32 @@ app.get('/categories/:name', authenticate, async (req, res) => {
   }
 });
 
-// GET salons par catégorie
 app.get('/categories/:name/salons', authenticate, async (req, res) => {
   try {
-    const category = await Category.getCategoryByName(req.params.name);
-    
-    // Vérifiez si la catégorie existe
-    if (!category) {
-      return res.status(404).json({ message: "Catégorie non trouvée" });
+    const { name } = req.params;
+    const { city } = req.query; // Récupérer la ville depuis l'URL
+
+    // Récupérer l'ID de la catégorie
+    const category = await Category.getCategoryByName(name);
+    if (!category) return res.status(404).json({ message: "Catégorie non trouvée" });
+
+    let salons;
+    if (city) {
+      // Filtrer les salons par catégorie et ville
+      salons = await Salon.getSalonsByCategoryAndCity(category.id_category, city);
+    } else {
+      // Récupérer tous les salons de la catégorie
+      salons = await Salon.getSalonsByCategoryId(category.id_category);
     }
 
-    // Logique pour récupérer les salons avec l'ID de catégorie
-    const salons = await Salon.getSalonsByCategoryId(category.id_category);
-    
-    // Si aucun salon n'est trouvé pour cette catégorie
-    if (salons.length === 0) {
-      return res.status(404).json({ message: "Aucun salon trouvé pour cette catégorie" });
-    }
+    if (salons.length === 0) return res.status(404).json({ message: "Aucun salon trouvé" });
 
-    // Renvoi des salons associés à la catégorie
     res.status(200).json(salons);
   } catch (error) {
-    console.error("Erreur serveur : ", error.message);
     res.status(500).json({ error: error.message });
   }
 });
+
 
 
 //POST

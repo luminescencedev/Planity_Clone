@@ -129,7 +129,6 @@ CREATE TABLE public.Users(
 )WITHOUT OIDS;
 
 -- Insert data into Users
-INSERT INTO public.Users (role, first_name, last_name, age, mail, phone,city, password, created_at, updated_at, id_salon)
 INSERT INTO public.Users (role, first_name, last_name, age, mail, phone, city, password, created_at, updated_at, id_salon)
 VALUES
 ('Admin', 'John', 'Doe', 30, 'john.doe@example.com', 1234567890, 'Paris', 'password123', current_date, current_date, 1),

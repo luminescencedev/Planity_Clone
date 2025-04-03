@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+html, body{
+    overflow-x: hidden;
+}
 
 header{
     display: flex;
@@ -266,4 +269,10 @@ footer .grey{
 footer ul li{
     color: rgb(160, 160, 160);
     line-height: 1.8em;
+}
+
+#login, #register {
+    width: 100vw;
+    background:RGB(247, 247, 247);
+    background-size: cover;
 }

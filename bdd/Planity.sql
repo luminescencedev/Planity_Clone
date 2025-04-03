@@ -1,8 +1,8 @@
 ------------------------------------------------------------
---        Script Postgre 
+--        Script PostgreSQL complet avec mise à jour
 ------------------------------------------------------------
 
--- Drop tables if they exist
+-- Supprimer les tables existantes si elles existent déjà
 DROP TABLE IF EXISTS public.Rendez_vous CASCADE;
 DROP TABLE IF EXISTS public.Users CASCADE;
 DROP TABLE IF EXISTS public.Reviews CASCADE;
@@ -10,6 +10,7 @@ DROP TABLE IF EXISTS public.Services CASCADE;
 DROP TABLE IF EXISTS public.Salons CASCADE;
 DROP TABLE IF EXISTS public.Categories CASCADE;
 
+-- Création des séquences pour les ID
 CREATE SEQUENCE public.Categories_id_category_seq;
 CREATE SEQUENCE public.Salons_id_salon_seq;
 CREATE SEQUENCE public.Services_id_service_seq;
@@ -37,7 +38,7 @@ CREATE TABLE public.Categories(
     CONSTRAINT Categories_PK PRIMARY KEY (id_category)
 )WITHOUT OIDS;
 
--- Insert data into Categories
+-- Insertion des catégories
 INSERT INTO public.Categories (name, picture, description, created_at, updated_at)
 VALUES
 ('Coiffeur', 'url_to_image', 'Description de la catégorie Coiffeur', current_date, current_date),
@@ -51,7 +52,7 @@ CREATE TABLE public.Salons(
     id_salon      SERIAL NOT NULL,
     name          VARCHAR (50) NOT NULL UNIQUE,
     adress        VARCHAR (50) NOT NULL,
-    city           VARCHAR (50) NOT NULL,
+    city          VARCHAR (50) NOT NULL,
     picture       VARCHAR (2000) NOT NULL,
     description   VARCHAR (2000) NOT NULL,
     created_at    DATE NOT NULL,
@@ -61,11 +62,11 @@ CREATE TABLE public.Salons(
     CONSTRAINT Salons_Categories_FK FOREIGN KEY (id_category) REFERENCES public.Categories(id_category)
 )WITHOUT OIDS;
 
--- Insert data into Salons
+-- Insertion des salons
 INSERT INTO public.Salons (name, adress, city, picture, description, created_at, updated_at, id_category)
 VALUES
 ('Salon de Paris', '123 Rue de Paris', 'Paris', 'url_to_image', 'Description du salon de Paris', current_date, current_date, 1),
-('Salon de Lyon', '456 Rue de Lyon', 'Paris', 'url_to_image', 'Description du salon de Lyon', current_date, current_date, 2);
+('Salon de Lyon', '456 Rue de Lyon', 'Lyon', 'url_to_image', 'Description du salon de Lyon', current_date, current_date, 2);
 
 ------------------------------------------------------------
 -- Table: Services
@@ -82,7 +83,7 @@ CREATE TABLE public.Services(
     CONSTRAINT Services_Salons_FK FOREIGN KEY (id_salon) REFERENCES public.Salons(id_salon)
 )WITHOUT OIDS;
 
--- Insert data into Services
+-- Insertion des services
 INSERT INTO public.Services (price, time, description, created_at, updated_at, id_salon)
 VALUES
 (30.00, 60, 'Coupe de cheveux', current_date, current_date, 1),
@@ -92,18 +93,18 @@ VALUES
 -- Table: Reviews
 ------------------------------------------------------------
 CREATE TABLE public.Reviews(
-    id_review       SERIAL NOT NULL,
+    id_review     SERIAL NOT NULL,
     rating        INT NOT NULL,
     description   VARCHAR (2000) NOT NULL,
     created_at    DATE NOT NULL,
     updated_at    DATE NOT NULL,
     id_salon      INT NOT NULL,
-    CONSTRAINT reviews_PK PRIMARY KEY (id_review),
-    CONSTRAINT reviews_Salons_FK FOREIGN KEY (id_salon) REFERENCES public.Salons(id_salon)
+    CONSTRAINT Reviews_PK PRIMARY KEY (id_review),
+    CONSTRAINT Reviews_Salons_FK FOREIGN KEY (id_salon) REFERENCES public.Salons(id_salon)
 )WITHOUT OIDS;
 
--- Insert data into reviews
-INSERT INTO public.reviews (rating, description, created_at, updated_at, id_salon)
+-- Insertion des avis
+INSERT INTO public.Reviews (rating, description, created_at, updated_at, id_salon)
 VALUES
 (5, 'Excellent service!', current_date, current_date, 1),
 (4, 'Très bon mais peut s''améliorer', current_date, current_date, 2);
@@ -118,39 +119,42 @@ CREATE TABLE public.Users(
     last_name    VARCHAR (50) NOT NULL,
     age          INT NOT NULL,
     mail         VARCHAR (80) NOT NULL UNIQUE,
-    phone        VARCHAR(10) NOT NULL UNIQUE,
+    phone        INT NOT NULL UNIQUE,
     city          VARCHAR (50) NOT NULL,
     password     VARCHAR (255) NOT NULL,
     created_at   DATE NOT NULL,
     updated_at   DATE NOT NULL,
     id_salon     INT,
     CONSTRAINT Users_PK PRIMARY KEY (id_user),
-    CONSTRAINT Users_Salons1_FK FOREIGN KEY (id_salon) REFERENCES public.Salons(id_salon)
+    CONSTRAINT Users_Salons_FK FOREIGN KEY (id_salon) REFERENCES public.Salons(id_salon)
 )WITHOUT OIDS;
 
--- Insert data into Users
+-- Insertion des utilisateurs
 INSERT INTO public.Users (role, first_name, last_name, age, mail, phone, city, password, created_at, updated_at, id_salon)
 VALUES
-('Admin', 'John', 'Doe', 30, 'john.doe@example.com', 1234567890, 'Paris', 'password123', current_date, current_date, 1),
-('User', 'Jane', 'Smith', 25, 'jane.smith@example.com', 0987654321, 'Paris', 'password456', current_date, current_date, 2);
+('Admin', 'John', 'Doe', 30, 'john.doe@example.com', '1234567890', 'Paris', 'password123', current_date, current_date, 1),
+('User', 'Jane', 'Smith', 25, 'jane.smith@example.com', '0987654321', 'Lyon', 'password456', current_date, current_date, 2);
 
 ------------------------------------------------------------
--- Table: Rendez_vous
+-- Table: Rendez_vous (Mise à jour avec le champ 'id_service')
 ------------------------------------------------------------
 CREATE TABLE public.Rendez_vous(
-    id_rendezvous   SERIAL NOT NULL,
-    date            DATE NOT NULL,
-    created_at      DATE NOT NULL,
-    updated_at      DATE NOT NULL,
-    id_salon        INT NOT NULL,
-    id_user         INT NOT NULL,
+    id_rendezvous SERIAL NOT NULL,
+    date          DATE NOT NULL,
+    time          TIME NOT NULL,
+    created_at    TIMESTAMP  NOT NULL,
+    updated_at    TIMESTAMP  NOT NULL,
+    id_salon      INT NOT NULL,
+    id_user       INT NOT NULL,
+    id_service    INT NOT NULL, -- Nouveau champ pour lier le rendez-vous au service
     CONSTRAINT Rendez_vous_PK PRIMARY KEY (id_rendezvous),
     CONSTRAINT Rendez_vous_Salons_FK FOREIGN KEY (id_salon) REFERENCES public.Salons(id_salon),
-    CONSTRAINT Rendez_vous_Users0_FK FOREIGN KEY (id_user) REFERENCES public.Users(id_user)
+    CONSTRAINT Rendez_vous_Users_FK FOREIGN KEY (id_user) REFERENCES public.Users(id_user),
+    CONSTRAINT Rendez_vous_Services_FK FOREIGN KEY (id_service) REFERENCES public.Services(id_service) -- Clé étrangère vers la table Services
 )WITHOUT OIDS;
 
--- Insert data into Rendez_vous
-INSERT INTO public.Rendez_vous (date, created_at, updated_at, id_salon, id_user)
+-- Insertion des rendez-vous avec le service
+INSERT INTO public.Rendez_vous (date, time, created_at, updated_at, id_salon, id_user, id_service)
 VALUES
-(current_date + interval '1 day', current_date, current_date, 1, 1),
-(current_date + interval '2 days', current_date, current_date, 2, 2);
+(current_date + interval '1 day', '14:30:00', current_date, current_date, 1, 1, 1),  -- Coupe de cheveux
+(current_date + interval '2 days', '16:00:00', current_date, current_date, 2, 2, 2);  -- Rasage de barbe

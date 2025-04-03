@@ -3,6 +3,7 @@ const Category = require('./models/category');
 const User = require('./models/user');
 const Salon = require('./models/salon');
 const Service = require('./models/service');
+const RendezVous = require('./models/rendezVous');
 const Review = require('./models/review');
 require('dotenv').config();
 const bcrypt = require('bcrypt');
@@ -324,6 +325,31 @@ app.patch('/users/:id', authenticate, async (req, res) => {
 
 // /createSalon (Admin, Salon Owner) 
 
+app.post("/rendez-vous", async (req, res) => {
+  const { userId, salonId, serviceId, date, time } = req.body;
+  if (!userId || !salonId || !serviceId || !date || !time) {
+      return res.status(400).json({ error: "Tous les champs sont requis !" });
+  }
+
+  try {
+      const createdAt = new Date();
+      const updatedAt = new Date();
+
+      console.log("Données reçues pour la réservation:", {
+          userId, salonId, serviceId, date, time
+      });
+
+      const newRdv = await RendezVous.createRendezVousClient({
+          date, 
+          time,
+          created_at: createdAt, 
+          updated_at: updatedAt, 
+          id_salon: salonId, 
+          id_user: userId, 
+          id_service: serviceId  
+      });
+
+      res.status(201).json(newRdv);
 // backend.js (ou un fichier de routes dans ton backend Node.js)
 
 app.post('/salon/:id_salon/reviews', authenticate, async (req, res) => {
@@ -346,12 +372,22 @@ app.post('/salon/:id_salon/reviews', authenticate, async (req, res) => {
     });
     res.status(201).json(newReview);
   } catch (error) {
+      console.error("Erreur lors de la réservation:", error.message);
+      console.error("Détails de l'erreur complète:", error);
+      res.status(500).json({ error: "Erreur serveur" });
     console.error("Error creating review:", error);
     if (error.code === '23503') { // Foreign key violation
       return res.status(404).json({ error: "Salon not found" });
     }
     res.status(500).json({ error: "Internal server error" });
   }
+});
+
+
+
+
+
+
 }); 
 
 

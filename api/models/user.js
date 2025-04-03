@@ -79,7 +79,7 @@ class User {
   }
 
   static async findById(id) {
-    const result = await pool.query("SELECT * FROM Users WHERE id_salon = $1", [id]);
+    const result = await pool.query("SELECT * FROM Users WHERE id_user = $1", [id]);
     return result.rows[0] || null;
   }
 

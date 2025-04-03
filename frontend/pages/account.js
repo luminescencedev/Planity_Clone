@@ -35,7 +35,7 @@ export default function Account() {
   });
 
   useEffect(() => {
-    const fetchAllUsers = async () => {
+    const fetchAllUsers = async () => { //gestion des erreurs pour la récupération des utilisateurs.erreur se produit, capturée et affichée dans l'état usersError
       setUsersLoading(true);
       setUsersError(null);
       try {
@@ -65,7 +65,7 @@ export default function Account() {
   // Fetch user data from API
   useEffect(() => {
 
-    const fetchUserData = async () => {
+    const fetchUserData = async () => {//Ajout log pour débogage des données récupérées.Permet de vérifier la structure des données retournées.
       try {
         const response = await fetch("http://localhost:3001/account", {
           headers: {
@@ -86,7 +86,7 @@ export default function Account() {
           console.error("ID utilisateur manquant dans la réponse !");
           throw new Error("ID utilisateur introuvable");
         }
-
+        //Vérification de l'ID utilisateur dans la réponse. Si l'ID manquant, erreur est levée pour garantir les données sont valides.
         setUser(data);
       } catch (err) {
         console.error("Full fetch error:", err);

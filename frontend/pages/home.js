@@ -1,7 +1,7 @@
 import { useState, useContext } from "react";
 import { useRouter } from "next/router";
-import Header from '../component/header.js'
-import Footer from '../component/footer'
+import Header from '../component/header.js';
+import Footer from '../component/footer';
 
 export default function Register() {
     const [nameSearch, setNameSearch] = useState("");
@@ -29,7 +29,7 @@ export default function Register() {
         <h1>Réservez en beauté</h1>
         <span>Simple • Immédiat • 24h/24</span>
         
-        <form onSubmit={handleHome}>
+        <form id="search" onSubmit={handleHome} >
             <label for="name">
               <span>Que cherchez-vous?</span>
             <input type="text" id="name" name="name" placeholder="Nom du salon, prestations (coupe...)"></input>

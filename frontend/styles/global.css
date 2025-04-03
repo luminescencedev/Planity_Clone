@@ -24,7 +24,7 @@ html, body {
     color: white;
     margin-left: 45%;
 }
-#home form{
+#search{
     background-color: white;
     border-radius: 1em;
     width: 65%;
@@ -33,20 +33,20 @@ html, body {
     display: flex;
     margin-top: 2%;
 }
-#home form label{
+#search label{
     width: 40%;
     display: flex;
     flex-wrap: wrap;
     margin-right: 2%;
 
 }
-#home form span{
+#search span{
     width: 100%;
 }
 form input{
     width: 100%;
 }
-#home button[type="submit"]{
+#search button[type="submit"]{
     background-color: black;
     width: 15%;
     height: 7vh;
@@ -65,9 +65,9 @@ h3{
     font-weight: 500
 }
 p{
-    color: rgb(95, 95, 95);
+    color: rgb(68, 68, 68);
     font-size: 1.3em;
-    font-weight: 500;
+    font-weight: 400;
 }
 article{
     display: flex;
@@ -192,4 +192,78 @@ article{
     width: 100vw;
     background:RGB(247, 247, 247);
     background-size: cover;
+}
+
+
+
+
+/* ////////////////////////////////////////////////////////// */
+/* //////////////      TYPE SALON /////////////////////////// */
+
+#namesalon{
+    background-color: rgb(247, 247, 247);
+    padding-bottom: 5%;
+}
+#namesalon h1{
+    font-size: 2.6em;
+    text-align: center;
+    padding-top: 8%;
+}
+
+#listeville{
+    width: 80%;
+    margin: auto;
+    margin-top: 2%;
+    justify-content: space-between;
+}
+#listeville>span{
+    width: 100%;
+    margin: 3% 0;
+}
+
+#villea{
+   width: 32%;
+   border-radius: 1em;
+    box-shadow: 2px 10px 10px 4px rgba(0,0,0,.1);
+    margin-bottom: 4%;
+    padding-bottom: 1%;
+}
+#villea img{
+    width: 100%;
+    border-radius: 1em 1em 0 0;
+    padding-bottom: 3%;
+}
+#villea span,#villea h3{
+    padding: 0 3%;
+}
+#villea h3{
+    font-size: 1.4em;
+}
+#conseils{
+    width: 55%;
+    margin: auto;
+    margin-bottom: 5%;
+}
+#conseils h4{
+    font-size: 2em;
+    margin: 3% 0;
+}
+#conseils p{
+    line-height: 1.3em;
+    font-size: 1.2em;
+}
+#conseils img{
+    width: 100%;
+    margin: 5% 0;
+}
+#conseils h3{
+    margin: 5% 0 2%;
+}
+#conseils ul{
+    display: flex;
+    flex-wrap: wrap;
+}
+#conseils li{
+    width: 50%;
+    margin-bottom: 2%;
 }

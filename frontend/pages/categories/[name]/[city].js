@@ -9,8 +9,13 @@ export default function SalonsParVille() {
   const { name, city } = router.query;
   const { token } = useContext(AuthContext);
   const [salons, setSalons] = useState([]);
+  const [filteredSalons, setFilteredSalons] = useState([]);
   const [error, setError] = useState(null);
   const [showDetails, setShowDetails] = useState({});
+
+  // Nouveaux états pour les filtres
+  const [ratingFilter, setRatingFilter] = useState('all');
+  const [sortBy, setSortBy] = useState('default');
 
   useEffect(() => {
     if (name && city && token) {
@@ -26,6 +31,7 @@ export default function SalonsParVille() {
         })
         .then((data) => {
           setSalons(data);
+          setFilteredSalons(data); // Initialiser les salons filtrés
           const initialDetailsState = data.reduce((acc, salon) => {
             acc[salon.id_salon] = false;
             return acc;
@@ -36,8 +42,30 @@ export default function SalonsParVille() {
     }
   }, [name, city, token]);
 
-  if (!name || !city || !token) return <p>Chargement...</p>;
-  if (error) return <p style={{ color: "red" }}>{error}</p>;
+  // Fonction pour appliquer les filtres
+  const applyFilters = () => {
+    let filtered = [...salons];
+
+    // Filtre par note
+    if (ratingFilter !== 'all') {
+      filtered = filtered.filter(salon => 
+        Math.round(salon.moyenne_rating) >= parseInt(ratingFilter)
+      );
+    }
+
+    // Tri
+    if (sortBy === 'rating-high') {
+      filtered.sort((a, b) => b.moyenne_rating - a.moyenne_rating);
+    } else if (sortBy === 'rating-low') {
+      filtered.sort((a, b) => a.moyenne_rating - b.moyenne_rating);
+    }
+
+    setFilteredSalons(filtered);
+  };
+
+  useEffect(() => {
+    applyFilters();
+  }, [ratingFilter, sortBy]);
 
   const toggleDetails = (id_salon) => {
     setShowDetails((prevState) => ({
@@ -46,76 +74,101 @@ export default function SalonsParVille() {
     }));
   };
 
-
-
-
-
-
-
-  
+  if (!name || !city || !token) return <p>Chargement...</p>;
+  if (error) return <p style={{ color: "red" }}>{error}</p>;
 
   return (
     <>
-    <Header/>
-    
-    <div>
-      <h1>Salons de la catégorie {name} à {city}</h1>
-      {salons.length === 0 ? (
-        <p>Aucun salon trouvé pour {city}.</p>
-      ) : (
-        <ul>
-          {salons.map((salon) => (
-            <li key={salon.id_salon} style={{ border: "1px solid #ccc", padding: "10px", margin: "10px 0" }}>
-              <strong>{salon.name}</strong><br />
-              <span>{salon.adress}</span><br />
-              <img src={`../../${salon.picture}`} alt={salon.name}/>
-              <p>: {salon.moyenne_rating ? Number(salon.moyenne_rating).toFixed(1) : "N/A"}</p>
+      <Header />
+      <div className="pt-[8vh] p-4 min-h-screen flex flex-col">
+        <h1>Salons de la catégorie {name} à {city}</h1>
 
-              <button 
-                onClick={() => toggleDetails(salon.id_salon)} 
-                style={{ marginTop: "10px", padding: "5px 10px", cursor: "pointer" }}
+        {/* Filtres */}
+        <div style={{ margin: "20px 0", padding: "20px", backgroundColor: "#f5f5f5" }}>
+          <h3>Filtres</h3>
+          <div style={{ display: "flex", gap: "20px" }}>
+            <div>
+              <label>Note minimum : </label>
+              <select 
+                value={ratingFilter} 
+                onChange={(e) => setRatingFilter(e.target.value)}
+                style={{ padding: "5px" }}
               >
-                {showDetails[salon.id_salon] ? "Moins d’informations" : "Plus d’informations"}
-              </button>
-
-              {showDetails[salon.id_salon] && (
-                <div>
-                  <h3>Avis des clients :</h3>
-                  {salon.reviews.length === 0 ? (
-                    <p>Aucun avis pour ce salon.</p>
-                  ) : (
-                    <ul>
-                      {salon.reviews.map((review) => (
-                        <li key={review.id_review}>
-                          <strong>{review.rating}/5</strong><br />
-                          <span>{review.description}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-
-                  <h3>En savoir plus sur {salon.name}</h3>
-                  <p>{salon.description}</p>
-                </div>
-              )}
-
-              <button
-                onClick={() => router.push(`/categories/${name}/${city}/salon/${salon.name}`)} 
-                style={{ marginTop: "10px", padding: "5px 10px", cursor: "pointer" }}
+                <option value="all">Toutes les notes</option>
+                <option value="4">4+ étoiles</option>
+                <option value="3">3+ étoiles</option>
+                <option value="2">2+ étoiles</option>
+                <option value="1">1+ étoiles</option>
+              </select>
+            </div>
+            
+            <div>
+              <label>Trier par : </label>
+              <select 
+                value={sortBy} 
+                onChange={(e) => setSortBy(e.target.value)}
+                style={{ padding: "5px" }}
               >
-                Prendre RDV
-              </button>
+                <option value="default">Par défaut</option>
+                <option value="rating-high">Meilleures notes</option>
+                <option value="rating-low">Notes les plus basses</option>
+              </select>
+            </div>
+          </div>
+        </div>
 
+        {/* Liste des salons */}
+        {filteredSalons.length === 0 ? (
+          <p>Aucun salon ne correspond à vos critères de recherche.</p>
+        ) : (
+          <ul>
+            {filteredSalons.map((salon) => (
+              <li key={salon.id_salon} style={{ border: "1px solid #ccc", padding: "10px", margin: "10px 0" }}>
+                <strong>{salon.name}</strong><br />
+                <span>{salon.adress}</span><br />
+                <img src={`../../${salon.picture}`} alt={salon.name} />
+                <p>Note : {salon.moyenne_rating ? Number(salon.moyenne_rating).toFixed(1) : "N/A"}</p>
 
+                <button 
+                  onClick={() => toggleDetails(salon.id_salon)} 
+                  style={{ marginTop: "10px", padding: "5px 10px", cursor: "pointer" }}
+                >
+                  {showDetails[salon.id_salon] ? "Moins d’informations" : "Plus d’informations"}
+                </button>
 
-              <p id="service"></p>
+                {showDetails[salon.id_salon] && (
+                  <div>
+                    <h3>Avis des clients :</h3>
+                    {salon.reviews.length === 0 ? (
+                      <p>Aucun avis pour ce salon.</p>
+                    ) : (
+                      <ul>
+                        {salon.reviews.map((review) => (
+                          <li key={review.id_review}>
+                            <strong>{review.rating}/5</strong><br />
+                            <span>{review.description}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
 
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
-    <Footer/>
+                    <h3>En savoir plus sur {salon.name}</h3>
+                    <p>{salon.description}</p>
+                  </div>
+                )}
+
+                <button
+                  onClick={() => router.push(`/categories/${name}/${city}/salon/${salon.name}`)} 
+                  style={{ marginTop: "10px", padding: "5px 10px", cursor: "pointer" }}
+                >
+                  Prendre RDV
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+      <Footer />
     </>
   );
 }

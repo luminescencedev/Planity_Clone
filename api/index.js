@@ -61,12 +61,12 @@ const authenticate = (req, res, next) => {
 app.get('/salon/:salon', authenticate, async (req, res) => {
   try {
     const salonName = req.params.salon;
-    const salon = await Salon.getSalonById(salonName); // Assurez-vous que getSalonById existe
+    const salon = await Salon.getSalonByName(salonName); // Assurez-vous que getSalonById existe
     
     if (!salon) {
       return res.status(404).json({ message: "Salon non trouvé" });
     }
-
+    console.log("Données du salon récupérées :", salon); // Log pour vérifier les données récupérées
     res.status(200).json(salon);
   } catch (error) {
     console.error(error);

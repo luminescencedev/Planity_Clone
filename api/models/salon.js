@@ -62,19 +62,19 @@ class Salons {
       }
 
       static async getSalonsByCategoryAndCity(id_category, city) {
-      
         const result = await pool.query(
           `SELECT s.*, 
                   COALESCE(AVG(r.rating), 0) AS moyenne_rating, 
-                  COALESCE(json_agg(r) FILTER (WHERE r.id_review IS NOT NULL), '[]') AS reviews
+                  COALESCE(json_agg(r) FILTER (WHERE r.id_review IS NOT NULL), '[]') AS reviews,
+                  COALESCE(json_agg(service) FILTER (WHERE service.id_service IS NOT NULL), '[]') AS services
            FROM Salons s
            LEFT JOIN Reviews r ON s.id_salon = r.id_salon
+           LEFT JOIN Services service ON s.id_salon = service.id_salon
            WHERE s.id_category = $1 AND LOWER(s.city) = LOWER($2)
            GROUP BY s.id_salon`,
           [id_category, city]
         );
-
-        return result.rows;// renvoie tous les salons de la catégorie avec la moyenne des notes et les avis associés
+        return result.rows; // renvoie les salons avec leurs services, avis et notes
       }
       
       static async getSalonByName(name) {
@@ -84,10 +84,12 @@ class Salons {
           const result = await pool.query(
             `SELECT s.*, 
                     COALESCE(AVG(r.rating), 0) AS moyenne_rating, 
-                    COALESCE(json_agg(r) FILTER (WHERE r.id_review IS NOT NULL), '[]') AS reviews
+                    COALESCE(json_agg(r) FILTER (WHERE r.id_review IS NOT NULL), '[]') AS reviews,
+                    COALESCE(json_agg(service) FILTER (WHERE service.id_service IS NOT NULL), '[]') AS services
              FROM Salons s
              LEFT JOIN Reviews r ON s.id_salon = r.id_salon
-             WHERE LOWER(s.name) = LOWER($1)  -- Recherche par nom de salon
+             LEFT JOIN Services service ON s.id_salon = service.id_salon
+             WHERE LOWER(s.name) = LOWER($1)
              GROUP BY s.id_salon`,
             [name]
           );
@@ -105,6 +107,7 @@ class Salons {
           return { error: error.message }; // Retourne l'erreur dans le format attendu
         }
       }
+      
       
       static async getSalonById(salonName) {
         const result = await pool.query(

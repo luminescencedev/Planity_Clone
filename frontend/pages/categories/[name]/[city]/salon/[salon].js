@@ -12,7 +12,6 @@ export default function SalonPage() {
   useEffect(() => {
     if (salon && token) {
       const salonName = encodeURIComponent(salon); // Encode le nom du salon pour éviter des erreurs
-      console.log("Nom du salon encodé:", salonName);
 
       fetch(`http://localhost:3001/salon/${salonName}`, {
         headers: {
@@ -37,8 +36,14 @@ export default function SalonPage() {
   if (!salon || !token) return <p>Chargement...</p>;
   if (error) return <p style={{ color: "red" }}>{error}</p>;
 
-  // Si salonData est null, cela signifie que la donnée n'a pas encore été récupérée
   if (!salonData) return <p>Chargement des données...</p>;
+
+  const handleReservation = (serviceId) => {
+    // Vous pouvez rediriger l'utilisateur vers une page de réservation ou afficher un formulaire/modal
+    console.log("Réservation pour le service ID:", serviceId);
+    // Par exemple, rediriger vers une page de réservation avec l'ID du service
+    router.push(`/reservation/${serviceId}`);
+  };
 
   return (
     <div>
@@ -64,9 +69,28 @@ export default function SalonPage() {
       <h3>Note moyenne :</h3>
       <p>{Number(salonData.moyenne_rating).toFixed(1)} / 5</p>
 
-      <button onClick={() => router.push(`/categories/${salonData.id_category}/salon/${salonData.name}/rdv`)}>
-        Prendre RDV
-      </button>
+      <h3>Services proposés :</h3>
+      {Array.isArray(salonData.services) && salonData.services.length === 0 ? (
+        <p>Aucun service proposé pour ce salon.</p>
+      ) : (
+        <ul>
+          {Array.isArray(salonData.services) ? (
+            salonData.services.map((service) => (
+              <li key={service.id_service}>
+                <strong>{service.description}</strong>: {service.price} € - {service.time} minutes
+                <button
+                  onClick={() => handleReservation(service.id_service)}
+                  style={{ marginLeft: "10px", padding: "5px 10px", cursor: "pointer" }}
+                >
+                  Réserver
+                </button>
+              </li>
+            ))
+          ) : (
+            <p>Aucun service disponible pour ce salon.</p>
+          )}
+        </ul>
+      )}
     </div>
   );
 }

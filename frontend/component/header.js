@@ -2,14 +2,14 @@ export default function Header() {
     return (
     <>
     <header>
-            <h1><a>PLANITY</a></h1>
-            <img src="/planity-logo.png"/>
+
+            <a href="/home"><img src="/planity-logo.png"/></a>
             <nav>
                 <a>Coiffeur</a>
                 <a>Barbier</a>
                 <a>Manucure</a>
             </nav>
-            <a><img src="/user.svg"></img> Mon compte</a>
+            <a><img src="/userwhite.svg"></img> Mon compte</a>
         </header>
     </>
     )

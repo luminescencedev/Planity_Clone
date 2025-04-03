@@ -9,6 +9,7 @@ header{
     padding: 0 25% 0 15%;
     justify-content: space-between;
     background-color: white;
+    position: fixed;
 }
 header>a:first-of-type{
     width: 15%;
@@ -46,8 +47,223 @@ header nav a:hover{
 }
 
 #home{
-    width: 100vw;
+    width: 99vw;
     height: 100vh;
     background-image: url("../public/backgroundplanity.jpg");
     background-size: cover;
+
+}
+#home>h1{
+    color: white;
+    text-align: center;
+    padding-top: 19%;
+    font-size: 2.5em;
+}
+#home>span{
+    color: white;
+    margin-left: 45%;
+}
+#home form{
+    background-color: white;
+    border-radius: 1em;
+    width: 48%;
+    margin: auto;
+    padding: 1% 2%;
+    display: flex;
+    margin-top: 2%;
+}
+#home form label{
+    width: 40%;
+    display: flex;
+    flex-wrap: wrap;
+    margin-right: 2%;
+
+}
+#home form span{
+    width: 100%;
+}
+form input{
+    width: 100%;
+}
+#home button[type="submit"]{
+    background-color: black;
+    width: 15%;
+    color: white;
+    border-radius: 1em;
+}
+
+h2{
+    font-size: 3em;
+    line-height: 1.2em;
+}
+h3{
+    font-size: 1.5em;
+    font-weight: 500
+}
+p{
+    color: rgb(95, 95, 95);
+    font-size: 1.3em;
+    font-weight: 500;
+}
+article{
+    display: flex;
+    flex-wrap: wrap;
+}
+#discover>div{
+    display: flex;
+    flex-wrap: wrap;
+    margin: 5% 0;
+    justify-content: space-between;
+
+}
+#discover img{
+    border-radius: 2em;
+    width: 22%;
+}
+#discover div div{
+    width: 28%;
+    padding-bottom: 2%;
+    margin: 0 2%;
+}
+#discover h3{
+    line-height: 5em;
+}
+
+.black{
+    background-color: black;
+    color: white;
+    padding: 4% 0;
+}
+.grey{
+    color: rgb(133, 133, 133);
+    font-weight: 700;
+    font-size: .9em;
+    border-bottom: solid rgb(27, 27, 199) 2px;
+    
+}
+.black .grey{
+    margin-left: 48.5%;
+}
+.black h2{
+    width: 100%;
+    text-align: center;
+    margin: 2% 0;
+}
+.black img{
+    border: solid rgb(80, 80, 80) 1px;
+    width: 14%;
+    padding: 2% 4%;
+}
+.black img:first-of-type{
+    margin-left: 22%;
+}
+.stats{
+    width: 61%;
+    margin: 6% auto;
+}
+.stats h2{
+    margin-top: 2%;
+    width: 80%;
+    margin-right: 10%;
+}
+.stats section{
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 3%;
+}
+.stats div{
+    width: 33%;
+    border: solid rgb(185, 185, 185) 1px;
+    padding: 5% 4%;
+}
+
+.articlegrey{
+    background-color: rgb(248, 248, 248);
+    padding: 10% 15%;
+    justify-content: space-around;
+}
+.articlegrey img{
+    width: 45%;
+    border-radius: 1em;
+}
+.articlegrey div{
+    width: 40%;
+}
+.articlegrey h2{
+    margin-top: 2%;
+}
+.articlegrey p{
+    margin-bottom: 8%;
+}
+.articlegrey a{
+    background-color: black;
+    border-radius: 1em;
+    color: white;
+    width: 15%;
+    padding: 3%;
+    font-size: .9em;
+}
+#saloncity{
+    display: flex;
+    flex-wrap: wrap;
+    border: none;
+}
+#saloncity div{
+    width: 27%;
+    border: none;
+}
+#saloncity p{
+    font-size: 1em;
+    margin: 10% 0;
+}
+#saloncity ul li{
+    margin: 3% 0;
+}
+
+footer{
+    background-color: rgb(37, 37, 37);
+    display: flex;
+    flex-wrap: wrap;
+    padding: 5% 20% 0;
+}
+footer h3{
+    color: white;
+}
+
+footer article a:first-of-type{
+    width: 70%;
+    margin-right: 20%;
+}
+footer article a{
+    width: 20%;
+    
+}
+footer article:first-of-type{
+    width: 20%;
+    display: flex;
+    flex-wrap: wrap;
+
+}
+footer article{
+    width: 80%;
+    display: flex;
+    flex-wrap: wrap;
+}
+footer article div{
+    width: 28%;
+    margin: 0 2%;
+}
+footer article h3{
+    font-size: 1.3em;
+}
+footer .grey{
+    border-top: solid rgb(75, 75, 75) 1px;
+    width: 100%;
+    padding: 2% 0;
+    margin-top: 10%;
+    border-bottom: none;
+}
+footer ul li{
+    color: rgb(160, 160, 160);
+    line-height: 1.8em;
 }

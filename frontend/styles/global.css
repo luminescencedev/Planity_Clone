@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+html, body{
+    overflow-x: hidden;
+}
 
 header{
     display: flex;
@@ -49,5 +52,11 @@ header nav a:hover{
     width: 100vw;
     height: 100vh;
     background-image: url("../public/backgroundplanity.jpg");
+    background-size: cover;
+}
+
+#login, #register {
+    width: 100vw;
+    background:RGB(247, 247, 247);
     background-size: cover;
 }

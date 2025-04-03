@@ -1,6 +1,8 @@
 import { useRouter } from "next/router";
 import { useEffect, useState, useContext } from "react";
 import AuthContext from "../../../context/AuthContext";
+import Header from '../../../component/header.js';
+import Footer from '../../../component/footer';
 
 export default function SalonsParVille() {
   const router = useRouter();
@@ -44,7 +46,18 @@ export default function SalonsParVille() {
     }));
   };
 
+
+
+
+
+
+
+  
+
   return (
+    <>
+    <Header/>
+    
     <div>
       <h1>Salons de la catégorie {name} à {city}</h1>
       {salons.length === 0 ? (
@@ -55,7 +68,7 @@ export default function SalonsParVille() {
             <li key={salon.id_salon} style={{ border: "1px solid #ccc", padding: "10px", margin: "10px 0" }}>
               <strong>{salon.name}</strong><br />
               <span>{salon.adress}</span><br />
-              <img src={salon.picture} alt={salon.name} style={{ width: "100px", height: "100px" }} />
+              <img src={`../../${salon.picture}`} alt={salon.name}/>
               <p>: {salon.moyenne_rating ? Number(salon.moyenne_rating).toFixed(1) : "N/A"}</p>
 
               <button 
@@ -93,10 +106,16 @@ export default function SalonsParVille() {
                 Prendre RDV
               </button>
 
+
+
+              <p id="service"></p>
+
             </li>
           ))}
         </ul>
       )}
     </div>
+    <Footer/>
+    </>
   );
 }

@@ -18,7 +18,7 @@ export default function Register() {
         <Header />
         <h1>Réservez en beauté</h1>
         <span>Simple • Immédiat • 24h/24</span>
-        <form onSubmit={handleHome}>
+        <form onSubmit={handleHome} id="search">
           <label htmlFor="name">
             <span>Que cherchez-vous?</span>
             <select 

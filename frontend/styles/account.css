@@ -1,99 +1,164 @@
 .container-account {
    background-color: #f7f7f7;
 }
-.page-title {
+.container-account .page-title {
     padding-top: 10vh;
     height: auto;
     font-size: 2rem;
-    margin-left: 10%; /* Aligns with .left */
+    margin-left: 10%;
 }
 
-.container {
+.container-account .container {
     display: flex;
-    align-items: flex-start; /* Aligns .left and .right to the top */
+    align-items: flex-start;
     justify-content: space-between;
     width: 100%;
     gap: 20px;
 }
 
-.left {
+.container-account .left {
     width: 30%;
+    height: 35vh;
     background-color: white;
     padding: 20px;
-    margin-left: 10%; /* Same margin as h1 for alignment */
+    margin-left: 10%;
     border-radius: 10px;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
     align-items: flex-start;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
   
-  .right {
+.container-account  .right {
     display: flex;
     flex-direction: column;
     width: 60%;
     margin-right: 12%;
+    margin-bottom: 10%;
     gap: 20px;
   }
   
-  .box {
+.container-account  .box {
     display: flex;
     flex-direction: column;
     background-color: white;
     padding: 20px;
     border-radius: 10px;
     color: black;
-  }
-  .rendez-vous {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+ .container-account .rendez-vous {
+    padding: 2%;
     display: flex;
-    flex-direction: column; /* Stack items vertically */
-    justify-content: space-between; /* Space items evenly from top to bottom */
-    height: 100%;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 20vh;
   }
   
-  .user-infos {
+.container-account  .user-infos {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
  height: 40vh;
   }
+.container-account  .user-infos h2{
+    margin-bottom: 20px;
+  }
 
-  .form-group{
+.container-account  .form-group{
     display: flex;
     flex-direction: row;
     gap: 10px;
     width: 30%;
   }
   
-  .container-account h2{
+ .container-account .container-account h2{
     font-weight: 600;
     font-size: larger;
   }
-  .form-row {
+ .container-account .form-row {
     display: flex;
-    justify-content: space-between; /* Adds space between the two input fields */
-    gap: 20px; /* Adds space between the form groups */
+    justify-content: space-between;
+    gap: 20px;
     width: 100%;
   }
   
-  .form-group {
-    flex: 1; /* Ensures each input takes equal width */
+ .container-account .form-group {
+    flex: 1;
     display: flex;
     flex-direction: column;
   }
   
-  #rdv-submit{
-    background-color: black; /* Bootstrap primary color */
+ .container-account #rdv-submit{
+    background-color: black;
     color: white;
     border: none;
-    padding: 10px ;
+    padding: 5px ;
     border-radius: 8px;
     cursor: pointer;
     font-size: 16px;
     transition: background-color 0.3s ease;
     width: 20%;
   }
+
+.container-account  form button{
+    background-color: black;
+    color: white;
+    border: none;
+    padding: 5px ;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+    width: 20%;
+    margin: 2%;
+
+  }
+.container-account form button[type="button"] {
+    background-color: #f3f3f5;
+    color: black;
+    border: 2px solid #f3f3f5;
+    padding: 5px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+    width: 20%;
+}
+
+.container-account form button[type="button"]:hover {
+    background-color: #e0e0e0;
+    border-color: #d6d6d6;
+}
+
   
-  input {
+.container-account  input {
     border: 2px solid #f3f3f5;
     border-radius: 8px;
     padding: 8px;
-    width: 100%; /* Makes sure inputs fill the available space */
+    width: 100%;
   }
   
+.container-account  .left h4 {
+    cursor: pointer;
+    font-weight: normal;
+    transition: font-weight 0.2s ease-in-out;
+  }
+  
+.container-account  .left h4.active {
+    font-weight: bold;
+  }
+.container-account  hr {
+    border: 0;
+    clear:both;
+    display:block;
+    width: 96%;               
+    background-color:#f2f2f2;
+    height: 1px;
+  }
+  
+.container-account  #logout-submit{
+    color: red;
+  }

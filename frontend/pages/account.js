@@ -30,6 +30,7 @@ export default function Account() {
 
   // Fetch user data from API
   useEffect(() => {
+
     const fetchUserData = async () => {
       try {
         const response = await fetch("http://localhost:3001/account", {
@@ -80,6 +81,8 @@ export default function Account() {
       });
     }
   }, [user]);
+
+  
 
   const handleLogout = () => {
     logout(); // Appelle la fonction logout du contexte
@@ -220,7 +223,6 @@ export default function Account() {
             Mes informations
           </h4>
           <hr />
-
           {user && user.role === "Coiffeur" && (
             <button onClick={() => setShowSalonForm(!showSalonForm)}>
               {showSalonForm ? "Annuler la création" : "Créer un salon"}
@@ -232,7 +234,6 @@ export default function Account() {
           </button>
         </div>
 
-        {message && <div className="message">{message}</div>}
 
         <div className="right">
           {selectedSection === "rendez-vous" && (
@@ -374,7 +375,7 @@ export default function Account() {
                   </button>
                 </div>
               </form>
-               {message && <p>{message}</p>}
+               {message && <div className="message">{message}</div>}
             </div>
           )}
         </div>

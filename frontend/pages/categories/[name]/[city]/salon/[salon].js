@@ -53,7 +53,11 @@ export default function SalonPage() {
       router.push(url);
     }
   };
-
+  useEffect(() => {
+    if (!token) {
+      router.push("/login");
+    }
+  }, [token, router]);
   const handleReviewChange = (e) => {
     const { name, value } = e.target;
     setReviewForm((prev) => ({

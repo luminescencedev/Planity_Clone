@@ -70,7 +70,11 @@ export default function ServiceDescriptionPage() {
       })
       .catch(() => alert("Erreur lors de la réservation"));
   };
-
+  useEffect(() => {
+    if (!token) {
+      router.push("/login");
+    }
+  }, [token, router]);
   return (
     <div>
       {console.log("Service Details:", serviceDetails)}

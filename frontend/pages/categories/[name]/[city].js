@@ -16,7 +16,11 @@ export default function SalonsParVille() {
   // Nouveaux états pour les filtres
   const [ratingFilter, setRatingFilter] = useState('all');
   const [sortBy, setSortBy] = useState('default');
-
+  useEffect(() => {
+    if (!token) {
+      router.push("/login");
+    }
+  }, [token, router]);
   useEffect(() => {
     if (name && city && token) {
       console.log('Token:', token); // Ajoute un log pour vérifier le token

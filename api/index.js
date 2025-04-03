@@ -320,6 +320,31 @@ app.patch('/users/:id', authenticate, async (req, res) => {
   }
 });
 
+app.get('/rendez-vous', authenticate, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    console.log('User ID:', userId);
+
+    // Vérification de la connexion à la base de données
+    console.log('Connexion à la base de données');
+    const result = await pool.query(
+      'SELECT * FROM rendez_vous WHERE id_user = $1 ORDER BY date ASC',
+      [userId]
+    );
+
+    const appointments = result.rows;
+    console.log('Appointments:', appointments); // Affiche les rendez-vous récupérés
+
+    if (appointments.length === 0) {
+      return res.status(404).json({ message: 'Aucun rendez-vous trouvé' });
+    }
+
+    return res.json(appointments); // Retourne les rendez-vous en JSON
+  } catch (err) {
+    console.error('Erreur lors de la récupération des rendez-vous:', err); // Ajoutez plus d'informations sur l'erreur
+    return res.status(500).json({ error: 'Erreur serveur lors de la récupération des rendez-vous' });
+  }
+});
 
 //POST
 

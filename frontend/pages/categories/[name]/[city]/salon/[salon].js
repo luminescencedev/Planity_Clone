@@ -4,7 +4,7 @@ import AuthContext from "../../../../../context/AuthContext";
 
 export default function SalonPage() {
   const router = useRouter();
-  const { salon } = router.query; // Utilisation du paramètre "salon" de l'URL
+  const { salon, name, city } = router.query; // Utilisation du paramètre "salon" de l'URL
   const { token } = useContext(AuthContext);
   const [salonData, setSalonData] = useState(null);
   const [error, setError] = useState(null);
@@ -39,10 +39,25 @@ export default function SalonPage() {
   if (!salonData) return <p>Chargement des données...</p>;
 
   const handleReservation = (serviceId) => {
-    // Vous pouvez rediriger l'utilisateur vers une page de réservation ou afficher un formulaire/modal
-    console.log("Réservation pour le service ID:", serviceId);
-    // Par exemple, rediriger vers une page de réservation avec l'ID du service
-    router.push(`/reservation/${serviceId}`);
+    // Vérifier que serviceId est défini avant de procéder
+    if (serviceId) {
+      // Encoder les paramètres pour éviter les erreurs d'URL
+      const encodedName = encodeURIComponent(name);
+      const encodedCity = encodeURIComponent(city);
+      const encodedSalon = encodeURIComponent(salon);
+
+      // Construire l'URL de réservation
+      const url = `/categories/${encodedName}/${encodedCity}/salon/${encodedSalon}/reservation/${encodeURIComponent(serviceId)}`;
+
+      // Vérifier que l'URL n'a pas de double barre oblique
+      if (!url.includes('//')) {
+        router.push(url);
+      } else {
+        console.error("L'URL générée est invalide:", url);
+      }
+    } else {
+      console.error("L'ID du service est manquant.");
+    }
   };
 
   return (
@@ -79,7 +94,7 @@ export default function SalonPage() {
               <li key={service.id_service}>
                 <strong>{service.description}</strong>: {service.price} € - {service.time} minutes
                 <button
-                  onClick={() => handleReservation(service.id_service)}
+                  onClick={() => handleReservation(service.id_service)} // Passer l'ID du service
                   style={{ marginLeft: "10px", padding: "5px 10px", cursor: "pointer" }}
                 >
                   Réserver

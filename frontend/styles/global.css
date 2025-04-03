@@ -340,3 +340,74 @@ article{
     border-radius: .5em;
     margin-left: 3%;
 }
+
+
+
+/* ///////////////////////////////////// */
+/* ////////////// RDV ////////////////// */
+/* ///////////////////////////////////// */
+
+#rdv{
+    background-color: rgb(247, 247, 247);
+    padding:7% 12% 0;
+    
+}
+#rdv span{
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+#rdv span img{
+    width: 1.5%;
+    margin-right: .5%;
+}
+#rdv>img{
+    margin: 2% 0;
+    width: 60%;
+    border-radius: 1em;
+}
+
+#rdv article {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start; /* <- important pour éviter l'étirement vertical */
+  }
+#rdv section {
+    margin-top: 2%;
+    background-color: white;
+    border-radius: 1em;
+    padding: 0 2%;
+    box-sizing: border-box;
+  }
+  
+  #rdv section:first-of-type {
+    width: 67%;
+    margin-right: 3%;
+  }
+  
+  #rdv section:last-of-type {
+    width: 30%;
+    align-self: flex-start; /* <-- AJOUTE CECI pour empêcher qu'il grandisse avec le contenu de l'autre */
+  }
+  #rdv h4{
+    margin: 3% 0;
+    text-decoration: underline;
+  }
+  #note_glob{
+    background-color: rgb(45, 45, 45);
+    padding: 2%;
+    width: 40%;
+    color: white;
+    border-radius:.5em;
+    padding-left: 3%;
+  }
+  #rdv>div{
+    box-shadow: 2px 4px 10px 2px rgba(0,0,0,.1);
+    border-radius: .5em;
+    padding: 1%;
+    margin-top: 1%;
+  }
+  #rdv button{
+    background-color: rgb(47, 47, 47) !important;
+    border-radius: .5em !important;
+  }

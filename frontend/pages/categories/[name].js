@@ -9,12 +9,28 @@ export default function Categorie() {
   const { name } = router.query;
   const { token } = useContext(AuthContext);
   const [category, setCategory] = useState(null);
-  const [salons, setSalons] = useState([]);
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true); // État de chargement
 
   // Liste des 9 villes à afficher
   const villes = ["Paris", "Lyon", "Marseille", "Bordeaux", "Nice", "Toulouse", "Lille", "Nantes", "Strasbourg"];
 
+  // Attendre que le token soit disponible avec un délai (par exemple 2 secondes)
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (token === undefined) return;
+      if (!token) {
+        router.push("/login");
+      } else {
+        setLoading(false);
+      }
+    }, 10);
+
+
+    return () => clearTimeout(timeoutId);
+  }, [token, router]);
+
+  // Charger la catégorie si le token est valide
   useEffect(() => {
     if (name && token) {
       fetch(`http://localhost:3001/categories/${name}`, {
@@ -26,56 +42,45 @@ export default function Categorie() {
     }
   }, [name, token]);
 
+  if (loading) return <p>Chargement...</p>; // Afficher un message de chargement si le token n'est pas encore disponible
   if (!name || !token) return <p>Chargement...</p>;
   if (error) return <p style={{ color: "red" }}>{error}</p>;
   if (!category) return <p>Chargement de la catégorie...</p>;
 
   return (
     <>
-         <main id="namesalon">
-         <Header></Header>
-         
-         <h1>Réserver en ligne un RDV avec un coiffeur</h1>
-         
-         <form id="search" >
-             <label for="name">
-               <span>Que cherchez-vous?</span>
-             <input type="text" id="name" name="name" placeholder="Nom du salon, prestations (coupe...)"></input>
-             </label>
-             <label for="adress">
-               <span>Où</span>
-             <input type="text" id="adress" name="adress" placeholder="Adresse, ville..."></input>
-             </label>
-             <button type="submit">Rechercher</button>
-         </form>
-         </main>
-        <article id="listeville">
-          <span>{category.name}</span>
-            {villes.map((city) => (
+      <main id="namesalon">
+        <Header></Header>
+        <h1>Réserver en ligne un RDV avec un coiffeur</h1>
+        <form id="search" >
+          <label htmlFor="name">
+            <span>Que cherchez-vous?</span>
+            <input type="text" id="name" name="name" placeholder="Nom du salon, prestations (coupe...)" />
+          </label>
+          <label htmlFor="adress">
+            <span>Où</span>
+            <input type="text" id="adress" name="adress" placeholder="Adresse, ville..." />
+          </label>
+          <button type="submit">Rechercher</button>
+        </form>
+      </main>
+      <article id="listeville">
+        <span>{category.name}</span>
+        {villes.map((city) => (
           <a id="villea" key={city} href={`/categories/${name}/${city}`} style={{ marginRight: "10px" }}>
-            
             <div>
-              <img src="/imgville.jpeg"></img>
-            <span>Découvrez nos</span>
-            <h3>{category.name} à {city}</h3>
-              
+              <img src="/imgville.jpeg" alt="City" />
+              <span>Découvrez nos</span>
+              <h3>{category.name} à {city}</h3>
             </div>
           </a>
         ))}
-        </article>
-        <section id="conseils">
-        
+      </article>
+      <section id="conseils">
         <h4>Où trouver un salon pour une technique particulière ?</h4>
-        
-        <p>Les petits salons de coiffure dédiés spécialement à la gent masculine sont pris d’assaut. Savant mélange entre le barbier et le salon de coiffure traditionnel, ces nouveaux espaces proposent une prestation complète : <b>taille de barbe</b>, rasage à l’ancienne et <b>coupe de cheveux</b> pour une allure soignée et moderne. L’entretien de la barbe est une affaire sérieuse qui ne doit pas être prise à la légère. Il est parfois préférable de confier cette tâche à un professionnel, capable de choisir le modèle de barbe tendance qui mettra le mieux en valeur votre visage.
-        </p>
-        <img src="/salonimg.jpeg"></img>
-
-        <p>
-        Mais le souci du détail ne s’arrête plus aux <b>cheveux et à la barbe</b> . Aujourd’hui, les soins esthétiques gagnent du terrain, et les salons de manucure et de soins des pieds fleurissent en ville comme dans les petites communes françaises dynamiques. Prendre soin de ses ongles n’est plus une option : hommes et femmes accordent une importance croissante à leur apparence et à la santé de leurs mains et pieds.
-
-        Parmi nos coups de cœur, Angel Studio, situé dans le 17ᵉ arrondissement, se distingue par son style décalé et son ambiance atypique. Ce salon mixte accueille hommes, femmes et enfants, proposant une expérience complète et raffinée pour ceux qui souhaitent soigner leur look jusqu’au bout des doigts. Que ce soit pour une coupe moderne, un rasage précis ou une manucure soignée, ces adresses tendance redéfinissent les codes de la beauté au masculin comme au féminin.</p>
-        
+        <p>Les petits salons de coiffure dédiés spécialement à la gent masculine sont pris d’assaut...</p>
+        <img src="/salonimg.jpeg" alt="Salon" />
+        <p>Mais le souci du détail ne s’arrête plus aux <b>cheveux et à la barbe</b>...</p>
         <h3>Recherches fréquentes</h3>
         <ul>
           <li><u>Soins de la barbe</u></li>
@@ -95,10 +100,9 @@ export default function Categorie() {
           <li><u>Lissage et défrisage</u></li>
           <li><u>Coiffure jeunes</u></li>
           <li><u>Coloration barbe</u></li>
-          
         </ul>
-        </section>
-      <Footer/>
+      </section>
+      <Footer />
     </>
   );
 }

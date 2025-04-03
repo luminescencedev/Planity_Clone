@@ -10,7 +10,7 @@ export default function Account() {
   const [user, setUser] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
-  const [selectedSection, setSelectedSection] = useState("rendez-vous"); // Default to "Mes rendez-vous"
+  const [selectedSection, setSelectedSection] = useState("informations"); // Default to "Mes rendez-vous"
   const [message, setMessage] = useState("");
   const [formData, setFormData] = useState({
     first_name: "",
@@ -22,7 +22,10 @@ export default function Account() {
   const [salonData, setSalonData] = useState({
     salon_name: "",
     address: "",
-    phone: "",
+    city: "",
+    description: "",
+    id_category: "",
+    picture: "", // Ajout du champ picture
   });
 
   // Fetch user data from API
@@ -44,12 +47,11 @@ export default function Account() {
           throw new Error(data.details || "Account fetch failed");
         }
 
-        if (!data.id) {  // Changed from id_user to id
+        if (!data.id) {
           console.error("ID utilisateur manquant dans la réponse !");
           throw new Error("ID utilisateur introuvable");
         }
 
-        // Set user data, including id
         setUser(data);
       } catch (err) {
         console.error("Full fetch error:", err);
@@ -106,7 +108,6 @@ export default function Account() {
     }
 
     try {
-      // Prepare updates object
       const updates = {};
       if (formData.first_name !== user.first_name) updates.first_name = formData.first_name;
       if (formData.last_name !== user.last_name) updates.last_name = formData.last_name;
@@ -134,24 +135,23 @@ export default function Account() {
         throw new Error(data.error || "Échec de la mise à jour du profil");
       }
 
-      // Update local user data
       setUser({
         ...user,
-        ...data
+        ...data,
       });
 
       setMessage("Profil mis à jour avec succès!");
       setTimeout(() => setMessage(""), 3000);
-
     } catch (error) {
       console.error("Update error:", error);
       setMessage(`Erreur: ${error.message}`);
     }
   };
 
+  // Handle salon creation
   const handleSalonSubmit = async (e) => {
     e.preventDefault();
-  
+
     try {
       const body = JSON.stringify({
         salon_name: salonData.salon_name,
@@ -159,7 +159,9 @@ export default function Account() {
         city: salonData.city,
         description: salonData.description,
         id_category: salonData.id_category,
+        picture: salonData.picture,
       });
+
       console.log("Salon creation body:", body); // Debugging
       const response = await fetch(`http://localhost:3001/salons`, {
         method: "POST",
@@ -169,24 +171,26 @@ export default function Account() {
         },
         body: body,
       });
-  
+
       const data = await response.json();
-  
       if (!response.ok) {
         throw new Error(data.error || "Échec de la création du salon");
       }
-  
+
       setMessage("Salon créé avec succès !");
-      setSalonData({ salon_name: "", address: "", city: "", description: "", id_category: ""});
-      setShowSalonForm(false);
+      setSalonData({
+        salon_name: "",
+        address: "",
+        city: "",
+        description: "",
+        id_category: "",
+        picture: "",
+      });
     } catch (error) {
       console.error("Salon creation error:", error);
       setMessage(`Erreur: ${error.message}`);
     }
   };
-  
-  
-  
 
   if (loading) return <div>Loading...</div>;
 
@@ -195,7 +199,7 @@ export default function Account() {
       <Header />
 
       <h1 className="page-title">Mon compte</h1>
-      <div className="container">
+      <div className="container ">
         <div className="left">
           <h2>Mon compte</h2>
           <h4
@@ -215,7 +219,6 @@ export default function Account() {
             Se déconnecter
           </button>
 
-          {/* Show salon creation button if user is a coiffeur */}
           {user && user.role === "Coiffeur" && (
             <button onClick={() => setShowSalonForm(!showSalonForm)}>
               {showSalonForm ? "Annuler la création" : "Créer un salon"}
@@ -272,58 +275,102 @@ export default function Account() {
             </div>
           )}
 
-          {/* Show salon creation form if applicable */}
           {showSalonForm && user.role === "Coiffeur" && (
-  <div className="box">
-    <h2>Créer un salon de coiffure</h2>
-    <form onSubmit={handleSalonSubmit}>
-      <div className="form-group">
-        <label>Nom du salon *</label>
-        <input type="text" name="salon_name" value={salonData.salon_name} onChange={handleSalonChange} required />
-      </div>
+            <div className="box">
+              <h2>Créer un salon de coiffure</h2>
+              <form onSubmit={handleSalonSubmit}>
+                <div className="form-group">
+                  <label>Nom du salon *</label>
+                  <input
+                    type="text"
+                    name="salon_name"
+                    placeholder="Nom du salon"
+                    value={salonData.salon_name}
+                    onChange={handleSalonChange}
+                    required
+                  />                
+                </div>
+                <div className="form-group">
+                  <label>Adresse *</label>
+                  <input
+                    type="text"
+                    name="address"
+                    placeholder="Adresse"
+                    value={salonData.address}
+                    onChange={handleSalonChange}
+                    required
+                  />                
+                </div>
+                <div className="form-group">
+                  <label>Ville *</label>
+                  <select
+                    name="city"
+                    value={salonData.city}
+                    onChange={handleSalonChange}
+                    required
+                  >
+                    <option value="" disabled>Sélectionnez une ville</option>
+                    <option value="Paris">Paris</option>
+                    <option value="Lyon">Lyon</option>
+                    <option value="Marseille">Marseille</option>
+                    <option value="Bordeaux">Bordeaux</option>
+                    <option value="Nice">Nice</option>
+                    <option value="Toulouse">Toulouse</option>
+                    <option value="Lille">Lille</option>
+                    <option value="Nantes">Nantes</option>
+                    <option value="Strasbourg">Strasbourg</option>
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label>Photo du salon (nom du fichier)</label>
+                  <input
+                    type="text"
+                    name="picture"
+                    placeholder="Nom de l'image"
+                    value={salonData.picture}
+                    onChange={handleSalonChange}
+                    required
+                  />
+                </div>
 
-      <div className="form-group">
-        <label>Adresse *</label>
-        <input type="text" name="address" value={salonData.address} onChange={handleSalonChange} required />
-      </div>
+                <div className="form-group">
+                  <label>Description</label>
+                  <textarea
+                    name="description"
+                    placeholder="Description"
+                    value={salonData.description}
+                    onChange={handleSalonChange}
+                    required
+                  />
+                </div>
 
-      <div className="form-group">
-        <label>Ville *</label>
-        <input type="text" name="city" value={salonData.city} onChange={handleSalonChange} required />
-      </div>
+                <div className="form-group">
+                  <label>Catégorie *</label>
+                  <select
+                    name="id_category"
+                    value={salonData.id_category}
+                    onChange={handleSalonChange}
+                    required
+                  >
+                    <option value="">Sélectionner une catégorie</option>
+                    <option value="1">Coiffeur</option>
+                    <option value="2">Barbier</option>
+                    <option value="3">Manucure</option>
+                  </select>
+                </div>
 
-      <div className="form-group">
-        <label>Photo du salon</label>
-        <input type="file" name="picture"/>
-      </div>
-
-      <div className="form-group">
-        <label>Description</label>
-        <textarea name="description" value={salonData.description} onChange={handleSalonChange}></textarea>
-      </div>
-
-      <div className="form-group">
-        <label>Catégorie *</label>
-        <select name="id_category" value={salonData.id_category} onChange={handleSalonChange} required>
-          <option value="">Sélectionner une catégorie</option>
-          <option value="1">Coiffeur</option>
-          <option value="2">Barbier</option>
-          <option value="3">Manucure</option>
-        </select>
-      </div>
-
-      <div className="button-group">
-        <button type="button" onClick={() => setShowSalonForm(false)}>
-          Annuler
-        </button>
-        <button id="salon-submit" type="submit">
-          Créer le salon
-        </button>
-      </div>
-    </form>
-  </div>
-)}
-
+                <div className="button-group">
+                  <button type="button" onClick={() => setShowSalonForm(false)}>
+                    Annuler
+                  </button>
+                  <button id="salon-submit" type="submit">
+                    Créer le salon
+                  </button>
+                </div>
+              </form>
+               {message && <p>{message}</p>}
+            </div>
+          )}
         </div>
       </div>
 

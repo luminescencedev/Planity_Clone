@@ -25,17 +25,20 @@ app.use(cors(corsOptions));
 
 // Middleware de protection des routes
 const authenticate = (req, res, next) => {
-  const token = req.headers.authorization?.split(" ")[1];
-  if (!token) return res.status(401).json({ error: "Unauthorized" });
+  const authHeader = req.headers.authorization;
+  if (!authHeader) {
+    return res.status(401).json({ error: "Authorization header missing" });
+  }
 
+  const token = authHeader.split(' ')[1];
   try {
     const decoded = jwt.verify(token, SECRET_KEY);
-    req.user = { id: decoded.id }; // Make sure this matches what you put in the token
+    req.user = decoded;
     next();
-  } catch (error) {
-    res.status(403).json({ error: "Invalid token" });
+  } catch (err) {
+    return res.status(403).json({ error: "Invalid token" });
   }
-}
+};
 
 // Endpoints 
 
@@ -93,27 +96,29 @@ app.get('/salon/:salon', authenticate, async (req, res) => {
 app.post('/salons', authenticate, async (req, res) => {
   const { salon_name, address, city, picture, description, id_category } = req.body;
 
+  console.log("Données reçues pour la création du salon:", req.body); // Debugging
+
+  // Validation des champs
   if (!salon_name || !address || !city || !picture || !description || !id_category) {
-    return res.status(400).send('Tous les champs sont requis.');
+    return res.status(400).json({ error: "Tous les champs sont requis." });
   }
 
   try {
-
     const salon = await Salon.createSalon({
-      salon_name,
-      address,
+      name: salon_name, // Mapper correctement les noms
+      adress: address,
       city,
       description,
-      id_category
+      id_category,
+      picture,
     });
 
-    res.status(201).send({ message: 'Salon créé avec succès', salon });
+    res.status(201).json({ message: "Salon créé avec succès", salon });
   } catch (err) {
     console.error('Erreur lors de la création du salon:', err);
-    res.status(500).send('Erreur interne du serveur');
+    res.status(500).json({ error: "Erreur interne du serveur", details: err.message });
   }
 });
-
 
 
 

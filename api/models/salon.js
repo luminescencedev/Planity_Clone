@@ -140,12 +140,19 @@ class Salons {
         return result.rows;
       }
     
-      static async createSalon({ nom, adress, city, description, id_categorie }) {
-        const result = await pool.query(
-          "INSERT INTO Salons (Nom, Adress, city, description, id_categorie, Created_at, Updated_at, picture) VALUES ($1, $2, $3, $4, $5, 'imageurl/111.jpg', NOW(), NOW()) RETURNING *",
-          [nom, adress, city, description, id_categorie]
-        );
-        return result.rows[0];
+      static async createSalon({ name, adress, city, description, id_category, picture }) {
+        try {
+          const result = await pool.query(
+            `INSERT INTO Salons (name, adress, city, description, id_category, picture, created_at, updated_at)
+            VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())
+            RETURNING *`,
+            [name, adress, city, description, id_category, picture]
+          );
+          return result.rows[0];
+        } catch (error) {
+          console.error("Erreur lors de l'insertion du salon :", error.message);
+          throw error;
+        }
       }
     
       static async updateSalon(id, { nom, adresse, city, photos, description }) {

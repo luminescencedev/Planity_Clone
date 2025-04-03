@@ -12,6 +12,19 @@ export default function ServiceDescriptionPage() {
   const [error, setError] = useState(null);
   const [selectedTime, setSelectedTime] = useState("09:00");
 
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (token === undefined) return;
+      if (!token) {
+        router.push("/login");
+      } else {
+        setLoading(false);
+      }
+    }, 10);
+    return () => clearTimeout(timeoutId);
+  }, [token, router]);
+  
   useEffect(() => {
     if (router.isReady && serviceId && token) {
       fetch(`http://localhost:3001/service-details/${serviceId}`, {

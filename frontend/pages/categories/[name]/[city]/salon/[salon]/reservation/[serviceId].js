@@ -10,6 +10,35 @@ export default function ServiceDescriptionPage() {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
 
+  useEffect(() => {
+    const fetchAccountDetails = async () => {
+      try {
+        const response = await fetch("http://localhost:3001/account", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          console.error("Erreur lors de la récupération des informations du compte:", errorData);
+          throw new Error(errorData.error || "Erreur inconnue");
+        }
+
+        const accountData = await response.json();
+        console.log("Données du compte récupérées :", accountData);
+      } catch (err) {
+        console.error("Erreur lors de la récupération des informations du compte:", err);
+        setError(err.message);
+      }
+    };
+
+    if (token) {
+      fetchAccountDetails();
+    }
+  }, [token]);
 
   console.log("Valeurs dans AuthContext :", { user, token });
 

@@ -1,53 +1,11 @@
 @import "tailwindcss";
 
-html, body{
-    overflow-x: hidden;
-}
-
-header{
-    display: flex;
-    align-items: center;
-    height: 8vh;
-    width: 100%;
-    padding: 0 25% 0 15%;
-    justify-content: space-between;
-    background-color: white;
-    position: fixed;
-}
-header>a:first-of-type{
-    width: 15%;
-    display: flex;
-    height: 8vh;
-}
-header a img{
-    width: 100%;
-}
-header nav{
-    width: 40%;
-    display: flex;
-    justify-content: center;
-    color: black;
-}
-header nav a{
-    margin: 0 5%;
-}
-header>a:last-of-type{
-    background-color: rgb(29, 29, 29);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: .5% 1.2%;
-    border-radius: .5em;
-}
-header>a:last-of-type img{
-    width: 20%;
-    padding-right: 3%;
-}
-header nav a:hover{
-    text-decoration: underline;
-    scale: 1.05;
-}
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%; /* Ensure the full height of the page is used */
+  }
+  
 
 #home{
     width: 99vw;
@@ -223,53 +181,7 @@ article{
     margin: 3% 0;
 }
 
-footer{
-    background-color: rgb(37, 37, 37);
-    display: flex;
-    flex-wrap: wrap;
-    padding: 5% 20% 0;
-}
-footer h3{
-    color: white;
-}
 
-footer article a:first-of-type{
-    width: 70%;
-    margin-right: 20%;
-}
-footer article a{
-    width: 20%;
-    
-}
-footer article:first-of-type{
-    width: 20%;
-    display: flex;
-    flex-wrap: wrap;
-
-}
-footer article{
-    width: 80%;
-    display: flex;
-    flex-wrap: wrap;
-}
-footer article div{
-    width: 28%;
-    margin: 0 2%;
-}
-footer article h3{
-    font-size: 1.3em;
-}
-footer .grey{
-    border-top: solid rgb(75, 75, 75) 1px;
-    width: 100%;
-    padding: 2% 0;
-    margin-top: 10%;
-    border-bottom: none;
-}
-footer ul li{
-    color: rgb(160, 160, 160);
-    line-height: 1.8em;
-}
 
 #login, #register {
     width: 100vw;

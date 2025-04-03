@@ -2,8 +2,7 @@
    background-color: #f7f7f7;
 }
 .page-title {
-    margin: 2vh 0;
-    padding: 0;
+    padding-top: 10vh;
     height: auto;
     font-size: 2rem;
     margin-left: 10%; /* Aligns with .left */
@@ -62,7 +61,7 @@
     width: 30%;
   }
   
-  h2{
+  .container-account h2{
     font-weight: 600;
     font-size: larger;
   }
@@ -88,7 +87,7 @@
     cursor: pointer;
     font-size: 16px;
     transition: background-color 0.3s ease;
-    width: 15%;
+    width: 20%;
   }
   
   input {

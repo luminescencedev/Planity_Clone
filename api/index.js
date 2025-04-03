@@ -90,7 +90,29 @@ app.get('/salon/:salon', authenticate, async (req, res) => {
   }
 });
 
+app.post('/salons', authenticate, async (req, res) => {
+  const { salon_name, address, city, picture, description, id_category } = req.body;
 
+  if (!salon_name || !address || !city || !picture || !description || !id_category) {
+    return res.status(400).send('Tous les champs sont requis.');
+  }
+
+  try {
+
+    const salon = await Salon.createSalon({
+      salon_name,
+      address,
+      city,
+      description,
+      id_category
+    });
+
+    res.status(201).send({ message: 'Salon créé avec succès', salon });
+  } catch (err) {
+    console.error('Erreur lors de la création du salon:', err);
+    res.status(500).send('Erreur interne du serveur');
+  }
+});
 
 
 

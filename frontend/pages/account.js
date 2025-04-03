@@ -12,11 +12,16 @@ export default function Account() {
   const [loading, setLoading] = useState(true);
   const [selectedSection, setSelectedSection] = useState("rendez-vous"); // Default to "Mes rendez-vous"
   const [message, setMessage] = useState("");
-
   const [formData, setFormData] = useState({
     first_name: "",
     last_name: "",
     email: "",
+    phone: "",
+  });
+  const [showSalonForm, setShowSalonForm] = useState(false);
+  const [salonData, setSalonData] = useState({
+    salon_name: "",
+    address: "",
     phone: "",
   });
 
@@ -85,15 +90,21 @@ export default function Account() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Handle form submission
+  // Handle salon form changes
+  const handleSalonChange = (e) => {
+    const { name, value } = e.target;
+    setSalonData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Handle form submission (update user)
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     if (!user || !user.id) {
       setMessage("Erreur : ID utilisateur introuvable.");
       return;
     }
-  
+
     try {
       // Prepare updates object
       const updates = {};
@@ -101,13 +112,13 @@ export default function Account() {
       if (formData.last_name !== user.last_name) updates.last_name = formData.last_name;
       if (formData.email !== user.email) updates.mail = formData.email; // Note: backend expects 'mail'
       if (formData.phone !== user.phone) updates.phone = formData.phone;
-  
+
       if (Object.keys(updates).length === 0) {
         setMessage("Aucune modification détectée");
         setTimeout(() => setMessage(""), 3000);
         return;
       }
-  
+
       const response = await fetch(`http://localhost:3001/users/${user.id}`, {
         method: "PATCH",
         headers: {
@@ -116,27 +127,66 @@ export default function Account() {
         },
         body: JSON.stringify(updates),
       });
-  
+
       const data = await response.json();
-  
+
       if (!response.ok) {
         throw new Error(data.error || "Échec de la mise à jour du profil");
       }
-  
+
       // Update local user data
       setUser({
         ...user,
         ...data
       });
-      
+
       setMessage("Profil mis à jour avec succès!");
       setTimeout(() => setMessage(""), 3000);
-  
+
     } catch (error) {
       console.error("Update error:", error);
       setMessage(`Erreur: ${error.message}`);
     }
   };
+
+  const handleSalonSubmit = async (e) => {
+    e.preventDefault();
+  
+    try {
+      const body = JSON.stringify({
+        salon_name: salonData.salon_name,
+        address: salonData.address,
+        city: salonData.city,
+        description: salonData.description,
+        id_category: salonData.id_category,
+      });
+      console.log("Salon creation body:", body); // Debugging
+      const response = await fetch(`http://localhost:3001/salons`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: body,
+      });
+  
+      const data = await response.json();
+  
+      if (!response.ok) {
+        throw new Error(data.error || "Échec de la création du salon");
+      }
+  
+      setMessage("Salon créé avec succès !");
+      setSalonData({ salon_name: "", address: "", city: "", description: "", id_category: ""});
+      setShowSalonForm(false);
+    } catch (error) {
+      console.error("Salon creation error:", error);
+      setMessage(`Erreur: ${error.message}`);
+    }
+  };
+  
+  
+  
 
   if (loading) return <div>Loading...</div>;
 
@@ -164,6 +214,13 @@ export default function Account() {
           <button id="logout-submit" onClick={logout}>
             Se déconnecter
           </button>
+
+          {/* Show salon creation button if user is a coiffeur */}
+          {user && user.role === "Coiffeur" && (
+            <button onClick={() => setShowSalonForm(!showSalonForm)}>
+              {showSalonForm ? "Annuler la création" : "Créer un salon"}
+            </button>
+          )}
         </div>
 
         {message && <div className="message">{message}</div>}
@@ -214,6 +271,59 @@ export default function Account() {
               </form>
             </div>
           )}
+
+          {/* Show salon creation form if applicable */}
+          {showSalonForm && user.role === "Coiffeur" && (
+  <div className="box">
+    <h2>Créer un salon de coiffure</h2>
+    <form onSubmit={handleSalonSubmit}>
+      <div className="form-group">
+        <label>Nom du salon *</label>
+        <input type="text" name="salon_name" value={salonData.salon_name} onChange={handleSalonChange} required />
+      </div>
+
+      <div className="form-group">
+        <label>Adresse *</label>
+        <input type="text" name="address" value={salonData.address} onChange={handleSalonChange} required />
+      </div>
+
+      <div className="form-group">
+        <label>Ville *</label>
+        <input type="text" name="city" value={salonData.city} onChange={handleSalonChange} required />
+      </div>
+
+      <div className="form-group">
+        <label>Photo du salon</label>
+        <input type="file" name="picture"/>
+      </div>
+
+      <div className="form-group">
+        <label>Description</label>
+        <textarea name="description" value={salonData.description} onChange={handleSalonChange}></textarea>
+      </div>
+
+      <div className="form-group">
+        <label>Catégorie *</label>
+        <select name="id_category" value={salonData.id_category} onChange={handleSalonChange} required>
+          <option value="">Sélectionner une catégorie</option>
+          <option value="1">Coiffeur</option>
+          <option value="2">Barbier</option>
+          <option value="3">Manucure</option>
+        </select>
+      </div>
+
+      <div className="button-group">
+        <button type="button" onClick={() => setShowSalonForm(false)}>
+          Annuler
+        </button>
+        <button id="salon-submit" type="submit">
+          Créer le salon
+        </button>
+      </div>
+    </form>
+  </div>
+)}
+
         </div>
       </div>
 

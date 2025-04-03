@@ -140,10 +140,10 @@ class Salons {
         return result.rows;
       }
     
-      static async createSalon({ nom, adresse, city, photos, date, description, id_categorie }) {
+      static async createSalon({ nom, adress, city, description, id_categorie }) {
         const result = await pool.query(
-          "INSERT INTO Salons (Nom, Adresse, city, photos, Date, Description, id_categorie, Created_at, Updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW()) RETURNING *",
-          [nom, adresse, city, photos, date, description, id_categorie]
+          "INSERT INTO Salons (Nom, Adress, city, description, id_categorie, Created_at, Updated_at, picture) VALUES ($1, $2, $3, $4, $5, 'imageurl/111.jpg', NOW(), NOW()) RETURNING *",
+          [nom, adress, city, description, id_categorie]
         );
         return result.rows[0];
       }

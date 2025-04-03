@@ -10,7 +10,7 @@ export default function Account() {
   const [user, setUser] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
-  const [selectedSection, setSelectedSection] = useState("rendez-vous"); // Default to "Mes rendez-vous"
+  const [selectedSection, setSelectedSection] = useState("informations"); // Default to "Mes rendez-vous"
   const [message, setMessage] = useState("");
   const [formData, setFormData] = useState({
     first_name: "",
@@ -199,7 +199,7 @@ export default function Account() {
       <Header />
 
       <h1 className="page-title">Mon compte</h1>
-      <div className="container">
+      <div className="container ">
         <div className="left">
           <h2>Mon compte</h2>
           <h4
@@ -303,14 +303,23 @@ export default function Account() {
                 </div>
                 <div className="form-group">
                   <label>Ville *</label>
-                  <input
-                    type="text"
+                  <select
                     name="city"
-                    placeholder="Ville"
                     value={salonData.city}
                     onChange={handleSalonChange}
                     required
-                  />
+                  >
+                    <option value="" disabled>Sélectionnez une ville</option>
+                    <option value="Paris">Paris</option>
+                    <option value="Lyon">Lyon</option>
+                    <option value="Marseille">Marseille</option>
+                    <option value="Bordeaux">Bordeaux</option>
+                    <option value="Nice">Nice</option>
+                    <option value="Toulouse">Toulouse</option>
+                    <option value="Lille">Lille</option>
+                    <option value="Nantes">Nantes</option>
+                    <option value="Strasbourg">Strasbourg</option>
+                  </select>
                 </div>
                 <div className="form-group">
                   <label>Photo du salon (nom du fichier)</label>

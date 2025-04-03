@@ -1,54 +1,83 @@
-import { useEffect, useState, useContext } from "react";
-import { useRouter } from "next/router";
-import AuthContext from "../context/AuthContext";
+import { useState, useEffect, useContext } from 'react';
+import { useRouter } from 'next/router';
+import AuthContext from '../context/AuthContext';
 
 export default function Account() {
+  const router = useRouter();
   const { token, logout } = useContext(AuthContext);
   const [user, setUser] = useState(null);
-  const [error, setError] = useState("");
-  const router = useRouter();
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!token) {
-      router.push("/login"); // Redirect to login if not authenticated
-      return;
-    }
-
-    const fetchUser = async () => {
+    const fetchUserData = async () => {
       try {
-        const response = await fetch("http://localhost:3001/account", {
-          method: "GET",
-          headers: { "Authorization": `Bearer ${token}` }, // Send the JWT token
-          credentials: "include",
+        const response = await fetch('http://localhost:3001/account', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
         });
-
-        if (response.ok) {
-          const data = await response.json();
-          setUser(data);
-        } else {
-          setError("Impossible de récupérer les informations.");
+    
+        const data = await response.json();
+        
+        if (!response.ok) {
+          console.error("Backend error details:", data);
+          throw new Error(data.details || 'Account fetch failed');
         }
+        
+        setUser(data);
       } catch (err) {
-        setError("Erreur de connexion au serveur.");
+        console.error("Full fetch error:", err);
+        setError(err.message);
       }
     };
+    if (token) {
+      fetchUserData();
+    } else {
+      setLoading(false);
+      setError('No authentication token found');
+    }
+  }, [token]);
 
-    fetchUser();
-  }, [token, router]);
-
-  if (!user) return <p>Chargement...</p>;
+  if (loading) return <div>Loading...</div>;
 
   return (
-    <div>
-      <h1>Mon Compte</h1>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      <p><strong>Prénom:</strong> {user.first_name}</p>
-      <p><strong>Nom:</strong> {user.last_name}</p>
-      <p><strong>Email:</strong> {user.mail}</p>
-      <p><strong>Téléphone:</strong> {user.phone}</p>
-      <p><strong>Âge:</strong> {user.age}</p>
-      <p><strong>Code Postal:</strong> {user.zip}</p>
-      <button onClick={logout}>Déconnexion</button>
+     // Log the user data
+    <div style={{ padding: '20px', fontFamily: 'Arial' }}>
+      
+      
+      
+
+      
+
+      {user && (
+        <div>
+          <h2>Formatted Data:</h2>
+          <ul style={{ listStyle: 'none', padding: 0 }}>
+            {Object.entries(user).map(([key, value]) => (
+              <li key={key} style={{ marginBottom: '10px' }}>
+                <strong>{key}:</strong> {value !== null ? value.toString() : 'null'}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <button 
+        onClick={logout}
+        style={{
+          marginTop: '20px',
+          padding: '10px 15px',
+          backgroundColor: '#ff4444',
+          color: 'white',
+          border: 'none',
+          borderRadius: '4px',
+          cursor: 'pointer'
+        }}
+      >
+        Logout
+      </button>
     </div>
   );
 }

@@ -4,13 +4,13 @@ import AuthContext from "../context/AuthContext";
 import Header from "../component/header.js";
 
 export default function Login() {
-  const { login } = useContext(AuthContext);
+  const { login } = useContext(AuthContext);// Récupération du contexte d'authentification
   const [mail, setMail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
 
   const handleLogin = async (e) => {
-    e.preventDefault();
+    e.preventDefault();// Empêche le rechargement de la page
     const response = await fetch("http://localhost:3001/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -20,7 +20,7 @@ export default function Login() {
     if (response.ok) {
       const data = await response.json();
       login(data.token);
-      router.push("/home");
+      router.push("/home");// Redirection après connexion
     } else {
       // Handle login error
       console.error("Login failed");

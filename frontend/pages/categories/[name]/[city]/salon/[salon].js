@@ -18,6 +18,7 @@ export default function SalonPage() {
   const [reviewSuccess, setReviewSuccess] = useState("");
 
   const [loading, setLoading] = useState(true);
+  // Vérifie si l'utilisateur est connecté, sinon redirige vers la page de connexion
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       if (token === undefined) return;
@@ -29,7 +30,7 @@ export default function SalonPage() {
     }, 10);
     return () => clearTimeout(timeoutId);
   }, [token, router]);
-
+  // Récupère les données du salon depuis l'API
   const fetchSalonData = async () => {
     if (salon && token) {
       try {
@@ -57,6 +58,7 @@ export default function SalonPage() {
     fetchSalonData();
   }, [salon, token, reviewSuccess]);
 
+  // Redirige vers la page de réservation avec les informations du service sélectionné
   const handleReservation = (serviceId) => {
     if (serviceId) {
       const encodedName = encodeURIComponent(name);
@@ -69,6 +71,7 @@ export default function SalonPage() {
     }
   };
 
+   // Gère les changements des champs du formulaire d'avis
   const handleReviewChange = (e) => {
     const { name, value } = e.target;
     setReviewForm((prev) => ({

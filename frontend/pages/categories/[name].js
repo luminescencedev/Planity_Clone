@@ -6,7 +6,7 @@ import Footer from '../../component/footer';
 
 export default function Categorie() {
   const router = useRouter();
-  const { name } = router.query;
+  const { name } = router.query;// Récupération du paramètre de catégorie depuis l'URL
   const { token } = useContext(AuthContext);
   const [category, setCategory] = useState(null);
   const [error, setError] = useState(null);

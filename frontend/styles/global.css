@@ -40,3 +40,14 @@ header>a:last-of-type img{
     width: 20%;
     padding-right: 3%;
 }
+header nav a:hover{
+    text-decoration: underline;
+    scale: 1.05;
+}
+
+#home{
+    width: 100vw;
+    height: 100vh;
+    background-image: url("../public/backgroundplanity.jpg");
+    background-size: cover;
+}

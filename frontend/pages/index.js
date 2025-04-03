@@ -9,6 +9,7 @@ export default function Home() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
 
+  // Redirige si l'utilisateur n'est pas connecté
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
     if (!storedToken) {
@@ -18,15 +19,41 @@ export default function Home() {
     }
   }, [token]);
 
-  if (loading) return <p>Chargement...</p>;
+  useEffect(() => {
+    if (token) {
+      console.log(localStorage.getItem('token'));
+
+      fetch("http://localhost:3001/allCategories", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          console.log("Données reçues :", data);
+          if (Array.isArray(data)) {
+            setCategories(data);
+          } else {
+            console.error("Erreur API :", data.error);
+            setCategories([]); // Évite de planter si l'API retourne une erreur
+          }
+        })
+        .catch((err) => console.error("Erreur lors du chargement :", err));
+    }
+  }, [token]);
+
+  if (!token) return <p>Redirection en cours...</p>;
 
   return (
-    <>
-      <Header />
-      <main id="home">
-        <h1>Bienvenue</h1>
-        <Link href="/account">Mon Compte</Link>
-      </main>
-    </>
+    <div>
+      <h1>Accueil</h1>
+      <ul>
+        {categories.length === 0 ? (
+          <p>Aucune catégorie trouvée.</p>
+        ) : (
+          categories.map((category) => (
+            <li key={category.id_category}>{category.name}</li>
+          ))
+        )}
+      </ul>
+    </div>
   );
 }

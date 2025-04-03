@@ -1,7 +1,7 @@
 import { useEffect, useContext, useState } from "react";
 import { useRouter } from "next/router";
 import AuthContext from "../context/AuthContext";
-import Header from "../component/header";
+import Header from "../component/header.js";
 import Link from "next/link";
 
 export default function Home() {
@@ -13,7 +13,7 @@ export default function Home() {
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
     if (!storedToken) {
-      router.push("/login");
+      router.push("/home");
     } else {
       setLoading(false);
     }

@@ -1,7 +1,7 @@
 import { useState, useContext } from "react";
 import { useRouter } from "next/router";
 import AuthContext from "../context/AuthContext";
-import Header from "../component/Header";
+import Header from "../component/header.js";
 
 export default function Login() {
   const { login } = useContext(AuthContext);
@@ -20,7 +20,7 @@ export default function Login() {
     if (response.ok) {
       const data = await response.json();
       login(data.token);
-      router.push("/");
+      router.push("/home");
     } else {
       // Handle login error
       console.error("Login failed");
@@ -31,7 +31,7 @@ export default function Login() {
     <>
       <main id='login'>
         <Header/>
-        <div className="w-screen h-[92vh] flex justify-center items-center">
+        <div className="w-screen h-screen pt-[8vh] flex justify-center items-center">
           <div className="login-form w-screen lg:w-[50%] items-center flex flex-col">
             <form onSubmit={handleLogin} className="flex flex-col gap-6 w-[60%] items-center">
               <h1 className="text-2xl font-semibold mb-5">Vous avez déjà utilisé Planity ?</h1>

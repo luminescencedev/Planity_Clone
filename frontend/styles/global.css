@@ -1,53 +1,11 @@
 @import "tailwindcss";
 
-html, body{
-    overflow-x: hidden;
-}
-
-header{
-    display: flex;
-    align-items: center;
-    height: 8vh;
-    width: 100%;
-    padding: 0 25% 0 15%;
-    justify-content: space-between;
-    background-color: white;
-    position: fixed;
-}
-header>a:first-of-type{
-    width: 15%;
-    display: flex;
-    height: 8vh;
-}
-header a img{
-    width: 100%;
-}
-header nav{
-    width: 40%;
-    display: flex;
-    justify-content: center;
-    color: black;
-}
-header nav a{
-    margin: 0 5%;
-}
-header>a:last-of-type{
-    background-color: rgb(29, 29, 29);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: .5% 1.2%;
-    border-radius: .5em;
-}
-header>a:last-of-type img{
-    width: 20%;
-    padding-right: 3%;
-}
-header nav a:hover{
-    text-decoration: underline;
-    scale: 1.05;
-}
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%; /* Ensure the full height of the page is used */
+  }
+  
 
 #home{
     width: 99vw;
@@ -69,7 +27,7 @@ header nav a:hover{
 #home form{
     background-color: white;
     border-radius: 1em;
-    width: 48%;
+    width: 65%;
     margin: auto;
     padding: 1% 2%;
     display: flex;
@@ -91,13 +49,16 @@ form input{
 #home button[type="submit"]{
     background-color: black;
     width: 15%;
+    height: 7vh;
+    margin-top: 1.5%;
     color: white;
     border-radius: 1em;
 }
 
 h2{
-    font-size: 3em;
+    font-size: 2.7em;
     line-height: 1.2em;
+    font-weight: 400;
 }
 h3{
     font-size: 1.5em;
@@ -124,7 +85,7 @@ article{
     width: 22%;
 }
 #discover div div{
-    width: 28%;
+    width: 42%;
     padding-bottom: 2%;
     margin: 0 2%;
 }
@@ -154,14 +115,14 @@ article{
 }
 .black img{
     border: solid rgb(80, 80, 80) 1px;
-    width: 14%;
+    width: 18%;
     padding: 2% 4%;
 }
 .black img:first-of-type{
-    margin-left: 22%;
+    margin-left: 15%;
 }
 .stats{
-    width: 61%;
+    width: 68%;
     margin: 6% auto;
 }
 .stats h2{
@@ -173,6 +134,7 @@ article{
     display: flex;
     flex-wrap: wrap;
     margin-top: 3%;
+    width: 100%;
 }
 .stats div{
     width: 33%;
@@ -182,18 +144,19 @@ article{
 
 .articlegrey{
     background-color: rgb(248, 248, 248);
-    padding: 10% 15%;
+    padding: 10% 12%;
     justify-content: space-around;
 }
 .articlegrey img{
-    width: 45%;
+    width: 50%;
     border-radius: 1em;
 }
 .articlegrey div{
     width: 40%;
+    margin-left: 10%;
 }
 .articlegrey h2{
-    margin-top: 2%;
+    margin: 3% 0;
 }
 .articlegrey p{
     margin-bottom: 8%;
@@ -223,53 +186,7 @@ article{
     margin: 3% 0;
 }
 
-footer{
-    background-color: rgb(37, 37, 37);
-    display: flex;
-    flex-wrap: wrap;
-    padding: 5% 20% 0;
-}
-footer h3{
-    color: white;
-}
 
-footer article a:first-of-type{
-    width: 70%;
-    margin-right: 20%;
-}
-footer article a{
-    width: 20%;
-    
-}
-footer article:first-of-type{
-    width: 20%;
-    display: flex;
-    flex-wrap: wrap;
-
-}
-footer article{
-    width: 80%;
-    display: flex;
-    flex-wrap: wrap;
-}
-footer article div{
-    width: 28%;
-    margin: 0 2%;
-}
-footer article h3{
-    font-size: 1.3em;
-}
-footer .grey{
-    border-top: solid rgb(75, 75, 75) 1px;
-    width: 100%;
-    padding: 2% 0;
-    margin-top: 10%;
-    border-bottom: none;
-}
-footer ul li{
-    color: rgb(160, 160, 160);
-    line-height: 1.8em;
-}
 
 #login, #register {
     width: 100vw;

@@ -52,7 +52,7 @@ class User {
   static async getUserById(id_user) {
     try {
       const result = await pool.query(
-        `SELECT id_user, first_name, last_name, age, mail, phone, zip, role 
+        `SELECT id_user, first_name, last_name, age, mail, phone, city, role 
          FROM users WHERE id_user = $1`,
         [id_user]
       );

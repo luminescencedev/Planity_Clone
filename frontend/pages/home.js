@@ -1,6 +1,7 @@
 import { useState, useContext } from "react";
 import { useRouter } from "next/router";
-import Header from '../component/header'
+import Header from '../component/header.js'
+import Footer from '../component/footer'
 
 export default function Register() {
     const [nameSearch, setNameSearch] = useState("");
@@ -50,7 +51,6 @@ export default function Register() {
               <p>Envie de changer de tête ou simplement de rafraîchir votre coupe ? Vous avez besoin des conseils d'un expert pour sublimer votre style.</p>
               <p>Quels sont les meilleurs salons de coiffure autour de chez vous ? Pour répondre à ces questions, le portail de prises de rendez-vous Planity est votre meilleur allié. Découvrez quel salon est fait pour vous, les coiffeurs spécialisés, les visagistes aux meilleurs conseils, et prenez rendez-vous sans sortir de chez vous, quand vous le souhaitez ! Vos cheveux méritent le meilleur !</p>
             </div>
-            <img src="/hair_care.webp"></img>
           </div>
         </article>
         <article class="black">
@@ -154,48 +154,8 @@ export default function Register() {
 
 
 
-
-        <footer>
-          <article>
-              <a href="/home"><img src="/planity-logo.png"/></a>
-              <a><img src="/facebook.png"></img></a>
-              <a><img src="/instagram.png"></img></a>
-          </article>
-          <article>
-              <div>
-                <h3>À propos de Planity</h3>
-                <ul>
-                  <li><a>Rejoignez-nous</a></li>
-                  <li><a>CGU</a></li>
-                  <li><a>Planity Belgique</a></li>
-                  <li><a>Planity Deutschland</a></li>
-                  <li><a>Politique de confidentialité</a></li>
-                  <li><a>Politique de lutte contre les contenus illicites</a></li>
-                  <li><a>Gestion des cookies</a></li>
-                </ul>
-              </div>
-              <div>
-                <h3>Trouvez votre prestation</h3>
-                <ul>
-                  <li><a>Coiffeur</a></li>
-                  <li><a>Barbier</a></li>
-                  <li><a>Manucure</a></li>
-                </ul>
-              </div>
-              <div>
-                <h3>Recherches fréquentes</h3>
-                <ul>
-                  <li><a>Coiffeur Paris</a></li>
-                  <li><a>Coiffeur Bordeaux</a></li>
-                  <li><a>Coiffeur Lyon</a></li>
-                  <li><a>Coiffeur Toulouse</a></li>
-                </ul>
-              </div>
-          </article>
-
-          <span class="grey">Copyright © 2025 Planity</span>
+<Footer />
         
-        </footer>
       </>
     );
   }

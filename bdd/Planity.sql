@@ -146,11 +146,11 @@ CREATE TABLE public.Rendez_vous(
     updated_at    TIMESTAMP  NOT NULL,
     id_salon      INT NOT NULL,
     id_user       INT NOT NULL,
-    id_service    INT NOT NULL, -- Nouveau champ pour lier le rendez-vous au service
+    id_service    INT NOT NULL,
     CONSTRAINT Rendez_vous_PK PRIMARY KEY (id_rendezvous),
     CONSTRAINT Rendez_vous_Salons_FK FOREIGN KEY (id_salon) REFERENCES public.Salons(id_salon),
     CONSTRAINT Rendez_vous_Users_FK FOREIGN KEY (id_user) REFERENCES public.Users(id_user),
-    CONSTRAINT Rendez_vous_Services_FK FOREIGN KEY (id_service) REFERENCES public.Services(id_service) -- Clé étrangère vers la table Services
+    CONSTRAINT Rendez_vous_Services_FK FOREIGN KEY (id_service) REFERENCES public.Services(id_service)
 )WITHOUT OIDS;
 
 -- Insertion des rendez-vous avec le service

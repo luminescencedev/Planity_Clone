@@ -3,6 +3,7 @@ const Category = require('./models/category');
 const User = require('./models/user');
 const Salon = require('./models/salon');
 const Service = require('./models/service');
+const Review = require('./models/review');
 require('dotenv').config();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -256,6 +257,67 @@ app.get('/service-details/:serviceId', authenticate, async (req, res) => {
 
 
 
+// PATCH
+
+// PATCH - Update user details
+// Update your PATCH endpoint in your backend (server.js)
+app.patch('/users/:id', authenticate, async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const updates = req.body;
+
+    console.log("Received update request for user:", userId);
+    console.log("Updates:", updates);
+
+    // Verify the user exists
+    const user = await User.getUserById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Verify the authenticated user can only update their own profile
+    if (userId !== req.user.id.toString()) {
+      return res.status(403).json({ error: "You can only update your own profile" });
+    }
+
+    // Apply updates
+    let updatedUser;
+    if (updates.first_name) {
+      updatedUser = await User.patchUserFirstName(userId, { first_name: updates.first_name });
+    }
+    if (updates.last_name) {
+      updatedUser = await User.patchUserLastName(userId, { last_name: updates.last_name });
+    }
+    if (updates.mail) {
+      updatedUser = await User.patchUserMail(userId, { mail: updates.mail });
+    }
+    if (updates.phone) {
+      updatedUser = await User.patchUserPhone(userId, { phone: updates.phone });
+    }
+
+    if (!updatedUser) {
+      return res.status(400).json({ error: "No valid fields to update" });
+    }
+
+    // Return the updated user data
+    res.json({
+      id: updatedUser.id_user,
+      first_name: updatedUser.first_name,
+      last_name: updatedUser.last_name,
+      email: updatedUser.mail,
+      phone: updatedUser.phone,
+      city: updatedUser.city,
+      role: updatedUser.role
+    });
+
+  } catch (error) {
+    console.error("Error updating user:", error);
+    res.status(500).json({ 
+      error: "Internal server error",
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+});
 
 
 //POST
@@ -263,37 +325,35 @@ app.get('/service-details/:serviceId', authenticate, async (req, res) => {
 // /createSalon (Admin, Salon Owner) 
 
 // backend.js (ou un fichier de routes dans ton backend Node.js)
-app.post('/reservation', authenticate, async (req, res) => {
+
+app.post('/salon/:id_salon/reviews', authenticate, async (req, res) => {
   try {
-    const { serviceId, userId, salonId, date } = req.body; // Récupère les données nécessaires
-    if (!serviceId || !userId || !salonId || !date) {
-      return res.status(400).json({ error: "Tous les paramètres sont nécessaires" });
+    const { id_salon } = req.params;
+    const { rating, description } = req.body;
+
+    // Validation
+    if (!rating || !description) {
+      return res.status(400).json({ error: "Rating and description are required" });
+    }
+    if (rating < 1 || rating > 5) {
+      return res.status(400).json({ error: "Rating must be between 1 and 5" });
     }
 
-    // Vérifie si le service et le salon existent
-    const salon = await Salon.findById(salonId);
-    const service = await Service.findById(serviceId);
-    const user = await User.findById(userId);
-
-    if (!salon || !service || !user) {
-      return res.status(404).json({ error: "Service, salon ou utilisateur non trouvé" });
-    }
-
-    // Crée un nouveau rendez-vous
-    const newRendezvous = await Rendezvous.createRendezVousClient({
-      date,
-      salonId,
-      userId,
-      createdAt: new Date(),
-      updatedAt: new Date(),
+    const newReview = await Review.createReview({
+      rating,
+      description,
+      id_salon
     });
-
-    return res.status(201).json(newRendezvous);
+    res.status(201).json(newReview);
   } catch (error) {
-    console.error("Erreur lors de la création du rendez-vous:", error);
-    return res.status(500).json({ error: "Erreur interne du serveur" });
+    console.error("Error creating review:", error);
+    if (error.code === '23503') { // Foreign key violation
+      return res.status(404).json({ error: "Salon not found" });
+    }
+    res.status(500).json({ error: "Internal server error" });
   }
-});
+}); 
+
 
 
 app.post('/createSalon', authenticate, async (req, res) => {

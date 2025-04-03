@@ -20,6 +20,7 @@ export default function Account() {
     phone: "",
   });
 
+  // Fetch user data from API
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -31,12 +32,19 @@ export default function Account() {
         });
 
         const data = await response.json();
+        console.log("User Data:", data); // Debugging
 
         if (!response.ok) {
           console.error("Backend error details:", data);
           throw new Error(data.details || "Account fetch failed");
         }
 
+        if (!data.id) {  // Changed from id_user to id
+          console.error("ID utilisateur manquant dans la réponse !");
+          throw new Error("ID utilisateur introuvable");
+        }
+
+        // Set user data, including id
         setUser(data);
       } catch (err) {
         console.error("Full fetch error:", err);
@@ -54,7 +62,7 @@ export default function Account() {
     }
   }, [token]);
 
-  // Update formData when user data is fetched
+  // Pre-fill form when user data is loaded
   useEffect(() => {
     if (user) {
       setFormData({
@@ -66,50 +74,67 @@ export default function Account() {
     }
   }, [user]);
 
+  // Handle tab switching
   const handleSectionChange = (section) => {
     setSelectedSection(section);
-
-    // Ensure form remains pre-filled when switching to "Mes informations"
-    if (section === "informations" && user) {
-      setFormData({
-        first_name: user.first_name || "",
-        last_name: user.last_name || "",
-        email: user.email || "",
-        phone: user.phone || "",
-      });
-    }
   };
 
+  // Handle form changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+  
+    if (!user || !user.id) {
+      setMessage("Erreur : ID utilisateur introuvable.");
+      return;
+    }
+  
     try {
-      const response = await fetch("http://localhost:3001/account", {
-        method: "PUT",
+      // Prepare updates object
+      const updates = {};
+      if (formData.first_name !== user.first_name) updates.first_name = formData.first_name;
+      if (formData.last_name !== user.last_name) updates.last_name = formData.last_name;
+      if (formData.email !== user.email) updates.mail = formData.email; // Note: backend expects 'mail'
+      if (formData.phone !== user.phone) updates.phone = formData.phone;
+  
+      if (Object.keys(updates).length === 0) {
+        setMessage("Aucune modification détectée");
+        setTimeout(() => setMessage(""), 3000);
+        return;
+      }
+  
+      const response = await fetch(`http://localhost:3001/users/${user.id}`, {
+        method: "PATCH",
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(updates),
       });
-
+  
       const data = await response.json();
-
+  
       if (!response.ok) {
-        throw new Error(data.error || "Failed to update profile");
+        throw new Error(data.error || "Échec de la mise à jour du profil");
       }
-
-      setUser(data);
+  
+      // Update local user data
+      setUser({
+        ...user,
+        ...data
+      });
+      
       setMessage("Profil mis à jour avec succès!");
-
       setTimeout(() => setMessage(""), 3000);
+  
     } catch (error) {
-      setMessage(`Erreur: ${error.message}`);
       console.error("Update error:", error);
+      setMessage(`Erreur: ${error.message}`);
     }
   };
 
@@ -122,132 +147,76 @@ export default function Account() {
       <h1 className="page-title">Mon compte</h1>
       <div className="container">
         <div className="left">
-          <div>
           <h2>Mon compte</h2>
-          </div>
-          <div>
           <h4
             className={selectedSection === "rendez-vous" ? "active" : ""}
             onClick={() => handleSectionChange("rendez-vous")}
           >
             Mes rendez-vous
           </h4>
-          </div>
-          <div>
           <h4
             className={selectedSection === "informations" ? "active" : ""}
             onClick={() => handleSectionChange("informations")}
           >
             Mes informations
           </h4>
-          </div>
           <hr />
-
           <button id="logout-submit" onClick={logout}>
             Se déconnecter
           </button>
         </div>
 
-        {message && <div>{message}</div>}
+        {message && <div className="message">{message}</div>}
 
         <div className="right">
           {selectedSection === "rendez-vous" && (
             <div className="box">
-              <div className="rendez-vous">
-                <h2>Mes Rendez-Vous à venir</h2>
-                <p>Vous n'avez pas encore pris de rendez-vous</p>
-                <button
-                  id="rdv-submit"
-                  onClick={() => router.push("/categories/Coiffeur")}
-                >
-                  Prendre RDV
-                </button>
-              </div>
+              <h2>Mes Rendez-Vous à venir</h2>
+              <p>Vous n'avez pas encore pris de rendez-vous</p>
+              <button id="rdv-submit" onClick={() => router.push("/categories/Coiffeur")}>
+                Prendre RDV
+              </button>
             </div>
           )}
 
           {selectedSection === "informations" && (
             <div className="box">
-              <div className="user-infos">
-                <h2>Mes coordonnées</h2>
-                <form onSubmit={handleSubmit}>
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label htmlFor="first_name">Prénom *</label>
-                      <input
-                        type="text"
-                        id="first_name"
-                        name="first_name"
-                        value={formData.first_name}
-                        onChange={handleChange}
-                        required
-                      />
-                    </div>
+              <h2>Mes coordonnées</h2>
+              <form onSubmit={handleSubmit}>
+                <div className="form-group">
+                  <label>Prénom *</label>
+                  <input type="text" name="first_name" value={formData.first_name} onChange={handleChange} required />
+                </div>
 
-                    <div className="form-group">
-                      <label htmlFor="last_name">Nom *</label>
-                      <input
-                        type="text"
-                        id="last_name"
-                        name="last_name"
-                        value={formData.last_name}
-                        onChange={handleChange}
-                        required
-                      />
-                    </div>
-                  </div>
+                <div className="form-group">
+                  <label>Nom *</label>
+                  <input type="text" name="last_name" value={formData.last_name} onChange={handleChange} required />
+                </div>
 
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label htmlFor="email">Email *</label>
-                      <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        required
-                      />
-                    </div>
+                <div className="form-group">
+                  <label>Email *</label>
+                  <input type="email" name="email" value={formData.email} onChange={handleChange} required />
+                </div>
 
-                    <div className="form-group">
-                      <label htmlFor="phone">Téléphone *</label>
-                      <input
-                        type="tel"
-                        id="phone"
-                        name="phone"
-                        value={formData.phone}
-                        onChange={handleChange}
-                        pattern="[0-9]{10}"
-                        title="Numéro à 10 chiffres"
-                      />
-                    </div>
-                  </div>
+                <div className="form-group">
+                  <label>Téléphone *</label>
+                  <input type="tel" name="phone" value={formData.phone} onChange={handleChange} pattern="[0-9]{10}" title="Numéro à 10 chiffres" />
+                </div>
 
-                  <div className="button-group">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setFormData({
-                          first_name: user.first_name || "",
-                          last_name: user.last_name || "",
-                          email: user.email || "",
-                          phone: user.phone || "",
-                        });
-                      }}
-                    >
-                      Annuler
-                    </button>
-                    <button id="save-submit" type="submit">
-                      Enregistrer
-                    </button>
-                  </div>
-                </form>
-              </div>
+                <div className="button-group">
+                  <button type="button" onClick={() => setFormData(user)}>
+                    Annuler
+                  </button>
+                  <button id="save-submit" type="submit">
+                    Enregistrer
+                  </button>
+                </div>
+              </form>
             </div>
           )}
         </div>
       </div>
+
       <Footer />
     </div>
   );

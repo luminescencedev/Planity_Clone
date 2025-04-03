@@ -59,13 +59,20 @@ class Reviews {
     return result.rows[0] || null;
   }
 
-  static async createReview({ rating, description, id_salon, id_utilisateur }) {
-    const result = await pool.query(
-      "INSERT INTO Reviews (Rating, Description, Created_at, Updated_at, id_salon, id_utilisateur) VALUES ($1, $2, NOW(), NOW(), $3, $4) RETURNING *",
-      [rating, description, id_salon, id_utilisateur]
-    );
-    return result.rows[0];
+  static async createReview({ rating, description, id_salon }) {
+    try {
+      const result = await pool.query(
+        `INSERT INTO Reviews (rating, description, created_at, updated_at, id_salon)
+         VALUES ($1, $2, NOW(), NOW(), $3) 
+         RETURNING *`,
+        [rating, description, id_salon]
+      );
+      return result.rows[0];
+    } catch (error) {
+      throw error;
+    }
   }
+  
 
   static async updateReview(id, { rating, description }) {
     const result = await pool.query(

@@ -1,6 +1,6 @@
 import { useState, useContext } from "react";
 import { useRouter } from "next/router";
-import Header from '../component/header'
+import Header from '../component/header.js';
 
 export default function Register() {
     const [nameSearch, setNameSearch] = useState("");

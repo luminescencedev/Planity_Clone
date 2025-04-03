@@ -15,7 +15,6 @@ export default function SalonPage() {
   const [reviewError, setReviewError] = useState("");
   const [reviewSuccess, setReviewSuccess] = useState("");
 
-
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -42,12 +41,12 @@ export default function SalonPage() {
           }
         );
 
-        if (!response.ok) throw new Error("Error fetching salon data");
+        if (!response.ok) throw new Error("Erreur lors de la récupération des données du salon");
         const data = await response.json();
         setSalonData(data);
       } catch (error) {
-        console.error("Error:", error);
-        setError("Error loading salon data");
+        console.error("Erreur :", error);
+        setError("Erreur lors du chargement des données du salon");
       }
     }
   };
@@ -80,7 +79,7 @@ export default function SalonPage() {
     e.preventDefault();
     setReviewError("");
     setReviewSuccess("");
-  
+
     try {
       const response = await fetch(
         `http://localhost:3001/salon/${salonData.id_salon}/reviews`,
@@ -96,31 +95,29 @@ export default function SalonPage() {
           }),
         }
       );
-  
+
       const data = await response.json();
-  
+
       if (!response.ok) {
-        throw new Error(data.error || "Failed to submit review");
+        throw new Error(data.error || "Échec de la soumission de l'avis");
       }
-  
-      setReviewSuccess("Review submitted successfully!");
+
+      setReviewSuccess("Avis soumis avec succès !");
       setReviewForm({
         rating: 5,
         description: "",
       });
-  
-      // Refresh salon data to show the new review
+
       await fetchSalonData();
     } catch (error) {
-      console.error("Error submitting review:", error);
+      console.error("Erreur lors de la soumission de l'avis :", error);
       setReviewError(error.message);
     }
   };
- 
 
-  if (!salon || !token) return <p>Loading...</p>;
+  if (!salon || !token) return <p>Chargement...</p>;
   if (error) return <p style={{ color: "red" }}>{error}</p>;
-  if (!salonData) return <p>Loading salon data...</p>;
+  if (!salonData) return <p>Chargement des données du salon...</p>;
 
   return (
     <div>
@@ -137,61 +134,61 @@ export default function SalonPage() {
 
       {salonData.moyenne_rating && (
         <h3>
-          Average Rating: {Number(salonData.moyenne_rating).toFixed(1)} / 5
+          Note moyenne : {Number(salonData.moyenne_rating).toFixed(1)} / 5
         </h3>
       )}
 
-<div style={{ margin: "20px 0" }}>
-  <h3>Add a Review</h3>
-  <form onSubmit={handleReviewSubmit}>  {/* This was missing */}
-    <div style={{ marginBottom: "10px" }}>
-      <label>
-        Rating (1-5):
-        <select
-          name="rating"
-          value={reviewForm.rating}
-          onChange={handleReviewChange}
-          style={{ marginLeft: "10px" }}
-        >
-          {[1, 2, 3, 4, 5].map((num) => (
-            <option key={`rating-${num}`} value={num}>
-              {num}
-            </option>
-          ))}
-        </select>
-      </label>
-    </div>
-    <div style={{ marginBottom: "10px" }}>
-      <textarea
-        name="description"
-        value={reviewForm.description}
-        onChange={handleReviewChange}
-        placeholder="Your review..."
-        style={{ width: "100%", minHeight: "100px", padding: "8px" }}
-        required
-      />
-    </div>
-    {reviewError && <p style={{ color: "red" }}>{reviewError}</p>}
-    {reviewSuccess && <p style={{ color: "green" }}>{reviewSuccess}</p>}
-    <button
-      type="submit"
-      style={{
-        padding: "8px 16px",
-        background: "#0070f3",
-        color: "white",
-        border: "none",
-        borderRadius: "4px",
-        cursor: "pointer",
-      }}
-    >
-      Submit Review
-    </button>
-  </form>
-</div>
+      <div style={{ margin: "20px 0" }}>
+        <h3>Ajouter un avis</h3>
+        <form onSubmit={handleReviewSubmit}>
+          <div style={{ marginBottom: "10px" }}>
+            <label>
+              Note (1-5) :
+              <select
+                name="rating"
+                value={reviewForm.rating}
+                onChange={handleReviewChange}
+                style={{ marginLeft: "10px" }}
+              >
+                {[1, 2, 3, 4, 5].map((num) => (
+                  <option key={`rating-${num}`} value={num}>
+                    {num}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+          <div style={{ marginBottom: "10px" }}>
+            <textarea
+              name="description"
+              value={reviewForm.description}
+              onChange={handleReviewChange}
+              placeholder="Votre avis..."
+              style={{ width: "100%", minHeight: "100px", padding: "8px" }}
+              required
+            />
+          </div>
+          {reviewError && <p style={{ color: "red" }}>{reviewError}</p>}
+          {reviewSuccess && <p style={{ color: "green" }}>{reviewSuccess}</p>}
+          <button
+            type="submit"
+            style={{
+              padding: "8px 16px",
+              background: "#0070f3",
+              color: "white",
+              border: "none",
+              borderRadius: "4px",
+              cursor: "pointer",
+            }}
+          >
+            Soumettre l'avis
+          </button>
+        </form>
+      </div>
 
-      <h3>Reviews:</h3>
+      <h3>Avis :</h3>
       {salonData.reviews?.length === 0 ? (
-        <p>No reviews available for this salon.</p>
+        <p>Aucun avis disponible pour ce salon.</p>
       ) : (
         <ul style={{ listStyle: "none", padding: 0 }}>
           {salonData.reviews?.map((review) => (
@@ -212,9 +209,9 @@ export default function SalonPage() {
         </ul>
       )}
 
-      <h3>Services:</h3>
+      <h3>Services :</h3>
       {salonData.services?.length === 0 ? (
-        <p>No services available for this salon.</p>
+        <p>Aucun service disponible pour ce salon.</p>
       ) : (
         <ul style={{ listStyle: "none", padding: 0 }}>
           {salonData.services?.map((service) => (
@@ -240,7 +237,7 @@ export default function SalonPage() {
                   borderRadius: "4px",
                 }}
               >
-                Book
+                Réserver
               </button>
             </li>
           ))}

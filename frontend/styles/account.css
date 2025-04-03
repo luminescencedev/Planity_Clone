@@ -1,14 +1,14 @@
 .container-account {
    background-color: #f7f7f7;
 }
-.page-title {
+.container-account .page-title {
     padding-top: 10vh;
     height: auto;
     font-size: 2rem;
     margin-left: 10%;
 }
 
-.container {
+.container-account .container {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
@@ -16,7 +16,7 @@
     gap: 20px;
 }
 
-.left {
+.container-account .left {
     width: 30%;
     height: 35vh;
     background-color: white;
@@ -30,7 +30,7 @@
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
   
-  .right {
+.container-account  .right {
     display: flex;
     flex-direction: column;
     width: 60%;
@@ -39,7 +39,7 @@
     gap: 20px;
   }
   
-  .box {
+.container-account  .box {
     display: flex;
     flex-direction: column;
     background-color: white;
@@ -49,7 +49,7 @@
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-  .rendez-vous {
+ .container-account .rendez-vous {
     padding: 2%;
     display: flex;
     flex-direction: column;
@@ -57,41 +57,41 @@
     height: 20vh;
   }
   
-  .user-infos {
+.container-account  .user-infos {
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
  height: 40vh;
   }
-  .user-infos h2{
+.container-account  .user-infos h2{
     margin-bottom: 20px;
   }
 
-  .form-group{
+.container-account  .form-group{
     display: flex;
     flex-direction: row;
     gap: 10px;
     width: 30%;
   }
   
-  .container-account h2{
+ .container-account .container-account h2{
     font-weight: 600;
     font-size: larger;
   }
-  .form-row {
+ .container-account .form-row {
     display: flex;
     justify-content: space-between;
     gap: 20px;
     width: 100%;
   }
   
-  .form-group {
+ .container-account .form-group {
     flex: 1;
     display: flex;
     flex-direction: column;
   }
   
-  #rdv-submit{
+ .container-account #rdv-submit{
     background-color: black;
     color: white;
     border: none;
@@ -103,7 +103,7 @@
     width: 20%;
   }
 
-  form button{
+.container-account  form button{
     background-color: black;
     color: white;
     border: none;
@@ -116,7 +116,7 @@
     margin: 2%;
 
   }
-  form button[type="button"] {
+.container-account form button[type="button"] {
     background-color: #f3f3f5;
     color: black;
     border: 2px solid #f3f3f5;
@@ -128,29 +128,29 @@
     width: 20%;
 }
 
-form button[type="button"]:hover {
+.container-account form button[type="button"]:hover {
     background-color: #e0e0e0;
     border-color: #d6d6d6;
 }
 
   
-  input {
+.container-account  input {
     border: 2px solid #f3f3f5;
     border-radius: 8px;
     padding: 8px;
     width: 100%;
   }
   
-  .left h4 {
+.container-account  .left h4 {
     cursor: pointer;
     font-weight: normal;
     transition: font-weight 0.2s ease-in-out;
   }
   
-  .left h4.active {
+.container-account  .left h4.active {
     font-weight: bold;
   }
-  hr {
+.container-account  hr {
     border: 0;
     clear:both;
     display:block;
@@ -159,6 +159,6 @@ form button[type="button"]:hover {
     height: 1px;
   }
   
-  #logout-submit{
+.container-account  #logout-submit{
     color: red;
   }

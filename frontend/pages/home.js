@@ -18,17 +18,42 @@ export default function Register() {
         <Header />
         <h1>Réservez en beauté</h1>
         <span>Simple • Immédiat • 24h/24</span>
-        
-        <form id="search" onSubmit={handleHome} >
-            <label for="name">
-              <span>Que cherchez-vous?</span>
-            <input type="text" id="name" name="name" placeholder="Nom du salon, prestations (coupe...)"></input>
-            </label>
-            <label for="adress">
-              <span>Où</span>
-            <input type="text" id="adress" name="adress" placeholder="Adresse, ville..."></input>
-            </label>
-            <button type="submit">Rechercher</button>
+        <form onSubmit={handleHome} id="search">
+          <label htmlFor="name">
+            <span>Que cherchez-vous?</span>
+            <select 
+              id="name" 
+              name="name" 
+              onChange={(e) => setNameSearch(e.target.value)} 
+              value={nameSearch}
+            >
+              <option value="">Sélectionnez un service</option>
+              <option value="Barbier">Barbier</option>
+              <option value="Coiffeur">Coiffeur</option>
+              <option value="Manucure">Manucure</option>
+            </select>
+          </label>
+          <label htmlFor="adress">
+            <span>Où</span>
+            <select 
+              id="adress" 
+              name="adress" 
+              onChange={(e) => setLocalisation(e.target.value)} 
+              value={localisation}
+            >
+              <option value="">Sélectionnez une ville</option>
+              <option value="Paris">Paris</option>
+              <option value="Lyon">Lyon</option>
+              <option value="Marseille">Marseille</option>
+              <option value="Bordeaux">Bordeaux</option>
+              <option value="Nice">Nice</option>
+              <option value="Toulouse">Toulouse</option>
+              <option value="Lille">Lille</option>
+              <option value="Nantes">Nantes</option>
+              <option value="Strasbourg">Strasbourg</option>
+            </select>
+          </label>
+          <button type="submit" className="cursor-pointer">Rechercher</button>
         </form>
       </main>
         <article id="discover">

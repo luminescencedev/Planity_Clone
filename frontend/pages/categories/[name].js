@@ -51,7 +51,7 @@ export default function Categorie() {
     <>
       <main id="namesalon">
         <Header></Header>
-        <h1>Réserver en ligne un RDV avec un coiffeur</h1>
+        <h1>Réserver en ligne un RDV avec un {category.name}</h1>
         <form id="search" >
           <label htmlFor="name">
             <span>Que cherchez-vous?</span>

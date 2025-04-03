@@ -1,46 +1,61 @@
-import { useState, useContext } from "react";
+import { useState } from "react";
 import { useRouter } from "next/router";
-import Header from '../component/header.js'
-import Footer from '../component/footer'
+import Header from '../component/header.js';
+import Footer from '../component/footer';
 
 export default function Register() {
-    const [nameSearch, setNameSearch] = useState("");
-    const [localisation, setLocalisation] = useState("");
-    const router = useRouter();
+  const [nameSearch, setNameSearch] = useState("");
+  const [localisation, setLocalisation] = useState("");
+  const router = useRouter();
   
-    const handleHome = async (e) => {
-      e.preventDefault();
-      const response = await fetch("http://localhost:3001/home", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nameSearch: nom, localisation: city}),
-      });
-  
-      if (response.ok) router.push("/login");
-    };
-  
-
-
-    return (
-        <>
-        <main id="home">
-        <Header></Header>
-        
+  const handleHome = async (e) => {
+    e.preventDefault();
+    router.push(`/categories/${nameSearch}/${localisation}`);
+  }
+  return (
+    <>
+      <main id="home">
+        <Header />
         <h1>Réservez en beauté</h1>
         <span>Simple • Immédiat • 24h/24</span>
-        
         <form onSubmit={handleHome}>
-            <label for="name">
-              <span>Que cherchez-vous?</span>
-            <input type="text" id="name" name="name" placeholder="Nom du salon, prestations (coupe...)"></input>
-            </label>
-            <label for="adress">
-              <span>Où</span>
-            <input type="text" id="adress" name="adress" placeholder="Adresse, ville..."></input>
-            </label>
-            <button type="submit">Rechercher</button>
+          <label htmlFor="name">
+            <span>Que cherchez-vous?</span>
+            <select 
+              id="name" 
+              name="name" 
+              onChange={(e) => setNameSearch(e.target.value)} 
+              value={nameSearch}
+            >
+              <option value="">Sélectionnez un service</option>
+              <option value="Barbier">Barbier</option>
+              <option value="Coiffeur">Coiffeur</option>
+              <option value="Manucure">Manucure</option>
+            </select>
+          </label>
+          <label htmlFor="adress">
+            <span>Où</span>
+            <select 
+              id="adress" 
+              name="adress" 
+              onChange={(e) => setLocalisation(e.target.value)} 
+              value={localisation}
+            >
+              <option value="">Sélectionnez une ville</option>
+              <option value="Paris">Paris</option>
+              <option value="Lyon">Lyon</option>
+              <option value="Marseille">Marseille</option>
+              <option value="Bordeaux">Bordeaux</option>
+              <option value="Nice">Nice</option>
+              <option value="Toulouse">Toulouse</option>
+              <option value="Lille">Lille</option>
+              <option value="Nantes">Nantes</option>
+              <option value="Strasbourg">Strasbourg</option>
+            </select>
+          </label>
+          <button type="submit" className="cursor-pointer">Rechercher</button>
         </form>
-        </main>
+      </main>
         <article id="discover">
           <div>
             <img src="/beauty_salon.webp"></img>

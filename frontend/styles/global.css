@@ -1,8 +1,9 @@
 @import "tailwindcss";
 
-#home{
-    background-color: antiquewhite;
+html, body{
+    overflow-x: hidden;
 }
+
 header{
     display: flex;
     align-items: center;
@@ -10,10 +11,12 @@ header{
     width: 100%;
     padding: 0 25% 0 15%;
     justify-content: space-between;
+    background-color: white;
 }
 header>a:first-of-type{
     width: 15%;
-
+    display: flex;
+    height: 8vh;
 }
 header a img{
     width: 100%;
@@ -22,7 +25,7 @@ header nav{
     width: 40%;
     display: flex;
     justify-content: center;
-    color: white;
+    color: black;
 }
 header nav a{
     margin: 0 5%;
@@ -39,4 +42,21 @@ header>a:last-of-type{
 header>a:last-of-type img{
     width: 20%;
     padding-right: 3%;
+}
+header nav a:hover{
+    text-decoration: underline;
+    scale: 1.05;
+}
+
+#home{
+    width: 100vw;
+    height: 100vh;
+    background-image: url("../public/backgroundplanity.jpg");
+    background-size: cover;
+}
+
+#login, #register {
+    width: 100vw;
+    background:RGB(247, 247, 247);
+    background-size: cover;
 }

@@ -22,16 +22,16 @@ app.use(cors(corsOptions));
 
 // Middleware de protection des routes
 const authenticate = (req, res, next) => {
-    const token = req.headers.authorization?.split(" ")[1]; // Récupérer le token
-    if (!token) return res.status(401).json({ error: "Accès non autorisé" });
-  
-    try {
-      const decoded = jwt.verify(token, SECRET_KEY);
-      req.user = decoded; // Ajouter les infos du user à la requête
-      next();
-    } catch (error) {
-      res.status(403).json({ error: "Token invalide" });
-    }
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) return res.status(401).json({ error: "Unauthorized" });
+
+  try {
+    const decoded = jwt.verify(token, SECRET_KEY);
+    req.user = { id: decoded.id }; // Make sure this matches what you put in the token
+    next();
+  } catch (error) {
+    res.status(403).json({ error: "Invalid token" });
+  }
 }
 
 // Endpoints 
@@ -41,15 +41,28 @@ const authenticate = (req, res, next) => {
 
 //User Endpoints
 
+app.get('/account', authenticate, async (req, res) => {
+  try {
+    const user = await User.getUserById(req.user.id);
+    if (!user) return res.status(404).json({ error: "User not found" });
 
-
-
-
-
-
-
-
-
+    res.json({
+      id: user.id_user,
+      first_name: user.first_name,
+      last_name: user.last_name,
+      email: user.mail,
+      phone: user.phone,
+      zip: user.zip,
+      role: user.role
+    });
+  } catch (error) {
+    console.error('Account endpoint error:', error);
+    res.status(500).json({ 
+      error: "Internal server error",
+      ...(process.env.NODE_ENV === 'development' && { details: error.message })
+    });
+  }
+});
 
 
 
@@ -317,19 +330,24 @@ app.post("/register", async (req, res) => {
 
   
   // ROUTE : Connexion
-app.post("/login", async (req, res) => {
+  app.post("/login", async (req, res) => {
     try {
       const { mail, password } = req.body;
       const user = await User.getUserByMail(mail);
+      
       if (!user || !(await bcrypt.compare(password, user.password))) {
-        return res.status(401).json({ error: "Identifiants invalides" });
+        return res.status(401).json({ error: "Invalid credentials" });
       }
-
-      const token = jwt.sign({ id: user.id, mail: user.mail }, SECRET_KEY, {
+  
+      // Make sure to include the user ID in the token
+      const token = jwt.sign({ 
+        id: user.id_user, // or whatever your ID field is called
+        mail: user.mail 
+      }, SECRET_KEY, {
         expiresIn: "2h",
       });
-
-      res.json({ message: "Connexion réussie", token });
+  
+      res.json({ message: "Login successful", token });
     } catch (error) {
       res.status(500).json({ error: error.message });
     }

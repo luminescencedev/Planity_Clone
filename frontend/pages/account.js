@@ -13,7 +13,7 @@ export default function Account() {
   const [usersError, setUsersError] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
-  const [selectedSection, setSelectedSection] = useState("rendez-vous"); // Default to "Mes rendez-vous"
+  const [selectedSection, setSelectedSection] = useState("informations"); // Default to "Mes rendez-vous"
   const [message, setMessage] = useState("");
   const [formData, setFormData] = useState({
     first_name: "",
@@ -61,6 +61,7 @@ export default function Account() {
 
   // Fetch user data from API
   useEffect(() => {
+
     const fetchUserData = async () => {
       try {
         const response = await fetch("http://localhost:3001/account", {
@@ -111,6 +112,13 @@ export default function Account() {
       });
     }
   }, [user]);
+
+  
+
+  const handleLogout = () => {
+    logout(); // Appelle la fonction logout du contexte
+    router.push("/login"); // Redirige vers la page de connexion
+  };
 
   const handleDeleteUser = async (id_user) => {
     if (!window.confirm(`Are you sure you want to delete user #${id_user}?`)) return;

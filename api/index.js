@@ -384,7 +384,7 @@ app.get('/rendez-vous', authenticate, async (req, res) => {
     return res.json(appointments); // Retourne les rendez-vous en JSON
   } catch (err) {
     console.error('Erreur lors de la récupération des rendez-vous:', err); // Ajoutez plus d'informations sur l'erreur
-    return res.status(500).json({ error: 'Erreur serveur lors de la récupération des rendez-vous' });
+    return res.status(500).send('Erreur serveur lors de la récupération des rendez-vous');
   }
 });
 
@@ -392,36 +392,36 @@ app.get('/rendez-vous', authenticate, async (req, res) => {
 
 // /createSalon (Admin, Salon Owner) 
 
-app.post("/rendez-vous", async (req, res) => {
+app.post("/rendez-vous", authenticate, async (req, res) => {
   const { userId, salonId, serviceId, date, time } = req.body;
+
   if (!userId || !salonId || !serviceId || !date || !time) {
-      return res.status(400).json({ error: "Tous les champs sont requis !" });
+    return res.status(400).json({ error: "Tous les champs sont requis !" });
   }
 
   try {
-      const createdAt = new Date();
-      const updatedAt = new Date();
+    const createdAt = new Date();
+    const updatedAt = new Date();
 
-      console.log("Données reçues pour la réservation:", {
-          userId, salonId, serviceId, date, time
-      });
+    console.log("Données reçues pour la réservation:", {
+      userId, salonId, serviceId, date, time,
+    });
 
-      const newRdv = await RendezVous.createRendezVousClient({
-          date, 
-          time,
-          created_at: createdAt, 
-          updated_at: updatedAt, 
-          id_salon: salonId, 
-          id_user: userId, 
-          id_service: serviceId  
-      });
+    const newRdv = await RendezVous.createRendezVousClient({
+      date,
+      time,
+      created_at: createdAt,
+      updated_at: updatedAt,
+      id_salon: salonId,
+      id_user: userId,
+      id_service: serviceId,
+    });
 
-      res.status(201).json(newRdv);
-
+     res.status(201).json(newRdv);
   } catch (error) {
     console.error("Erreur lors de la réservation:", error.message);
-      console.error("Détails de l'erreur complète:", error);
-      res.status(500).json({ error: "Erreur serveur" });
+    console.error("Détails de l'erreur complète:", error);
+    res.status(500).json({ error: "Erreur serveur", details: error.message });
   }
 });
 // backend.js (ou un fichier de routes dans ton backend Node.js)

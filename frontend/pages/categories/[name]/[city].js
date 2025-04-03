@@ -136,49 +136,52 @@ export default function SalonsParVille() {
         {filteredSalons.length === 0 ? (
           <p>Aucun salon ne correspond à vos critères de recherche.</p>
         ) : (
-          <ul>
+          <ul id="listesalon">
             {filteredSalons.map((salon) => (
-              <li key={salon.id_salon} style={{ border: "1px solid #ccc", padding: "10px", margin: "10px 0" }}>
-                <strong>{salon.name}</strong><br />
-                <span>{salon.adress}</span><br />
-                <img src={`../../${salon.picture}`} alt={salon.name} />
-                <p>Note : {salon.moyenne_rating ? Number(salon.moyenne_rating).toFixed(1) : "N/A"}</p>
-
-                <button 
-                  onClick={() => toggleDetails(salon.id_salon)} 
-                  style={{ marginTop: "10px", padding: "5px 10px", cursor: "pointer" }}
-                >
-                  {showDetails[salon.id_salon] ? "Moins d’informations" : "Plus d’informations"}
-                </button>
-
-                {showDetails[salon.id_salon] && (
-                  <div>
-                    <h3>Avis des clients :</h3>
-                    {salon.reviews.length === 0 ? (
-                      <p>Aucun avis pour ce salon.</p>
-                    ) : (
-                      <ul>
-                        {salon.reviews.map((review) => (
-                          <li key={review.id_review}>
-                            <strong>{review.rating}/5</strong><br />
-                            <span>{review.description}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-
-                    <h3>En savoir plus sur {salon.name}</h3>
-                    <p>{salon.description}</p>
-                  </div>
-                )}
-
-                <button
-                  onClick={() => router.push(`/categories/${name}/${city}/salon/${salon.name}`)} 
-                  style={{ marginTop: "10px", padding: "5px 10px", cursor: "pointer" }}
-                >
-                  Prendre RDV
-                </button>
-              </li>
+              <li key={salon.id_salon} >
+              <img src={`../../${salon.picture}`} alt={salon.name} />
+              <div>
+                <h3>{salon.name}</h3>
+                <span><img src="/map-pin.svg" alt="" /> {salon.adress}</span>
+                <span><img src="/star.svg" alt="" /> {salon.moyenne_rating ? Number(salon.moyenne_rating).toFixed(1) : "N/A"}</span>
+              </div>
+            
+              {showDetails[salon.id_salon] && (
+                <div id="details">
+                  <h4>Avis des clients :</h4>
+                  {salon.reviews.length === 0 ? (
+                    <span>Aucun avis pour ce salon.</span>
+                  ) : (
+                    <ul>
+                      {salon.reviews.map((review) => (
+                        <li key={review.id_review}>
+                          <p><img id="star" src="/star.svg" alt="" /> {review.rating}</p>
+                          <span>{review.description}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  <h4>En savoir plus sur {salon.name}</h4>
+                  <span>{salon.description}</span>
+                </div>
+              )}
+            
+              {/* Le bouton est maintenant en bas du contenu */}
+              <button 
+                onClick={() => toggleDetails(salon.id_salon)} 
+                style={{ marginTop: "10px", padding: "5px 10px", cursor: "pointer" }}
+              >
+                {showDetails[salon.id_salon] ? "Moins d’informations" : "Plus d’informations"}
+              </button>
+            
+              <button
+                onClick={() => router.push(`/categories/${name}/${city}/salon/${salon.name}`)} 
+                style={{ marginTop: "10px", padding: "5px 10px", cursor: "pointer" }}
+              >
+                Prendre RDV
+              </button>
+            </li>
+            
             ))}
           </ul>
         )}

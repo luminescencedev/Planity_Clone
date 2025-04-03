@@ -43,7 +43,7 @@ export default function ServiceDescriptionPage() {
   if (!serviceDetails) return <p>Chargement...</p>;
 
   const handleReservation = () => {
-    if (!user || !salon || !selectedTime) {
+    if (!user || !selectedTime) {
       alert("Toutes les informations sont requises !");
       return;
     }
@@ -64,6 +64,8 @@ export default function ServiceDescriptionPage() {
       date: new Date().toISOString().split("T")[0],
       time: formattedTime,  // Utiliser l'heure formatée
     };
+
+    console.log("Données de réservation :", reservationData); // Log des données de réservation
 
     fetch("http://localhost:3001/rendez-vous", {
       method: "POST",
@@ -90,7 +92,11 @@ export default function ServiceDescriptionPage() {
       <h1>Service : {serviceDetails.description}</h1>
       <p>Prix : {serviceDetails.price} €</p>
       <p>Durée : {serviceDetails.time} min</p>
-      <TimePicker selectedTime={selectedTime} setSelectedTime={setSelectedTime} />
+      <input
+        type="time"
+        value={selectedTime}
+        onChange={(e) => setSelectedTime(e.target.value)}
+      />      
       <button onClick={handleReservation} style={{ padding: "10px 20px" }}>
         Réserver
       </button>

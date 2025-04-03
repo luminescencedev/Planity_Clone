@@ -12,15 +12,25 @@ export default function SalonsParVille() {
   const [filteredSalons, setFilteredSalons] = useState([]);
   const [error, setError] = useState(null);
   const [showDetails, setShowDetails] = useState({});
-
+  
   // Nouveaux états pour les filtres
   const [ratingFilter, setRatingFilter] = useState('all');
   const [sortBy, setSortBy] = useState('default');
+  const [loading, setLoading] = useState(true); // Ajout d'un état de chargement
+
+
   useEffect(() => {
-    if (!token) {
-      router.push("/login");
-    }
+    const timeoutId = setTimeout(() => {
+      if (token === undefined) return;
+      if (!token) {
+        router.push("/login");
+      } else {
+        setLoading(false);
+      }
+    }, 10);
+    return () => clearTimeout(timeoutId);
   }, [token, router]);
+
   useEffect(() => {
     if (name && city && token) {
       console.log('Token:', token); // Ajoute un log pour vérifier le token
@@ -78,6 +88,7 @@ export default function SalonsParVille() {
     }));
   };
 
+  if (loading) return <p>Chargement...</p>; // Afficher un message de chargement pendant 2s
   if (!name || !city || !token) return <p>Chargement...</p>;
   if (error) return <p style={{ color: "red" }}>{error}</p>;
 

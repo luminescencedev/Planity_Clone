@@ -9,19 +9,28 @@ export default function Categorie() {
   const { name } = router.query;
   const { token } = useContext(AuthContext);
   const [category, setCategory] = useState(null);
-  const [salons, setSalons] = useState([]);
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true); // État de chargement
 
   // Liste des 9 villes à afficher
   const villes = ["Paris", "Lyon", "Marseille", "Bordeaux", "Nice", "Toulouse", "Lille", "Nantes", "Strasbourg"];
 
-  // Redirect if no token (user is not authenticated)
+  // Attendre que le token soit disponible avec un délai (par exemple 2 secondes)
   useEffect(() => {
-    if (!token) {
-      router.push("/login");
-    }
+    const timeoutId = setTimeout(() => {
+      if (token === undefined) return;
+      if (!token) {
+        router.push("/login");
+      } else {
+        setLoading(false);
+      }
+    }, 10);
+
+
+    return () => clearTimeout(timeoutId);
   }, [token, router]);
 
+  // Charger la catégorie si le token est valide
   useEffect(() => {
     if (name && token) {
       fetch(`http://localhost:3001/categories/${name}`, {
@@ -33,6 +42,7 @@ export default function Categorie() {
     }
   }, [name, token]);
 
+  if (loading) return <p>Chargement...</p>; // Afficher un message de chargement si le token n'est pas encore disponible
   if (!name || !token) return <p>Chargement...</p>;
   if (error) return <p style={{ color: "red" }}>{error}</p>;
   if (!category) return <p>Chargement de la catégorie...</p>;

@@ -15,6 +15,20 @@ export default function SalonPage() {
   const [reviewError, setReviewError] = useState("");
   const [reviewSuccess, setReviewSuccess] = useState("");
 
+
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (token === undefined) return;
+      if (!token) {
+        router.push("/login");
+      } else {
+        setLoading(false);
+      }
+    }, 10);
+    return () => clearTimeout(timeoutId);
+  }, [token, router]);
+
   const fetchSalonData = async () => {
     if (salon && token) {
       try {
@@ -53,11 +67,7 @@ export default function SalonPage() {
       router.push(url);
     }
   };
-  useEffect(() => {
-    if (!token) {
-      router.push("/login");
-    }
-  }, [token, router]);
+
   const handleReviewChange = (e) => {
     const { name, value } = e.target;
     setReviewForm((prev) => ({

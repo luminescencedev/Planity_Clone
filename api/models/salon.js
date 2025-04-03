@@ -10,6 +10,7 @@ const pool = new Pool ({
 });
 
 class Salons {
+
     static async getNameSalon(id) {
         const result = await pool.query("SELECT Name FROM Salons WHERE id_salon = $1", [id]);
         return result.rows[0] || null;
@@ -59,6 +60,73 @@ class Salons {
         const result = await pool.query("SELECT * FROM Salons WHERE id_category = $1", [id_category]);
         return result.rows;
       }
+
+      static async getSalonsByCategoryAndCity(id_category, city) {
+      
+        const result = await pool.query(
+          `SELECT s.*, 
+                  COALESCE(AVG(r.rating), 0) AS moyenne_rating, 
+                  COALESCE(json_agg(r) FILTER (WHERE r.id_review IS NOT NULL), '[]') AS reviews
+           FROM Salons s
+           LEFT JOIN Reviews r ON s.id_salon = r.id_salon
+           WHERE s.id_category = $1 AND LOWER(s.city) = LOWER($2)
+           GROUP BY s.id_salon`,
+          [id_category, city]
+        );
+
+        return result.rows;// renvoie tous les salons de la catégorie avec la moyenne des notes et les avis associés
+      }
+      
+      static async getSalonByName(name) {
+        try {
+          console.log("Tentative de récupération du salon avec le nom :", name); // Log pour vérifier le nom du salon
+      
+          const result = await pool.query(
+            `SELECT s.*, 
+                    COALESCE(AVG(r.rating), 0) AS moyenne_rating, 
+                    COALESCE(json_agg(r) FILTER (WHERE r.id_review IS NOT NULL), '[]') AS reviews
+             FROM Salons s
+             LEFT JOIN Reviews r ON s.id_salon = r.id_salon
+             WHERE LOWER(s.name) = LOWER($1)  -- Recherche par nom de salon
+             GROUP BY s.id_salon`,
+            [name]
+          );
+      
+          console.log("Résultat de la requête SQL :", result.rows); // Log pour vérifier ce que la requête retourne
+      
+          if (result.rows.length === 0) {
+            console.log("Aucun salon trouvé avec ce nom"); // Log si aucun salon n'est trouvé
+            return { error: "Salon non trouvé" }; // Retourne une erreur explicite
+          }
+      
+          return result.rows[0]; // Retourne le salon trouvé
+        } catch (error) {
+          console.error("Erreur lors de la récupération du salon :", error.message); // Log détaillé de l'erreur
+          return { error: error.message }; // Retourne l'erreur dans le format attendu
+        }
+      }
+      
+      static async getSalonById(salonName) {
+        const result = await pool.query(
+          `SELECT s.*, 
+                  COALESCE(AVG(r.rating), 0) AS moyenne_rating, 
+                  COALESCE(json_agg(r) FILTER (WHERE r.id_review IS NOT NULL), '[]') AS reviews
+           FROM Salons s
+           LEFT JOIN Reviews r ON s.id_salon = r.id_salon
+           WHERE LOWER(s.name) = LOWER($1)
+           GROUP BY s.id_salon`,
+          [salonName]
+        );
+    
+        if (result.rows.length === 0) {
+          throw new Error("Salon non trouvé");
+        }
+    
+        return result.rows[0]; // Retourne le salon trouvé
+      }
+    
+
+
     
       static async getSalonByCategoriesByLocalisation(id_category, city) {
         const result = await pool.query("SELECT * FROM Salons WHERE id_category = $1 AND city = $2", [id_category, city]);

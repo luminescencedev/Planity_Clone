@@ -58,6 +58,27 @@ const authenticate = (req, res, next) => {
 
 // GET
 
+app.get('/salon/:salon', authenticate, async (req, res) => {
+  try {
+    const salonName = req.params.salon;
+    const salon = await Salon.getSalonById(salonName); // Assurez-vous que getSalonById existe
+    
+    if (!salon) {
+      return res.status(404).json({ message: "Salon non trouvé" });
+    }
+
+    res.status(200).json(salon);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
+
+
+
+
 // /nameSalon (Public, Admin, User) 
 
 app.get('/nameSalon', authenticate, async (req,res) =>{
@@ -342,31 +363,32 @@ app.get('/categories/:name', authenticate, async (req, res) => {
   }
 });
 
-// GET salons par catégorie
 app.get('/categories/:name/salons', authenticate, async (req, res) => {
   try {
-    const category = await Category.getCategoryByName(req.params.name);
-    
-    // Vérifiez si la catégorie existe
-    if (!category) {
-      return res.status(404).json({ message: "Catégorie non trouvée" });
+    const { name } = req.params;
+    const { city } = req.query; // Récupérer la ville depuis l'URL
+
+    // Récupérer l'ID de la catégorie
+    const category = await Category.getCategoryByName(name);
+    if (!category) return res.status(404).json({ message: "Catégorie non trouvée" });
+
+    let salons;
+    if (city) {
+      // Filtrer les salons par catégorie et ville
+      salons = await Salon.getSalonsByCategoryAndCity(category.id_category, city);
+    } else {
+      // Récupérer tous les salons de la catégorie
+      salons = await Salon.getSalonsByCategoryId(category.id_category);
     }
 
-    // Logique pour récupérer les salons avec l'ID de catégorie
-    const salons = await Salon.getSalonsByCategoryId(category.id_category);
-    
-    // Si aucun salon n'est trouvé pour cette catégorie
-    if (salons.length === 0) {
-      return res.status(404).json({ message: "Aucun salon trouvé pour cette catégorie" });
-    }
+    if (salons.length === 0) return res.status(404).json({ message: "Aucun salon trouvé" });
 
-    // Renvoi des salons associés à la catégorie
     res.status(200).json(salons);
   } catch (error) {
-    console.error("Erreur serveur : ", error.message);
     res.status(500).json({ error: error.message });
   }
 });
+
 
 
 //POST

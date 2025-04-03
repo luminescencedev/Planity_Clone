@@ -1,6 +1,6 @@
 import { useState, useContext } from "react";
 import { useRouter } from "next/router";
-import Header from '../component/header'
+import Header from '../component/header.js'
 import Footer from '../component/footer'
 
 export default function Register() {
@@ -51,7 +51,6 @@ export default function Register() {
               <p>Envie de changer de tête ou simplement de rafraîchir votre coupe ? Vous avez besoin des conseils d'un expert pour sublimer votre style.</p>
               <p>Quels sont les meilleurs salons de coiffure autour de chez vous ? Pour répondre à ces questions, le portail de prises de rendez-vous Planity est votre meilleur allié. Découvrez quel salon est fait pour vous, les coiffeurs spécialisés, les visagistes aux meilleurs conseils, et prenez rendez-vous sans sortir de chez vous, quand vous le souhaitez ! Vos cheveux méritent le meilleur !</p>
             </div>
-            <img src="/hair_care.webp"></img>
           </div>
         </article>
         <article class="black">

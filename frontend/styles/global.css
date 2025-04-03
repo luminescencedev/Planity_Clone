@@ -27,7 +27,7 @@ html, body {
 #home form{
     background-color: white;
     border-radius: 1em;
-    width: 48%;
+    width: 65%;
     margin: auto;
     padding: 1% 2%;
     display: flex;
@@ -49,13 +49,16 @@ form input{
 #home button[type="submit"]{
     background-color: black;
     width: 15%;
+    height: 7vh;
+    margin-top: 1.5%;
     color: white;
     border-radius: 1em;
 }
 
 h2{
-    font-size: 3em;
+    font-size: 2.7em;
     line-height: 1.2em;
+    font-weight: 400;
 }
 h3{
     font-size: 1.5em;
@@ -82,7 +85,7 @@ article{
     width: 22%;
 }
 #discover div div{
-    width: 28%;
+    width: 42%;
     padding-bottom: 2%;
     margin: 0 2%;
 }
@@ -112,14 +115,14 @@ article{
 }
 .black img{
     border: solid rgb(80, 80, 80) 1px;
-    width: 14%;
+    width: 18%;
     padding: 2% 4%;
 }
 .black img:first-of-type{
-    margin-left: 22%;
+    margin-left: 15%;
 }
 .stats{
-    width: 61%;
+    width: 68%;
     margin: 6% auto;
 }
 .stats h2{
@@ -131,6 +134,7 @@ article{
     display: flex;
     flex-wrap: wrap;
     margin-top: 3%;
+    width: 100%;
 }
 .stats div{
     width: 33%;
@@ -140,18 +144,19 @@ article{
 
 .articlegrey{
     background-color: rgb(248, 248, 248);
-    padding: 10% 15%;
+    padding: 10% 12%;
     justify-content: space-around;
 }
 .articlegrey img{
-    width: 45%;
+    width: 50%;
     border-radius: 1em;
 }
 .articlegrey div{
     width: 40%;
+    margin-left: 10%;
 }
 .articlegrey h2{
-    margin-top: 2%;
+    margin: 3% 0;
 }
 .articlegrey p{
     margin-bottom: 8%;

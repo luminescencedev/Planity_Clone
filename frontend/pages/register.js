@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
-import Header from "../component/Header";
+import Header from "../component/header.js";
 
 export default function Register() {
   const [role, setRole] = useState("");
@@ -41,7 +41,7 @@ export default function Register() {
     <>
           <main id='login'>
             <Header/>
-            <div className="w-screen h-[92vh] flex justify-center items-center">
+            <div className="w-screen h-screen pt-[8vh] flex justify-center items-center">
               <div className="register-form w-screen h-full overflow-y-auto p-6 lg:w-[50%] items-center flex flex-col">
                 <form onSubmit={handleRegister} className="flex flex-col gap-6 w-[60%] items-center">
                   <h1 className="text-2xl font-semibold mb-5">Nouveau sur Planity ?</h1>

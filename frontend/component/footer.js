@@ -39,7 +39,7 @@ export default function Footer() {
               </div>
           </article>
 
-          <span class="grey">Copyright © 2025 Planity</span>
+          <span className="grey">Copyright © 2025 Planity</span>
         
         </footer>
 

@@ -43,9 +43,30 @@ class User {
     return result.rows[0];
   }
 
-  static async getAllUsers() {
-    const result = await pool.query("SELECT * FROM Users");
-    return result.rows;
+  // In your user controller
+  static async getAllUsers(req, res) {
+    try {
+      const result = await pool.query(`
+      SELECT 
+        id_user,
+        role,
+        first_name,
+        last_name,
+        age,
+        mail,
+        phone,
+        city,
+        created_at,
+        updated_at
+      FROM users
+      ORDER BY created_at DESC
+    `);
+
+      res.json(result.rows);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      res.status(500).json({ message: "Apprends a écrire ptn" });
+    }
   }
 
   // In models/user.js - keep your existing queries but ensure they return id_user
@@ -79,7 +100,9 @@ class User {
   }
 
   static async findById(id) {
-    const result = await pool.query("SELECT * FROM Users WHERE id_user = $1", [id]);
+    const result = await pool.query("SELECT * FROM Users WHERE id_user = $1", [
+      id,
+    ]);
     return result.rows[0] || null;
   }
 
@@ -252,8 +275,69 @@ class User {
     return result.rows[0];
   }
 
-  static async deleteUser(id) {
-    await pool.query("DELETE FROM Users WHERE id_user = $1", [id]);
+  // In your user controller
+  static async deleteUser(req, res) {
+    const id_user = req.params.id; // Using id_user to match your schema
+
+    try {
+      // 1. Verify admin role
+      if (req.user.role !== "Admin") {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      // 2. Check if user exists
+      const userCheck = await pool.query(
+        "SELECT id_user, role FROM Users WHERE id_user = $1",
+        [id_user]
+      );
+
+      if (userCheck.rows.length === 0) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // 3. Prevent self-deletion
+      if (req.user.id_user === parseInt(id_user)) {
+        return res
+          .status(400)
+          .json({ message: "Cannot delete your own account" });
+      }
+
+      // 4. Check for salon ownership
+      const salonCheck = await pool.query(
+        "SELECT id_salon FROM Users WHERE id_user = $1 AND id_salon IS NOT NULL",
+        [id_user]
+      );
+
+      if (salonCheck.rows.length > 0) {
+        return res.status(400).json({
+          message: "User owns a salon. Transfer salon ownership first.",
+        });
+      }
+
+      // 5. Delete user
+      await pool.query("DELETE FROM Users WHERE id_user = $1", [id_user]);
+
+      res.json({
+        success: true,
+        message: "User deleted successfully",
+      });
+    } catch (error) {
+      console.error("Delete user error:", error);
+
+      // Handle foreign key constraints
+      if (error.code === "23503") {
+        return res.status(400).json({
+          success: false,
+          message:
+            "User has related records (appointments, etc.). Delete those first.",
+        });
+      }
+
+      res.status(500).json({
+        success: false,
+        message: "Server error during deletion",
+      });
+    }
   }
 }
 

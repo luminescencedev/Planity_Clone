@@ -8,9 +8,15 @@ export default function Account() {
   const router = useRouter();
   const { token, logout } = useContext(AuthContext);
   const [user, setUser] = useState(null);
+  const [users, setUsers] = useState([]);
+  const [usersLoading, setUsersLoading] = useState(false);
+  const [usersError, setUsersError] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const [selectedSection, setSelectedSection] = useState("informations"); // Default to "Mes rendez-vous"
+  const [appointments, setAppointments] = useState([]);
+  const [appointmentsError, setAppointmentsError] = useState(null);
+  const [loadingAppointments, setLoadingAppointments] = useState(false);
   const [message, setMessage] = useState("");
   const [formData, setFormData] = useState({
     first_name: "",
@@ -28,8 +34,37 @@ export default function Account() {
     picture: "", // Ajout du champ picture
   });
 
+  useEffect(() => {
+    const fetchAllUsers = async () => {
+      setUsersLoading(true);
+      setUsersError(null);
+      try {
+        const response = await fetch("http://localhost:3001/admin/users", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.message || "Failed to fetch users");
+        }
+
+        setUsers(data);
+      } catch (err) {
+        setUsersError(err.message);
+      } finally {
+        setUsersLoading(false);
+      }
+    };
+
+    fetchAllUsers();
+  }, [token]);
+
   // Fetch user data from API
   useEffect(() => {
+
     const fetchUserData = async () => {
       try {
         const response = await fetch("http://localhost:3001/account", {
@@ -81,9 +116,46 @@ export default function Account() {
     }
   }, [user]);
 
+
+  
+
   const handleLogout = () => {
     logout(); // Appelle la fonction logout du contexte
     router.push("/login"); // Redirige vers la page de connexion
+  };
+
+  const handleDeleteUser = async (id_user) => {
+    if (!window.confirm(`Are you sure you want to delete user #${id_user}?`)) return;
+  
+    try {
+      const response = await fetch(`http://localhost:3001/api/users/${id_user}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      const result = await response.json();
+  
+      if (!response.ok) {
+        throw new Error(result.message || "Deletion failed");
+      }
+  
+      // Refresh user list
+      fetchAllUsers();
+      setMessage({
+        type: 'success',
+        text: result.message
+      });
+      
+    } catch (error) {
+      setMessage({
+        type: 'error',
+        text: error.message
+      });
+    } finally {
+      setTimeout(() => setMessage(null), 5000);
+    }
   };
 
   // Handle tab switching
@@ -114,8 +186,10 @@ export default function Account() {
 
     try {
       const updates = {};
-      if (formData.first_name !== user.first_name) updates.first_name = formData.first_name;
-      if (formData.last_name !== user.last_name) updates.last_name = formData.last_name;
+      if (formData.first_name !== user.first_name)
+        updates.first_name = formData.first_name;
+      if (formData.last_name !== user.last_name)
+        updates.last_name = formData.last_name;
       if (formData.email !== user.email) updates.mail = formData.email; // Note: backend expects 'mail'
       if (formData.phone !== user.phone) updates.phone = formData.phone;
 
@@ -197,189 +271,366 @@ export default function Account() {
     }
   };
 
+  useEffect(() => {
+  const fetchAppointments = async () => {
+    setLoadingAppointments(true);
+    setAppointmentsError(null);
+
+    try {
+      const response = await fetch("http://localhost:3001/rendez-vous", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Erreur lors de la récupération des rendez-vous");
+      }
+
+      const data = await response.json();
+      setAppointments(data);
+    } catch (err) {
+      console.error("Erreur lors de la récupération des rendez-vous :", err);
+      setAppointmentsError(err.message);
+    } finally {
+      setLoadingAppointments(false);
+    }
+  };
+
+  if (token) {
+    fetchAppointments();
+  }
+}, [token]);
+
   if (loading) return <div>Loading...</div>;
 
   return (
     <div className="container-account">
       <Header />
+      {user && user.role !== "Admin" && (
+        <>
+          <h1 className="page-title">Mon compte</h1>
+          <div className="container">
+            <div className="left">
+              <h2>Mon compte</h2>
 
-      <h1 className="page-title">Mon compte</h1>
-      <div className="container ">
-        <div className="left">
-          <h2>Mon compte</h2>
-          <h4
-            className={selectedSection === "rendez-vous" ? "active" : ""}
-            onClick={() => handleSectionChange("rendez-vous")}
-          >
-            Mes rendez-vous
-          </h4>
-          <h4
-            className={selectedSection === "informations" ? "active" : ""}
-            onClick={() => handleSectionChange("informations")}
-          >
-            Mes informations
-          </h4>
-          <hr />
+              <h4
+                className={selectedSection === "rendez-vous" ? "active" : ""}
+                onClick={() => handleSectionChange("rendez-vous")}
+              >
+                Mes rendez-vous
+              </h4>
+              <h4
+                className={selectedSection === "informations" ? "active" : ""}
+                onClick={() => handleSectionChange("informations")}
+              >
+                Mes informations
+              </h4>
+              <hr />
 
-          {user && user.role === "Coiffeur" && (
-            <button onClick={() => setShowSalonForm(!showSalonForm)}>
-              {showSalonForm ? "Annuler la création" : "Créer un salon"}
-            </button>
-          )}
+              {user && user.role === "Coiffeur" && (
+                <button onClick={() => setShowSalonForm(!showSalonForm)}>
+                  {showSalonForm ? "Annuler la création" : "Créer un salon"}
+                </button>
+              )}
 
-          <button id="logout-submit" onClick={handleLogout}>
-            Se déconnecter
-          </button>
-        </div>
-
-        {message && <div className="message">{message}</div>}
-
-        <div className="right">
-          {selectedSection === "rendez-vous" && (
-            <div className="box">
-              <h2>Mes Rendez-Vous à venir</h2>
-              <p>Vous n'avez pas encore pris de rendez-vous</p>
-              <button id="rdv-submit" onClick={() => router.push("/categories/Coiffeur")}>
-                Prendre RDV
+              <button id="logout-submit" onClick={handleLogout}>
+                Se déconnecter
               </button>
+            </div>
+
+            {message && <div className="message">{message}</div>}
+
+            <div className="right">
+              {selectedSection === "rendez-vous" && (
+                <div className="box">
+              <h2>Mes Rendez-Vous</h2>
+              {loadingAppointments ? (
+                <p>Chargement des rendez-vous...</p>
+              ) : appointmentsError ? (
+                <p style={{ color: "red" }}>{appointmentsError}</p>
+              ) : appointments.length > 0 ? (
+                <ul>
+                  {appointments.map((rdv) => (
+                    <li key={rdv.id_rendezvous}>
+                      <p>
+                        <strong>Date :</strong> {new Date(rdv.date).toLocaleDateString()}
+                      </p>
+                      <p>
+                        <strong>Heure :</strong> {rdv.time}
+                      </p>
+                      <p>
+                        <strong>Salon :</strong> {rdv.salon_name}
+                      </p>
+                      <p>
+                        <strong>Service :</strong> {rdv.service_name}
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>Vous n'avez pas encore pris de rendez-vous.</p>
+              )}
             </div>
           )}
 
           {selectedSection === "informations" && (
             <div className="box">
-              <h2>Mes coordonnées</h2>
-              <form onSubmit={handleSubmit}>
-                <div className="form-group">
-                  <label>Prénom *</label>
-                  <input type="text" name="first_name" value={formData.first_name} onChange={handleChange} required />
-                </div>
+              <h2>Mes informations</h2>
+                  <form onSubmit={handleSubmit}>
+                    <div className="form-group">
+                      <label>Prénom *</label>
+                      <input
+                        type="text"
+                        name="first_name"
+                        value={formData.first_name}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
 
-                <div className="form-group">
-                  <label>Nom *</label>
-                  <input type="text" name="last_name" value={formData.last_name} onChange={handleChange} required />
-                </div>
+                    <div className="form-group">
+                      <label>Nom *</label>
+                      <input
+                        type="text"
+                        name="last_name"
+                        value={formData.last_name}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
 
-                <div className="form-group">
-                  <label>Email *</label>
-                  <input type="email" name="email" value={formData.email} onChange={handleChange} required />
-                </div>
+                    <div className="form-group">
+                      <label>Email *</label>
+                      <input
+                        type="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
 
-                <div className="form-group">
-                  <label>Téléphone *</label>
-                  <input type="tel" name="phone" value={formData.phone} onChange={handleChange} pattern="[0-9]{10}" title="Numéro à 10 chiffres" />
-                </div>
+                    <div className="form-group">
+                      <label>Téléphone *</label>
+                      <input
+                        type="tel"
+                        name="phone"
+                        value={formData.phone}
+                        onChange={handleChange}
+                        pattern="[0-9]{10}"
+                        title="Numéro à 10 chiffres"
+                      />
+                    </div>
 
-                <div className="button-group">
-                  <button type="button" onClick={() => setFormData(user)}>
-                    Annuler
-                  </button>
-                  <button id="save-submit" type="submit">
-                    Enregistrer
-                  </button>
+                    <div className="button-group">
+                      <button type="button" onClick={() => setFormData(user)}>
+                        Annuler
+                      </button>
+                      <button id="save-submit" type="submit">
+                        Enregistrer
+                      </button>
+                    </div>
+                  </form>
                 </div>
-              </form>
+              )}
+
+              {showSalonForm && user.role === "Coiffeur" && (
+                <div className="box">
+                  <h2>Créer un salon de coiffure</h2>
+                  <form onSubmit={handleSalonSubmit}>
+                    <div className="form-group">
+                      <label>Nom du salon *</label>
+                      <input
+                        type="text"
+                        name="salon_name"
+                        placeholder="Nom du salon"
+                        value={salonData.salon_name}
+                        onChange={handleSalonChange}
+                        required
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>Adresse *</label>
+                      <input
+                        type="text"
+                        name="address"
+                        placeholder="Adresse"
+                        value={salonData.address}
+                        onChange={handleSalonChange}
+                        required
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>Ville *</label>
+                      <input
+                        type="text"
+                        name="city"
+                        placeholder="Ville"
+                        value={salonData.city}
+                        onChange={handleSalonChange}
+                        required
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>Photo du salon (nom du fichier)</label>
+                      <input
+                        type="text"
+                        name="picture"
+                        placeholder="Nom de l'image"
+                        value={salonData.picture}
+                        onChange={handleSalonChange}
+                        required
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label>Description</label>
+                      <textarea
+                        name="description"
+                        placeholder="Description"
+                        value={salonData.description}
+                        onChange={handleSalonChange}
+                        required
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label>Catégorie *</label>
+                      <select
+                        name="id_category"
+                        value={salonData.id_category}
+                        onChange={handleSalonChange}
+                        required
+                      >
+                        <option value="">Sélectionner une catégorie</option>
+                        <option value="1">Coiffeur</option>
+                        <option value="2">Barbier</option>
+                        <option value="3">Manucure</option>
+                      </select>
+                    </div>
+
+                    <div className="button-group">
+                      <button
+                        type="button"
+                        onClick={() => setShowSalonForm(false)}
+                      >
+                        Annuler
+                      </button>
+                      <button id="salon-submit" type="submit">
+                        Créer le salon
+                      </button>
+                    </div>
+                  </form>
+                  {message && <p>{message}</p>}
+                </div>
+              )}
             </div>
-          )}
+          </div>
+        </>
+      )}{" "}
+      : user && user.role === "Admin" ? (
+      <>
+        {/* Admin Control Panel */}
+        <h1 className="page-title">Admin Dashboard</h1>
+        <div className="admin-panel">
+          <div className="admin-nav">
+            <button
+              className={selectedSection === "users" ? "active" : ""}
+              onClick={() => handleSectionChange("users")}
+            >
+              Manage Users
+            </button>
+            <button
+              className={selectedSection === "salons" ? "active" : ""}
+              onClick={() => handleSectionChange("salons")}
+            >
+              Manage Salons
+            </button>
+            <button
+              className={selectedSection === "reviews" ? "active" : ""}
+              onClick={() => handleSectionChange("reviews")}
+            >
+              Manage Reviews
+            </button>
+          </div>
 
-          {showSalonForm && user.role === "Coiffeur" && (
-            <div className="box">
-              <h2>Créer un salon de coiffure</h2>
-              <form onSubmit={handleSalonSubmit}>
-                <div className="form-group">
-                  <label>Nom du salon *</label>
-                  <input
-                    type="text"
-                    name="salon_name"
-                    placeholder="Nom du salon"
-                    value={salonData.salon_name}
-                    onChange={handleSalonChange}
-                    required
-                  />                
-                </div>
-                <div className="form-group">
-                  <label>Adresse *</label>
-                  <input
-                    type="text"
-                    name="address"
-                    placeholder="Adresse"
-                    value={salonData.address}
-                    onChange={handleSalonChange}
-                    required
-                  />                
-                </div>
-                <div className="form-group">
-                  <label>Ville *</label>
-                  <select
-                    name="city"
-                    value={salonData.city}
-                    onChange={handleSalonChange}
-                    required
-                  >
-                    <option value="" disabled>Sélectionnez une ville</option>
-                    <option value="Paris">Paris</option>
-                    <option value="Lyon">Lyon</option>
-                    <option value="Marseille">Marseille</option>
-                    <option value="Bordeaux">Bordeaux</option>
-                    <option value="Nice">Nice</option>
-                    <option value="Toulouse">Toulouse</option>
-                    <option value="Lille">Lille</option>
-                    <option value="Nantes">Nantes</option>
-                    <option value="Strasbourg">Strasbourg</option>
-                  </select>
-                </div>
-                <div className="form-group">
-                  <label>Photo du salon (nom du fichier)</label>
-                  <input
-                    type="text"
-                    name="picture"
-                    placeholder="Nom de l'image"
-                    value={salonData.picture}
-                    onChange={handleSalonChange}
-                    required
-                  />
-                </div>
+          <div className="admin-content">
+            {selectedSection === "users" && (
+              <div className="admin-section">
+                <h2>User Management</h2>
+                {/* Add user management functionality here */}
+                <p>List of all users with edit/delete options</p>
+                <table className="admin-table">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Role</th>
+                      <th>First Name</th>
+                      <th>Last Name</th>
+                      <th>Age</th>
+                      <th>Email</th>
+                      <th>Phone</th>
+                      <th>City</th>
+                      <th>Created At</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {users.map((user) => (
+                      <tr key={user.id_user || user.id}>
+                        <td>{user.id_user || user.id}</td>
+                        <td>{user.role}</td>
+                        <td>{user.first_name}</td>
+                        <td>{user.last_name}</td>
+                        <td>{user.age}</td>
+                        <td>{user.mail || user.email}</td>
+                        <td>{user.phone}</td>
+                        <td>{user.city}</td>
+                        <td>
+                          {new Date(user.created_at).toLocaleDateString()}
+                        </td>
+                        <td>
+                          <button className="edit-btn">Edit</button>
+                          <button
+                            className="delete-btn"
+                            onClick={() =>
+                              handleDeleteUser(user.id_user || user.id)
+                            }
+                          >
+                            Delete
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
 
-                <div className="form-group">
-                  <label>Description</label>
-                  <textarea
-                    name="description"
-                    placeholder="Description"
-                    value={salonData.description}
-                    onChange={handleSalonChange}
-                    required
-                  />
-                </div>
+            {selectedSection === "salons" && (
+              <div className="admin-section">
+                <h2>Salon Management</h2>
+                <p>List of all salons with approval/delete options</p>
+              </div>
+            )}
 
-                <div className="form-group">
-                  <label>Catégorie *</label>
-                  <select
-                    name="id_category"
-                    value={salonData.id_category}
-                    onChange={handleSalonChange}
-                    required
-                  >
-                    <option value="">Sélectionner une catégorie</option>
-                    <option value="1">Coiffeur</option>
-                    <option value="2">Barbier</option>
-                    <option value="3">Manucure</option>
-                  </select>
-                </div>
+            {selectedSection === "reviews" && (
+              <div className="admin-section">
+                <h2>Reviews Management</h2>
+                <p>View and manage all reviews</p>
+              </div>
+            )}
+          </div>
 
-                <div className="button-group">
-                  <button type="button" onClick={() => setShowSalonForm(false)}>
-                    Annuler
-                  </button>
-                  <button id="salon-submit" type="submit">
-                    Créer le salon
-                  </button>
-                </div>
-              </form>
-               {message && <p>{message}</p>}
-            </div>
-          )}
+          <div className="admin-actions">
+            <button onClick={logout} className="admin-logout">
+              Logout
+            </button>
+          </div>
         </div>
-      </div>
-
+      </>
       <Footer />
     </div>
   );

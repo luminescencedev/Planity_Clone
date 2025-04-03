@@ -1,3 +1,14 @@
+const { Pool } = require('pg');
+require('dotenv').config();
+
+const pool = new Pool({
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  port: process.env.DB_PORT,
+});
+
 const express = require('express');
 const Category = require('./models/category');
 const User = require('./models/user');
@@ -67,6 +78,22 @@ app.get('/account', authenticate, async (req, res) => {
       error: "Internal server error",
       ...(process.env.NODE_ENV === 'development' && { details: error.message })
     });
+  }
+});
+
+
+// In your backend routes
+app.get('/admin/users', async (req, res) => {
+  try {
+    // Call your existing model method
+    const users = await User.getAllUsers(req, res);
+    // No need for res.json() here since getAllUsers already sends the response
+  } catch (error) {
+    console.error('Route handler error:', error);
+    // Fallback error if model doesn't handle it
+    if (!res.headersSent) {
+      res.status(500).json({ error: 'Erreur serveur' });
+    }
   }
 });
 
@@ -352,24 +379,27 @@ app.get('/rendez-vous', authenticate, async (req, res) => {
     const userId = req.user.id;
     console.log('User ID:', userId);
 
-    // Vérification de la connexion à la base de données
-    console.log('Connexion à la base de données');
-    const result = await pool.query(
-      'SELECT * FROM rendez_vous WHERE id_user = $1 ORDER BY date ASC',
+     const result = await pool.query(
+      `SELECT rv.id_rendezvous, rv.date, rv.time, s.name AS salon_name, srv.description AS service_name
+       FROM Rendez_vous rv
+       JOIN Salons s ON rv.id_salon = s.id_salon
+       JOIN Services srv ON rv.id_service = srv.id_service
+       WHERE rv.id_user = $1
+       ORDER BY rv.date ASC, rv.time ASC`,
       [userId]
     );
 
     const appointments = result.rows;
-    console.log('Appointments:', appointments); // Affiche les rendez-vous récupérés
+    console.log('Appointments:', appointments);
 
     if (appointments.length === 0) {
       return res.status(404).json({ message: 'Aucun rendez-vous trouvé' });
     }
 
-    return res.json(appointments); // Retourne les rendez-vous en JSON
+    return res.json(appointments);
   } catch (err) {
-    console.error('Erreur lors de la récupération des rendez-vous:', err); // Ajoutez plus d'informations sur l'erreur
-    return res.status(500).json({ error: 'Erreur serveur lors de la récupération des rendez-vous' });
+    console.error('Erreur lors de la récupération des rendez-vous:', err);
+    return res.status(500).json({ error: 'Erreur serveur', details: err.message });
   }
 });
 
@@ -377,36 +407,53 @@ app.get('/rendez-vous', authenticate, async (req, res) => {
 
 // /createSalon (Admin, Salon Owner) 
 
-app.post("/rendez-vous", async (req, res) => {
+app.post("/rendez-vous", authenticate, async (req, res) => {
   const { userId, salonId, serviceId, date, time } = req.body;
+
   if (!userId || !salonId || !serviceId || !date || !time) {
-      return res.status(400).json({ error: "Tous les champs sont requis !" });
+    return res.status(400).json({ error: "Tous les champs sont requis !" });
   }
 
   try {
-      const createdAt = new Date();
-      const updatedAt = new Date();
+    // Vérifiez si l'utilisateur existe
+    const userExists = await pool.query('SELECT id_user FROM Users WHERE id_user = $1', [userId]);
+    if (userExists.rows.length === 0) {
+      return res.status(404).json({ error: "Utilisateur non trouvé" });
+    }
 
-      console.log("Données reçues pour la réservation:", {
-          userId, salonId, serviceId, date, time
-      });
+    // Vérifiez si le salon existe
+    const salonExists = await pool.query('SELECT id_salon FROM Salons WHERE id_salon = $1', [salonId]);
+    if (salonExists.rows.length === 0) {
+      return res.status(404).json({ error: "Salon non trouvé" });
+    }
 
-      const newRdv = await RendezVous.createRendezVousClient({
-          date, 
-          time,
-          created_at: createdAt, 
-          updated_at: updatedAt, 
-          id_salon: salonId, 
-          id_user: userId, 
-          id_service: serviceId  
-      });
+    // Vérifiez si le service existe
+    const serviceExists = await pool.query('SELECT id_service FROM Services WHERE id_service = $1', [serviceId]);
+    if (serviceExists.rows.length === 0) {
+      return res.status(404).json({ error: "Service non trouvé" });
+    }
 
-      res.status(201).json(newRdv);
+    const createdAt = new Date();
+    const updatedAt = new Date();
 
+    console.log("Données reçues pour la réservation:", {
+      userId, salonId, serviceId, date, time,
+    });
+
+    const newRdv = await RendezVous.createRendezVousClient({
+      date,
+      time,
+      created_at: createdAt,
+      updated_at: updatedAt,
+      id_salon: salonId,
+      id_user: userId,
+      id_service: serviceId,
+    });
+
+    res.status(201).json(newRdv);
   } catch (error) {
     console.error("Erreur lors de la réservation:", error.message);
-      console.error("Détails de l'erreur complète:", error);
-      res.status(500).json({ error: "Erreur serveur" });
+    res.status(500).json({ error: "Erreur serveur", details: error.message });
   }
 });
 // backend.js (ou un fichier de routes dans ton backend Node.js)
@@ -518,6 +565,58 @@ app.delete('/deleteSalon/:id', authenticate, async (req, res) => {
         res.status(500).json({ error: error.message })
     }
 })
+
+app.delete('/deleteUser/:id', authenticate, async (req, res) => {
+  const userId = req.params.id;
+  const currentUser = req.user; // From your auth middleware
+
+  try {
+      // 1. Verify user exists
+      const user = await pool.query(
+          'SELECT id_user, role FROM Users WHERE id_user = $1', 
+          [userId]
+      );
+      
+      if (user.rows.length === 0) {
+          return res.status(404).json({ error: "User not found" });
+      }
+
+      // 2. Prevent self-deletion
+      if (currentUser.id_user === parseInt(userId)) {
+          return res.status(400).json({ error: "Cannot delete your own account" });
+      }
+
+      // 3. Check if user owns a salon
+      const salonResult = await pool.query(
+          'SELECT id_salon FROM Users WHERE id_user = $1 AND id_salon IS NOT NULL',
+          [userId]
+      );
+      
+      if (salonResult.rows.length > 0) {
+          return res.status(400).json({ 
+              error: "User owns a salon. Transfer ownership first." 
+          });
+      }
+
+      // 4. Delete user
+      await pool.query('DELETE FROM Users WHERE id_user = $1', [userId]);
+
+      res.status(204).send();
+  } catch (error) {
+      console.error(`Error deleting user ${userId}:`, error);
+      
+      // Handle foreign key constraint
+      if (error.code === '23503') {
+          return res.status(400).json({ 
+              error: "User has related records (appointments, etc.)" 
+          });
+      }
+      
+      res.status(500).json({ 
+          error: error.message || "Failed to delete user" 
+      });
+  }
+});
 
 
 // ROUTE : Inscription

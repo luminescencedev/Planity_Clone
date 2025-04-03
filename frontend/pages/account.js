@@ -10,14 +10,15 @@ export default function Account() {
   const [user, setUser] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
-  const [isEditing, setIsEditing] = useState(false);
+  const [selectedSection, setSelectedSection] = useState("rendez-vous"); // Default to "Mes rendez-vous"
+  const [message, setMessage] = useState("");
+
   const [formData, setFormData] = useState({
     first_name: "",
     last_name: "",
     email: "",
     phone: "",
   });
-  const [message, setMessage] = useState("");
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -37,12 +38,6 @@ export default function Account() {
         }
 
         setUser(data);
-        setFormData({
-          first_name: data.first_name || "",
-          last_name: data.last_name || "",
-          email: data.email || "",
-          phone: data.phone || "",
-        });
       } catch (err) {
         console.error("Full fetch error:", err);
         setError(err.message);
@@ -58,6 +53,32 @@ export default function Account() {
       setError("No authentication token found");
     }
   }, [token]);
+
+  // Update formData when user data is fetched
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        first_name: user.first_name || "",
+        last_name: user.last_name || "",
+        email: user.email || "",
+        phone: user.phone || "",
+      });
+    }
+  }, [user]);
+
+  const handleSectionChange = (section) => {
+    setSelectedSection(section);
+
+    // Ensure form remains pre-filled when switching to "Mes informations"
+    if (section === "informations" && user) {
+      setFormData({
+        first_name: user.first_name || "",
+        last_name: user.last_name || "",
+        email: user.email || "",
+        phone: user.phone || "",
+      });
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -84,7 +105,7 @@ export default function Account() {
 
       setUser(data);
       setMessage("Profil mis à jour avec succès!");
-      setIsEditing(false);
+
       setTimeout(() => setMessage(""), 3000);
     } catch (error) {
       setMessage(`Erreur: ${error.message}`);
@@ -101,114 +122,130 @@ export default function Account() {
       <h1 className="page-title">Mon compte</h1>
       <div className="container">
         <div className="left">
+          <div>
           <h2>Mon compte</h2>
-          <h3>Mes rendez-vous</h3>
-          <h3>Mes informations</h3>
-          <button id="logout-submit" onClick={logout}>Déconnexion</button>
+          </div>
+          <div>
+          <h4
+            className={selectedSection === "rendez-vous" ? "active" : ""}
+            onClick={() => handleSectionChange("rendez-vous")}
+          >
+            Mes rendez-vous
+          </h4>
+          </div>
+          <div>
+          <h4
+            className={selectedSection === "informations" ? "active" : ""}
+            onClick={() => handleSectionChange("informations")}
+          >
+            Mes informations
+          </h4>
+          </div>
+          <hr />
+
+          <button id="logout-submit" onClick={logout}>
+            Se déconnecter
+          </button>
         </div>
 
         {message && <div>{message}</div>}
 
         <div className="right">
-          <div className="box">
-            <div className="rendez-vous">
-              <h2>Mes Rendez-Vous à venir</h2>
-              <p>Vous n'avez pas encore pris de rendez-vous</p>
-              <button id="rdv-submit" onClick={() => router.push("/categories/Coiffeur")}>
-                Prendre RDV
-              </button>
+          {selectedSection === "rendez-vous" && (
+            <div className="box">
+              <div className="rendez-vous">
+                <h2>Mes Rendez-Vous à venir</h2>
+                <p>Vous n'avez pas encore pris de rendez-vous</p>
+                <button
+                  id="rdv-submit"
+                  onClick={() => router.push("/categories/Coiffeur")}
+                >
+                  Prendre RDV
+                </button>
+              </div>
             </div>
-          </div>
+          )}
 
-          <div className="box">
-            <div className="user-infos">
-              <h2>Mes coordonnées</h2>
-              <form onSubmit={handleSubmit}>
-                <div className="form-row">
-                  <div className="form-group">
-                    <label htmlFor="first_name">Prénom</label>
-                    <input
-                      type="text"
-                      id="first_name"
-                      name="first_name"
-                      value={formData.first_name}
-                      onChange={handleChange}
-                      disabled={!isEditing}
-                      required
-                    />
+          {selectedSection === "informations" && (
+            <div className="box">
+              <div className="user-infos">
+                <h2>Mes coordonnées</h2>
+                <form onSubmit={handleSubmit}>
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label htmlFor="first_name">Prénom *</label>
+                      <input
+                        type="text"
+                        id="first_name"
+                        name="first_name"
+                        value={formData.first_name}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label htmlFor="last_name">Nom *</label>
+                      <input
+                        type="text"
+                        id="last_name"
+                        name="last_name"
+                        value={formData.last_name}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
                   </div>
 
-                  <div className="form-group">
-                    <label htmlFor="last_name">Nom</label>
-                    <input
-                      type="text"
-                      id="last_name"
-                      name="last_name"
-                      value={formData.last_name}
-                      onChange={handleChange}
-                      disabled={!isEditing}
-                      required
-                    />
-                  </div>
-                </div>
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label htmlFor="email">Email *</label>
+                      <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
 
-                <div className="form-row">
-                  <div className="form-group">
-                    <label htmlFor="email">Email</label>
-                    <input
-                      type="email"
-                      id="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      disabled={!isEditing}
-                      required
-                    />
+                    <div className="form-group">
+                      <label htmlFor="phone">Téléphone *</label>
+                      <input
+                        type="tel"
+                        id="phone"
+                        name="phone"
+                        value={formData.phone}
+                        onChange={handleChange}
+                        pattern="[0-9]{10}"
+                        title="Numéro à 10 chiffres"
+                      />
+                    </div>
                   </div>
 
-                  <div className="form-group">
-                    <label htmlFor="phone">Téléphone</label>
-                    <input
-                      type="tel"
-                      id="phone"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleChange}
-                      disabled={!isEditing}
-                      pattern="[0-9]{10}"
-                      title="Numéro à 10 chiffres"
-                    />
-                  </div>
-                </div>
-
-                <div className="button-group">
-                  {isEditing ? (
-                    <>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setIsEditing(false);
-                          setFormData({
-                            first_name: user.first_name || "",
-                            last_name: user.last_name || "",
-                            email: user.email || "",
-                            phone: user.phone || "",
-                          });
-                        }}
-                      >
-                        Annuler
-                      </button>
-                      <button id="save-submit" type="submit">Enregistrer</button>
-                    </>
-                  ) : (
-                    <button id="cancel-submit" type="button" onClick={() => setIsEditing(true)}>
-                      Modifier
+                  <div className="button-group">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setFormData({
+                          first_name: user.first_name || "",
+                          last_name: user.last_name || "",
+                          email: user.email || "",
+                          phone: user.phone || "",
+                        });
+                      }}
+                    >
+                      Annuler
                     </button>
-                  )}
-                </div>
-              </form>
+                    <button id="save-submit" type="submit">
+                      Enregistrer
+                    </button>
+                  </div>
+                </form>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
       <Footer />

@@ -292,15 +292,16 @@ export default function Account() {
                 Mes informations
               </h4>
               <hr />
-              <button id="logout-submit" onClick={logout}>
-                Se déconnecter
-              </button>
 
               {user && user.role === "Coiffeur" && (
                 <button onClick={() => setShowSalonForm(!showSalonForm)}>
                   {showSalonForm ? "Annuler la création" : "Créer un salon"}
                 </button>
               )}
+
+              <button id="logout-submit" onClick={handleLogout}>
+                Se déconnecter
+              </button>
             </div>
 
             {message && <div className="message">{message}</div>}

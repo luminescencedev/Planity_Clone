@@ -350,6 +350,13 @@ app.post("/rendez-vous", async (req, res) => {
       });
 
       res.status(201).json(newRdv);
+
+  } catch (error) {
+    console.error("Erreur lors de la réservation:", error.message);
+      console.error("Détails de l'erreur complète:", error);
+      res.status(500).json({ error: "Erreur serveur" });
+  }
+});
 // backend.js (ou un fichier de routes dans ton backend Node.js)
 
 app.post('/salon/:id_salon/reviews', authenticate, async (req, res) => {
@@ -372,9 +379,6 @@ app.post('/salon/:id_salon/reviews', authenticate, async (req, res) => {
     });
     res.status(201).json(newReview);
   } catch (error) {
-      console.error("Erreur lors de la réservation:", error.message);
-      console.error("Détails de l'erreur complète:", error);
-      res.status(500).json({ error: "Erreur serveur" });
     console.error("Error creating review:", error);
     if (error.code === '23503') { // Foreign key violation
       return res.status(404).json({ error: "Salon not found" });
@@ -384,11 +388,6 @@ app.post('/salon/:id_salon/reviews', authenticate, async (req, res) => {
 });
 
 
-
-
-
-
-}); 
 
 
 

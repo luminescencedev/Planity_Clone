@@ -15,6 +15,9 @@ export default function Account() {
   const [usersLoading, setUsersLoading] = useState(false);
   const [usersError, setUsersError] = useState(null);
   const [error, setError] = useState("");
+  const [reviews, setReviews] = useState([]);
+const [reviewsLoading, setReviewsLoading] = useState(false);
+const [reviewsError, setReviewsError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedSection, setSelectedSection] = useState("informations"); // Default to "Mes rendez-vous"
   const [appointments, setAppointments] = useState([]);
@@ -93,6 +96,58 @@ export default function Account() {
     fetchAllSalons();
   }, [token]);
 
+  const fetchReviews = async () => {
+    setReviewsLoading(true);
+    try {
+      const response = await fetch('http://localhost:3001/allReviews');
+      const data = await response.json();
+      setReviews(data);
+      setReviewsError(null);
+    } catch (error) {
+      setReviewsError(error.message);
+    } finally {
+      setReviewsLoading(false);
+    }
+  };
+  
+  // Delete review function
+  const handleDeleteReview = async (reviewId) => {
+    if (window.confirm('Are you sure you want to delete this review?')) {
+      try {
+        const token = localStorage.getItem('token'); // or your token storage method
+        
+        const response = await fetch(`http://localhost:3001/reviews/${reviewId}`, {
+          method: "DELETE",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+          }
+        });
+  
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+  
+        const data = await response.json();
+        
+        if (data.success) {
+          setReviews(reviews.filter(review => review.id_review !== reviewId));
+        } else {
+          console.error('Failed to delete review:', data.message);
+        }
+        
+      } catch (error) {
+        console.error('Error deleting review:', error);
+        // Optionally show error to user
+        alert('Failed to delete review. Please try again.');
+      }
+    }
+  };
+  
+  // Call fetchReviews in useEffect
+  useEffect(() => {
+    fetchReviews();
+  }, []);
   // Fetch user data from API
   useEffect(() => {
 
@@ -738,12 +793,60 @@ export default function Account() {
               </div>
             )}
 
-            {selectedSection === "reviews" && (
-              <div className="admin-section">
-                <h2>Reviews Management</h2>
-                <p>View and manage all reviews</p>
-              </div>
-            )}
+{selectedSection === "reviews" && (
+  <div className="admin-section">
+    <h2>Review Management</h2>
+    {reviewsLoading ? (
+      <p>Loading reviews...</p>
+    ) : reviewsError ? (
+      <p className="error">Error: {reviewsError}</p>
+    ) : (
+      <table className="admin-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Rating</th>
+            <th>Description</th>
+            <th>Salon</th>
+            <th>Created At</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {reviews.map((review) => (
+            <tr key={review.id_review}>
+              <td>{review.id_review}</td>
+              <td>
+                {Array.from({ length: review.rating }).map((_, i) => (
+                  <span key={i}>★</span>
+                ))}
+              </td>
+              <td className="review-description">
+                {review.description.length > 50
+                  ? `${review.description.substring(0, 50)}...`
+                  : review.description}
+              </td>
+              <td>
+                {salons.find(s => s.id_salon === review.id_salon)?.name || 'Unknown Salon'}
+              </td>
+              <td>
+                {new Date(review.created_at).toLocaleDateString()}
+              </td>
+              <td>
+                <button
+                  className="delete-btn"
+                  onClick={() => handleDeleteReview(review.id_review)}
+                >
+                  Delete
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    )}
+  </div>
+)}
           </div>
 
           <div className="admin-actions">

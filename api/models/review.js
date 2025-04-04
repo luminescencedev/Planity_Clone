@@ -99,8 +99,15 @@ class Reviews {
   }
 
   static async deleteReview(id) {
-    const result = await pool.query("DELETE FROM Reviews WHERE id_Reviews = $1 RETURNING *", [id]);
-    return result.rows[0] || null;
+    try {
+      const result = await pool.query(
+        "DELETE FROM Reviews WHERE id_review = $1 RETURNING *", 
+        [id]
+      );
+      return result.rows[0] || null;
+    } catch (error) {
+      throw error;
+    }
   }
 }
 

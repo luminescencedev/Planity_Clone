@@ -7,6 +7,9 @@ import Footer from "../component/footer";
 export default function Account() {
   const router = useRouter();
   const { token, logout } = useContext(AuthContext);
+  const [salons, setSalons] = useState([]);
+  const [salonsLoading, setSalonsLoading] = useState(false);
+  const [salonsError, setSalonsError] = useState(null);
   const [user, setUser] = useState(null);
   const [users, setUsers] = useState([]);
   const [usersLoading, setUsersLoading] = useState(false);
@@ -59,9 +62,36 @@ export default function Account() {
     fetchAllUsers();
   }, [token]);
 
+  useEffect(() => {
+    const fetchAllSalons = async () => {
+      setSalonsLoading(true);
+      setSalonsError(null);
+      try {
+        const response = await fetch("http://localhost:3001/allSalons", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.message || "Failed to fetch salons");
+        }
+
+        setSalons(data);
+      } catch (err) {
+        setSalonsError(err.message);
+      } finally {
+        setSalonsLoading(false);
+      }
+    };
+
+    fetchAllSalons();
+  }, [token]);
+
   // Fetch user data from API
   useEffect(() => {
-
     const fetchUserData = async () => {
       try {
         const response = await fetch("http://localhost:3001/account", {
@@ -113,41 +143,73 @@ export default function Account() {
     }
   }, [user]);
 
-  
-
   const handleLogout = () => {
     logout(); // Appelle la fonction logout du contexte
     router.push("/login"); // Redirige vers la page de connexion
   };
 
   const handleDeleteUser = async (id_user) => {
-    if (!window.confirm(`Are you sure you want to delete user #${id_user}?`)) return;
-  
+    if (!window.confirm(`Are you sure you want to delete user #${id_user}?`))
+      return;
+
     try {
-      const response = await fetch(`http://localhost:3001/api/users/${id_user}`, {
+      const response = await fetch(`http://localhost:3001/users/${id_user}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-  
+
       const result = await response.json();
-  
+
       if (!response.ok) {
         throw new Error(result.message || "Deletion failed");
       }
-  
+
       // Refresh user list
       fetchAllUsers();
       setMessage({
-        type: 'success',
-        text: result.message
+        type: "success",
+        text: result.message,
       });
-      
     } catch (error) {
       setMessage({
-        type: 'error',
-        text: error.message
+        type: "error",
+        text: error.message,
+      });
+    } finally {
+      setTimeout(() => setMessage(null), 5000);
+    }
+  };
+
+  const handleDeleteSalon = async (id_salon) => {
+    if (!window.confirm(`Are you sure you want to delete salon #${id_salon}?`))
+      return;
+
+    try {
+      const response = await fetch(`http://localhost:3001/salons/${id_salon}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Deletion failed");
+      }
+
+      // Refresh user list
+      fetchAllSalons();
+      setMessage({
+        type: "success",
+        text: result.message,
+      });
+    } catch (error) {
+      setMessage({
+        type: "error",
+        text: error.message,
       });
     } finally {
       setTimeout(() => setMessage(null), 5000);
@@ -537,7 +599,6 @@ export default function Account() {
                           {new Date(user.created_at).toLocaleDateString()}
                         </td>
                         <td>
-                          <button className="edit-btn">Edit</button>
                           <button
                             className="delete-btn"
                             onClick={() =>
@@ -557,7 +618,57 @@ export default function Account() {
             {selectedSection === "salons" && (
               <div className="admin-section">
                 <h2>Salon Management</h2>
-                <p>List of all salons with approval/delete options</p>
+                {salonsLoading ? (
+                  <p>Loading salons...</p>
+                ) : salonsError ? (
+                  <p className="error">Error: {salonsError}</p>
+                ) : (
+                  <table className="admin-table">
+                    <thead>
+                      <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Address</th>
+                        <th>City</th>
+                        <th>Category</th>
+                        <th>Owner</th>
+                        <th>Created At</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {salons.map((salon) => (
+                        <tr key={salon.id_salon}>
+                          <td>{salon.id_salon}</td>
+                          <td>{salon.salon_name}</td>
+                          <td>{salon.address}</td>
+                          <td>{salon.city}</td>
+                          <td>
+                            {salon.id_category === 1
+                              ? "Coiffeur"
+                              : salon.id_category === 2
+                              ? "Barbier"
+                              : salon.id_category === 3
+                              ? "Manucure"
+                              : "Other"}
+                          </td>
+                          <td>{salon.id_user || "N/A"}</td>
+                          <td>
+                            {new Date(salon.created_at).toLocaleDateString()}
+                          </td>
+                          <td>
+                            <button
+                              className="delete-btn"
+                              onClick={() => handleDeleteSalon(salon.id_salon)}
+                            >
+                              Delete
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
               </div>
             )}
 

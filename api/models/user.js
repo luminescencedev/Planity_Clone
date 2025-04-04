@@ -276,69 +276,68 @@ class User {
   }
 
   // In your user controller
-  static async deleteUser(req, res) {
-    const id_user = req.params.id; // Using id_user to match your schema
-
+  static async deleteUser(id_user, currentUserId) {
     try {
-      // 1. Verify admin role
-      if (req.user.role !== "Admin") {
-        return res.status(403).json({ message: "Access denied" });
-      }
-
-      // 2. Check if user exists
+      // 1. Check if user exists
       const userCheck = await pool.query(
         "SELECT id_user, role FROM Users WHERE id_user = $1",
         [id_user]
       );
-
+  
       if (userCheck.rows.length === 0) {
-        return res.status(404).json({ message: "User not found" });
+        return { success: false, status: 404, message: "User not found" };
       }
-
-      // 3. Prevent self-deletion
-      if (req.user.id_user === parseInt(id_user)) {
-        return res
-          .status(400)
-          .json({ message: "Cannot delete your own account" });
+  
+      // 2. Prevent self-deletion
+      if (currentUserId === parseInt(id_user)) {
+        return { 
+          success: false, 
+          status: 400, 
+          message: "Cannot delete your own account" 
+        };
       }
-
-      // 4. Check for salon ownership
+  
+      // 3. Check for salon ownership
       const salonCheck = await pool.query(
         "SELECT id_salon FROM Users WHERE id_user = $1 AND id_salon IS NOT NULL",
         [id_user]
       );
-
+  
       if (salonCheck.rows.length > 0) {
-        return res.status(400).json({
-          message: "User owns a salon. Transfer salon ownership first.",
-        });
+        return {
+          success: false,
+          status: 400,
+          message: "User owns a salon. Transfer salon ownership first."
+        };
       }
-
-      // 5. Delete user
+  
+      // 4. Delete user
       await pool.query("DELETE FROM Users WHERE id_user = $1", [id_user]);
-
-      res.json({
+  
+      return {
         success: true,
-        message: "User deleted successfully",
-      });
+        status: 204,
+        message: "User deleted successfully"
+      };
+  
     } catch (error) {
       console.error("Delete user error:", error);
-
+  
       // Handle foreign key constraints
       if (error.code === "23503") {
-        return res.status(400).json({
+        return {
           success: false,
-          message:
-            "User has related records (appointments, etc.). Delete those first.",
-        });
+          status: 400,
+          message: "User has related records. Delete those first."
+        };
       }
-
-      res.status(500).json({
+  
+      return {
         success: false,
-        message: "Server error during deletion",
-      });
+        status: 500,
+        message: "Server error during deletion"
+      };
     }
   }
 }
-
 module.exports = User;

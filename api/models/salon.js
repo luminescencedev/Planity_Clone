@@ -199,7 +199,7 @@ class Salons {
       }
     
       static async deleteSalon(id) {
-        const result = await pool.query("DELETE FROM Salons WHERE id_salon = $1 RETURNING *", [id]);
+        const result = await pool.query("DELETE FROM salons WHERE id_salon = $1 RETURNING *", [id]);
         return result.rows[0] || null;
       }
 

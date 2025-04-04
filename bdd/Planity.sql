@@ -118,7 +118,7 @@ CREATE TABLE public.Users(
     last_name    VARCHAR (50) NOT NULL,
     age          INT NOT NULL,
     mail         VARCHAR (80) NOT NULL UNIQUE,
-    phone        INT NOT NULL UNIQUE,
+    phone        VARCHAR(10) NOT NULL UNIQUE,
     city          VARCHAR (50) NOT NULL,
     password     VARCHAR (255) NOT NULL,
     created_at   DATE NOT NULL,

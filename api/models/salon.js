@@ -83,34 +83,47 @@ class Salons {
       
       static async getSalonByName(name) {
         try {
-          console.log("Tentative de récupération du salon avec le nom :", name); // Log pour vérifier le nom du salon
+          console.log("Tentative de récupération du salon avec le nom :", name);
       
           const result = await pool.query(
-            `SELECT s.*, 
-                    COALESCE(AVG(r.rating), 0) AS moyenne_rating, 
-                    COALESCE(json_agg(r) FILTER (WHERE r.id_review IS NOT NULL), '[]') AS reviews,
-                    COALESCE(json_agg(service) FILTER (WHERE service.id_service IS NOT NULL), '[]') AS services
-             FROM Salons s
-             LEFT JOIN Reviews r ON s.id_salon = r.id_salon
-             LEFT JOIN Services service ON s.id_salon = service.id_salon
-             WHERE LOWER(s.name) = LOWER($1)
-             GROUP BY s.id_salon`,
+            `
+            SELECT 
+              s.*,
+              COALESCE((
+                SELECT AVG(r.rating) 
+                FROM Reviews r 
+                WHERE r.id_salon = s.id_salon
+              ), 0) AS moyenne_rating,
+              COALESCE((
+                SELECT json_agg(r.*) 
+                FROM Reviews r 
+                WHERE r.id_salon = s.id_salon
+              ), '[]') AS reviews,
+              COALESCE((
+                SELECT json_agg(serv.*)
+                FROM Services serv
+                WHERE serv.id_salon = s.id_salon
+              ), '[]') AS services
+            FROM Salons s
+            WHERE LOWER(s.name) = LOWER($1)
+            `,
             [name]
           );
       
-          console.log("Résultat de la requête SQL :", result.rows); // Log pour vérifier ce que la requête retourne
-      
           if (result.rows.length === 0) {
-            console.log("Aucun salon trouvé avec ce nom"); // Log si aucun salon n'est trouvé
-            return { error: "Salon non trouvé" }; // Retourne une erreur explicite
+            console.log("Aucun salon trouvé avec ce nom");
+            return { error: "Salon non trouvé" };
           }
       
-          return result.rows[0]; // Retourne le salon trouvé
+          console.log("Résultat de la requête SQL :", result.rows[0]);
+          return result.rows[0];
+      
         } catch (error) {
-          console.error("Erreur lors de la récupération du salon :", error.message); // Log détaillé de l'erreur
-          return { error: error.message }; // Retourne l'erreur dans le format attendu
+          console.error("Erreur lors de la récupération du salon :", error.message);
+          return { error: error.message };
         }
       }
+      
       
       
       static async getSalonById(salonName) {

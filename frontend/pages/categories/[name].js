@@ -6,7 +6,9 @@ import Footer from '../../component/footer';
 
 export default function Categorie() {
   const router = useRouter();
-  const { name } = router.query;// Récupération du paramètre de catégorie depuis l'URL
+  const [nameSearch, setNameSearch] = useState("");
+  const [localisation, setLocalisation] = useState("");
+  const { name } = router.query;
   const { token } = useContext(AuthContext);
   const [category, setCategory] = useState(null);
   const [error, setError] = useState(null);
@@ -15,6 +17,10 @@ export default function Categorie() {
   // Liste des 9 villes à afficher
   const villes = ["Paris", "Lyon", "Marseille", "Bordeaux", "Nice", "Toulouse", "Lille", "Nantes", "Strasbourg"];
 
+  const handleCat = async (e) => {
+    e.preventDefault();
+    router.push(`/categories/${nameSearch}/${localisation}`);
+  }
   // Attendre que le token soit disponible avec un délai (par exemple 2 secondes)
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -52,16 +58,42 @@ export default function Categorie() {
       <main id="namesalon">
         <Header></Header>
         <h1>Réserver en ligne un RDV avec un {category.name}</h1>
-        <form id="search" >
+        <form onSubmit={handleCat} id="search">
           <label htmlFor="name">
             <span>Que cherchez-vous?</span>
-            <input type="text" id="name" name="name" placeholder="Nom du salon, prestations (coupe...)" />
+            <select 
+              id="name" 
+              name="name" 
+              onChange={(e) => setNameSearch(e.target.value)} 
+              value={nameSearch}
+            >
+              <option value="">Sélectionnez un service</option>
+              <option value="Barbier">Barbier</option>
+              <option value="Coiffeur">Coiffeur</option>
+              <option value="Manucure">Manucure</option>
+            </select>
           </label>
           <label htmlFor="adress">
             <span>Où</span>
-            <input type="text" id="adress" name="adress" placeholder="Adresse, ville..." />
+            <select 
+              id="adress" 
+              name="adress" 
+              onChange={(e) => setLocalisation(e.target.value)} 
+              value={localisation}
+            >
+              <option value="">Sélectionnez une ville</option>
+              <option value="Paris">Paris</option>
+              <option value="Lyon">Lyon</option>
+              <option value="Marseille">Marseille</option>
+              <option value="Bordeaux">Bordeaux</option>
+              <option value="Nice">Nice</option>
+              <option value="Toulouse">Toulouse</option>
+              <option value="Lille">Lille</option>
+              <option value="Nantes">Nantes</option>
+              <option value="Strasbourg">Strasbourg</option>
+            </select>
           </label>
-          <button type="submit">Rechercher</button>
+          <button type="submit" className="cursor-pointer">Rechercher</button>
         </form>
       </main>
       <article id="listeville">

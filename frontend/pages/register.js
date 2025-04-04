@@ -51,6 +51,7 @@ export default function Register() {
                   id="role"
                   className="border border-gray-300 bg-white rounded-md px-4 py-2 focus:outline-none focus:ring-1 focus:ring-black"
                   value={role}
+                  required
                   onChange={(e) => setRole(e.target.value)}
                 >
                   <option value="" disabled>Choisissez un rôle</option>

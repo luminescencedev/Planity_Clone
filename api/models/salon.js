@@ -66,20 +66,27 @@ class Salons {
       }
 
       static async getSalonsByCategoryAndCity(id_category, city) {
-        const result = await pool.query(
-          `SELECT s.*, 
-                  COALESCE(AVG(r.rating), 0) AS moyenne_rating, 
-                  COALESCE(json_agg(r) FILTER (WHERE r.id_review IS NOT NULL), '[]') AS reviews,
-                  COALESCE(json_agg(service) FILTER (WHERE service.id_service IS NOT NULL), '[]') AS services
-           FROM Salons s
-           LEFT JOIN Reviews r ON s.id_salon = r.id_salon
-           LEFT JOIN Services service ON s.id_salon = service.id_salon
-           WHERE s.id_category = $1 AND LOWER(s.city) = LOWER($2)
-           GROUP BY s.id_salon`,
-          [id_category, city]
-        );
-        return result.rows; // renvoie les salons avec leurs services, avis et notes
+        try {
+          const result = await pool.query(
+            `SELECT s.*, 
+                    COALESCE(AVG(r.rating), 0) AS moyenne_rating, 
+                    COALESCE(json_agg(DISTINCT r) FILTER (WHERE r.id_review IS NOT NULL), '[]') AS reviews,
+                    COALESCE(json_agg(DISTINCT service) FILTER (WHERE service.id_service IS NOT NULL), '[]') AS services
+             FROM Salons s
+             LEFT JOIN Reviews r ON s.id_salon = r.id_salon
+             LEFT JOIN Services service ON s.id_salon = service.id_salon
+             WHERE s.id_category = $1 AND LOWER(s.city) = LOWER($2)
+             GROUP BY s.id_salon`,
+            [id_category, city]
+          );
+      
+          return result.rows; // Renvoie les salons avec leurs services, avis et notes
+        } catch (error) {
+          console.error("Erreur lors de la récupération des salons par catégorie et ville :", error.message);
+          throw new Error("Erreur interne lors de la récupération des salons.");
+        }
       }
+      
       
       static async getSalonByName(name) {
         try {

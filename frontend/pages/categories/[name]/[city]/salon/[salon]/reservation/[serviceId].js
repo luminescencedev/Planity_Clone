@@ -2,6 +2,8 @@ import { useRouter } from "next/router";
 import { useEffect, useState, useContext } from "react";
 import AuthContext from "../../../../../../../context/AuthContext";
 import TimePicker from "../../../../../../../component/TimePicker";
+import Header from '../../../../../../../component/header.js';
+import Footer from '../../../../../../../component/footer';
 
 export default function ServiceDescriptionPage() {
   const router = useRouter();
@@ -87,9 +89,11 @@ export default function ServiceDescriptionPage() {
   };
 
   return (
-    <div>
+    <>
+    <Header/>
+    <div id="reserver">
       {console.log("Service Details:", serviceDetails)}
-      <h1>Service : {serviceDetails.description}</h1>
+      <h3>Service : {serviceDetails.description}</h3>
       <p>Prix : {serviceDetails.price} €</p>
       <p>Durée : {serviceDetails.time} min</p>
       <input
@@ -101,5 +105,7 @@ export default function ServiceDescriptionPage() {
         Réserver
       </button>
     </div>
+    <Footer/>
+    </>
   );
 }

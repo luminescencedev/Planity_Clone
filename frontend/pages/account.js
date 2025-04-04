@@ -376,10 +376,13 @@ export default function Account() {
   if (loading) return <div>Loading...</div>;
 
   return (
+    <>
     <div className="container-account">
       <Header />
       {user && user.role !== "Admin" && (
+        
         <>
+        
           <h1 className="page-title">Mon compte</h1>
           <div className="container">
             <div className="left">
@@ -447,6 +450,7 @@ export default function Account() {
 
           {selectedSection === "informations" && (
             <div className="box">
+              <div className="user-info">
               <h2>Mes informations</h2>
                   <form onSubmit={handleSubmit}>
                     <div className="form-group">
@@ -503,6 +507,7 @@ export default function Account() {
                       </button>
                     </div>
                   </form>
+                </div>
                 </div>
               )}
 
@@ -599,9 +604,10 @@ export default function Account() {
             </div>
           </div>
         </>
-      )} : user && user.role === "Admin" ? (
+
+      )}
+       { user && user.role === "Admin" && (
       <>
-        {/* Admin Control Panel */}
         <h1 className="page-title">Admin Dashboard</h1>
         <div className="admin-panel">
           <div className="admin-nav">
@@ -749,7 +755,9 @@ export default function Account() {
           </div>
         </div>
       </>
+)}
       <Footer />
     </div>
+    </> 
   );
 }

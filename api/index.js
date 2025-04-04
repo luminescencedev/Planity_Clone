@@ -582,22 +582,21 @@ app.delete('/users/:id', authenticate, async (req, res) => {
 });
 
 app.delete('/salons/:id', authenticate, async (req, res) => {
-  const salonId = req.params.id;
+  const id_salon = req.params.id;
+  
+  // Verify requester is admin or salon owner
+  
+
   try {
-    const result = await Salon.deleteSalon(salonId);
-    
-    if (result.success) {
-      return res.status(result.status).send();
-    } else {
-      return res.status(result.status).json({ 
-        error: result.message 
-      });
-    }
+      const result = await Salon.deleteSalon(id_salon);
+      return res.status(result.status).json(result);
   } catch (error) {
-    console.error(`Route error deleting salon ${salonId}:`, error);
-    res.status(500).json({ 
-      error: "Unexpected server error" 
-    });
+      console.error(`Error deleting salon ${id_salon}:`, error);
+      return res.status(500).json({
+          success: false,
+          message: "Internal server error",
+          details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      });
   }
 });
 

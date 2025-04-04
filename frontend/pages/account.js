@@ -190,39 +190,44 @@ export default function Account() {
   };
 
   const handleDeleteSalon = async (id_salon) => {
-    if (!window.confirm(`Are you sure you want to delete salon #${id_salon}?`))
-      return;
+    if (!window.confirm(`This will permanently delete the salon and ALL its associated data (services, appointments, reviews). Users associated with this salon will have their salon reference removed. Continue?`)) {
+        return;
+    }
 
     try {
-      const response = await fetch(`http://localhost:3001/salons/${id_salon}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+        const response = await fetch(`http://localhost:3001/salons/${id_salon}`, {
+            method: "DELETE",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json"
+            }
+        });
 
-      const result = await response.json();
+        const result = await response.json();
 
-      if (!response.ok) {
-        throw new Error(result.message || "Deletion failed");
-      }
+        if (!response.ok || !result.success) {
+            throw new Error(result.message || "Failed to delete salon");
+        }
 
-      // Refresh user list
-      fetchAllSalons();
-      setMessage({
-        type: "success",
-        text: result.message,
-      });
+        // Optimistically update all related state
+        setSalons(prev => prev.filter(s => s.id_salon !== id_salon));
+        
+        
+        setMessage({
+            type: "success",
+            text: result.message
+        });
+        
     } catch (error) {
-      setMessage({
-        type: "error",
-        text: error.message,
-      });
+        console.error("Delete error:", error);
+        setMessage({
+            type: "error",
+            text: error.message || "An unexpected error occurred"
+        });
     } finally {
-      setTimeout(() => setMessage(null), 5000);
+        setTimeout(() => setMessage(null), 5000);
     }
-  };
-
+};
   // Handle tab switching
   const handleSectionChange = (section) => {
     setSelectedSection(section);
@@ -594,8 +599,7 @@ export default function Account() {
             </div>
           </div>
         </>
-      )}{" "}
-      : user && user.role === "Admin" ? (
+      )} : user && user.role === "Admin" ? (
       <>
         {/* Admin Control Panel */}
         <h1 className="page-title">Admin Dashboard</h1>
@@ -626,7 +630,7 @@ export default function Account() {
               <div className="admin-section">
                 <h2>User Management</h2>
                 {/* Add user management functionality here */}
-                <p>List of all users with edit/delete options</p>
+                <p>List of all users with delete options</p>
                 <table className="admin-table">
                   <thead>
                     <tr>

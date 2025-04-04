@@ -91,140 +91,11 @@ class User {
     return result.rows[0];
   }
 
-  static async getUserByName(last_name) {
-    const result = await pool.query(
-      "SELECT * FROM Users WHERE last_name = $1",
-      [last_name]
-    );
-    return result.rows[0];
-  }
-
   static async findById(id) {
     const result = await pool.query("SELECT * FROM Users WHERE id_user = $1", [
       id,
     ]);
     return result.rows[0] || null;
-  }
-
-  static async getUserByFirstName(first_name) {
-    const result = await pool.query(
-      "SELECT * FROM Users WHERE first_name = $1",
-      [first_name]
-    );
-    return result.rows[0];
-  }
-
-  static async getUserByAge(age) {
-    const result = await pool.query("SELECT * FROM Users WHERE age = $1", [
-      age,
-    ]);
-    return result.rows[0];
-  }
-
-  static async getUserByPhone(phone) {
-    const result = await pool.query("SELECT * FROM Users WHERE phone = $1", [
-      phone,
-    ]);
-    return result.rows[0];
-  }
-
-  static async getCoiffeursBySalon(id_salon) {
-    const result = await pool.query("SELECT * FROM Users WHERE id_salon = $1", [
-      id_salon,
-    ]);
-    return result.rows;
-  }
-
-  static async createCoiffeurInSalon({
-    role,
-    first_name,
-    last_name,
-    age,
-    mail,
-    phone,
-    city,
-    password,
-    created_at,
-    updated_at,
-    id_cookie,
-    id_privacy,
-    id_salon,
-  }) {
-    const result = await pool.query(
-      "INSERT INTO Users (role, first_name, last_name, age, mail, phone, city, password, created_at, updated_at, id_cookie, id_privacy, id_salon) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING *",
-      [
-        role,
-        first_name,
-        last_name,
-        age,
-        mail,
-        phone,
-        city,
-        password,
-        created_at,
-        updated_at,
-        id_cookie,
-        id_privacy,
-        id_salon,
-      ]
-    );
-    return result.rows[0];
-  }
-
-  static async updateUser(
-    id,
-    {
-      role,
-      first_name,
-      last_name,
-      age,
-      mail,
-      phone,
-      city,
-      password,
-      created_at,
-      updated_at,
-      id_cookie,
-      id_privacy,
-      id_salon,
-    }
-  ) {
-    const result = await pool.query(
-      "UPDATE Users SET role = $1, first_name = $2, last_name = $3, age = $4, mail = $5, phone = $6, city = $7, password = $8, created_at = $9, updated_at = $10, id_cookie = $11, id_privacy = $12, id_salon = $13 WHERE id_user = $14 RETURNING *",
-      [
-        role,
-        first_name,
-        last_name,
-        age,
-        mail,
-        phone,
-        city,
-        password,
-        created_at,
-        updated_at,
-        id_cookie,
-        id_privacy,
-        id_salon,
-        id,
-      ]
-    );
-    return result.rows[0];
-  }
-
-  static async patchUserRole(id, { role }) {
-    const result = await pool.query(
-      "UPDATE Users SET role = $1 WHERE id_user = $2 RETURNING *",
-      [role, id]
-    );
-    return result.rows[0];
-  }
-
-  static async patchUserAge(id, { age }) {
-    const result = await pool.query(
-      "UPDATE Users SET age = $1 WHERE id_user = $2 RETURNING *",
-      [age, id]
-    );
-    return result.rows[0];
   }
 
   static async patchUserLastName(id, { last_name }) {
@@ -251,26 +122,10 @@ class User {
     return result.rows[0];
   }
 
-  static async patchUserPassword(id, { password }) {
-    const result = await pool.query(
-      "UPDATE Users SET password = $1 WHERE id_user = $2 RETURNING *",
-      [password, id]
-    );
-    return result.rows[0];
-  }
-
   static async patchUserPhone(id, { phone }) {
     const result = await pool.query(
       "UPDATE Users SET phone = $1 WHERE id_user = $2 RETURNING *",
       [phone, id]
-    );
-    return result.rows[0];
-  }
-
-  static async patchUserLocation(id, { city }) {
-    const result = await pool.query(
-      "UPDATE Users SET city = $1 WHERE id_user = $2 RETURNING *",
-      [city, id]
     );
     return result.rows[0];
   }
@@ -283,59 +138,58 @@ class User {
         "SELECT id_user, role FROM Users WHERE id_user = $1",
         [id_user]
       );
-  
+
       if (userCheck.rows.length === 0) {
         return { success: false, status: 404, message: "User not found" };
       }
-  
+
       // 2. Prevent self-deletion
       if (currentUserId === parseInt(id_user)) {
-        return { 
-          success: false, 
-          status: 400, 
-          message: "Cannot delete your own account" 
+        return {
+          success: false,
+          status: 400,
+          message: "Cannot delete your own account",
         };
       }
-  
+
       // 3. Check for salon ownership
       const salonCheck = await pool.query(
         "SELECT id_salon FROM Users WHERE id_user = $1 AND id_salon IS NOT NULL",
         [id_user]
       );
-  
+
       if (salonCheck.rows.length > 0) {
         return {
           success: false,
           status: 400,
-          message: "User owns a salon. Transfer salon ownership first."
+          message: "User owns a salon. Transfer salon ownership first.",
         };
       }
-  
+
       // 4. Delete user
       await pool.query("DELETE FROM Users WHERE id_user = $1", [id_user]);
-  
+
       return {
         success: true,
         status: 204,
-        message: "User deleted successfully"
+        message: "User deleted successfully",
       };
-  
     } catch (error) {
       console.error("Delete user error:", error);
-  
+
       // Handle foreign key constraints
       if (error.code === "23503") {
         return {
           success: false,
           status: 400,
-          message: "User has related records. Delete those first."
+          message: "User has related records. Delete those first.",
         };
       }
-  
+
       return {
         success: false,
         status: 500,
-        message: "Server error during deletion"
+        message: "Server error during deletion",
       };
     }
   }

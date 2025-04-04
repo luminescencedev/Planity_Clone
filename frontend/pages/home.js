@@ -103,7 +103,7 @@ export default function Register() {
               <p>Pris toutes les secondes</p>
             </div>
             <div>
-              <h2>5 milliards €</h2>
+              <h2> 5 milliards €</h2>
               <p>De rendez-vous vendus</p>
             </div>
           </section>

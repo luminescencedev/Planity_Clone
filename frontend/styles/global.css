@@ -3,7 +3,8 @@
 html, body {
     margin: 0;
     padding: 0;
-    height: 100%; /* Ensure the full height of the page is used */
+    height: 100%; 
+    overflow-x: hidden;
   }
   
 
@@ -430,3 +431,5 @@ article{
     border-radius: .5em;
     margin-left: 5%;
   }
+
+  

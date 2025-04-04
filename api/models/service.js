@@ -10,13 +10,7 @@ const pool = new Pool({
 });
 
 class Service {
-  static async findById(id) {
-    const result = await pool.query(
-      "SELECT * FROM Services WHERE id_service = $1",
-      [id]
-    );
-    return result.rows[0] || null;
-  }
+  
 
   static async getServiceById(id) {
     const result = await pool.query(

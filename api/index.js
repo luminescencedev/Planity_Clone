@@ -240,6 +240,17 @@ app.get('/allSalons', async (req,res) =>{
   }
 })
 
+app.get('/allReviews', async (req,res) =>{
+  try {
+    const salon = await Review.getAllReviews();
+    salon ? res.status(200).json(salon) : res.status(404).json({
+      message: "Pas trouvé"
+  });
+} catch (error) {
+    res.status(500).json({ error: error.message })
+}
+})
+
 // /allSalonsByLocalisation (Public, Admin, User) 
 
 app.get('/allSalonsByLocalisation', authenticate, async (req,res) =>{
@@ -555,7 +566,7 @@ app.delete('/deleteSalonDescription/:id', authenticate, async (req, res) => {
     }
 })
 
-// /deleteSalon (Admin, Salon Owner) 
+
 
 
 
@@ -584,8 +595,6 @@ app.delete('/users/:id', authenticate, async (req, res) => {
 app.delete('/salons/:id', authenticate, async (req, res) => {
   const id_salon = req.params.id;
   
-  // Verify requester is admin or salon owner
-  
 
   try {
       const result = await Salon.deleteSalon(id_salon);
@@ -597,6 +606,35 @@ app.delete('/salons/:id', authenticate, async (req, res) => {
           message: "Internal server error",
           details: process.env.NODE_ENV === 'development' ? error.message : undefined
       });
+  }
+});
+
+app.delete('/reviews/:id', authenticate, async (req, res) => {
+  const id_review = req.params.id;
+  
+  try {
+    const result = await Review.deleteReview(id_review);
+    
+    if (!result) {
+      return res.status(404).json({
+        success: false,
+        message: "Review not found"
+      });
+    }
+    
+    return res.status(200).json({
+      success: true,
+      message: "Review deleted successfully",
+      data: result
+    });
+    
+  } catch (error) {
+    console.error(`Error deleting review ${id_review}:`, error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 });
 

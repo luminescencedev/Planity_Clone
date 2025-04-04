@@ -67,8 +67,6 @@ export default function ServiceDescriptionPage() {
       time: formattedTime,  // Utiliser l'heure formatée
     };
 
-    console.log("Données de réservation :", reservationData); // Log des données de réservation
-
     fetch("http://localhost:3001/rendez-vous", {
       method: "POST",
       headers: {
@@ -92,7 +90,6 @@ export default function ServiceDescriptionPage() {
     <>
     <Header/>
     <div id="reserver">
-      {console.log("Service Details:", serviceDetails)}
       <h3>Service : {serviceDetails.description}</h3>
       <p>Prix : {serviceDetails.price} €</p>
       <p>Durée : {serviceDetails.time} min</p>

@@ -80,7 +80,7 @@ CREATE TABLE public.Services(
     updated_at    DATE NOT NULL,
     id_salon      INT NOT NULL,
     CONSTRAINT Services_PK PRIMARY KEY (id_service),
-    CONSTRAINT Services_Salons_FK FOREIGN KEY (id_salon) REFERENCES public.Salons(id_salon)
+    CONSTRAINT Services_Salons_FK FOREIGN KEY (id_salon) REFERENCES public.Salons(id_salon) ON DELETE CASCADE
 )WITHOUT OIDS;
 
 -- Insertion des services
@@ -100,9 +100,8 @@ CREATE TABLE public.Reviews(
     updated_at    DATE NOT NULL,
     id_salon      INT NOT NULL,
     CONSTRAINT Reviews_PK PRIMARY KEY (id_review),
-    CONSTRAINT Reviews_Salons_FK FOREIGN KEY (id_salon) REFERENCES public.Salons(id_salon)
+    CONSTRAINT Reviews_Salons_FK FOREIGN KEY (id_salon) REFERENCES public.Salons(id_salon) ON DELETE CASCADE
 )WITHOUT OIDS;
-
 -- Insertion des avis
 INSERT INTO public.Reviews (rating, description, created_at, updated_at, id_salon)
 VALUES
@@ -119,16 +118,15 @@ CREATE TABLE public.Users(
     last_name    VARCHAR (50) NOT NULL,
     age          INT NOT NULL,
     mail         VARCHAR (80) NOT NULL UNIQUE,
-    phone        INT NOT NULL UNIQUE,
+    phone        VARCHAR(10) NOT NULL UNIQUE,
     city          VARCHAR (50) NOT NULL,
     password     VARCHAR (255) NOT NULL,
     created_at   DATE NOT NULL,
     updated_at   DATE NOT NULL,
     id_salon     INT,
     CONSTRAINT Users_PK PRIMARY KEY (id_user),
-    CONSTRAINT Users_Salons_FK FOREIGN KEY (id_salon) REFERENCES public.Salons(id_salon)
+    CONSTRAINT Users_Salons_FK FOREIGN KEY (id_salon) REFERENCES public.Salons(id_salon) ON DELETE SET NULL
 )WITHOUT OIDS;
-
 -- Insertion des utilisateurs
 INSERT INTO public.Users (role, first_name, last_name, age, mail, phone, city, password, created_at, updated_at, id_salon)
 VALUES
@@ -148,9 +146,9 @@ CREATE TABLE public.Rendez_vous(
     id_user       INT NOT NULL,
     id_service    INT NOT NULL,
     CONSTRAINT Rendez_vous_PK PRIMARY KEY (id_rendezvous),
-    CONSTRAINT Rendez_vous_Salons_FK FOREIGN KEY (id_salon) REFERENCES public.Salons(id_salon),
-    CONSTRAINT Rendez_vous_Users_FK FOREIGN KEY (id_user) REFERENCES public.Users(id_user),
-    CONSTRAINT Rendez_vous_Services_FK FOREIGN KEY (id_service) REFERENCES public.Services(id_service)
+    CONSTRAINT Rendez_vous_Salons_FK FOREIGN KEY (id_salon) REFERENCES public.Salons(id_salon) ON DELETE CASCADE,
+    CONSTRAINT Rendez_vous_Users_FK FOREIGN KEY (id_user) REFERENCES public.Users(id_user) ON DELETE CASCADE,
+    CONSTRAINT Rendez_vous_Services_FK FOREIGN KEY (id_service) REFERENCES public.Services(id_service) ON DELETE CASCADE
 )WITHOUT OIDS;
 
 -- Insertion des rendez-vous avec le service

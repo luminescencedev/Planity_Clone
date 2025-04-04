@@ -4,7 +4,7 @@
   flex-direction: column;
   align-items: center;
   background-color: #f3f4f6; /* Gris clair */
-  min-height: 100vh;
+  min-height: 40vh;
   margin-bottom: 20px;
 }
 
@@ -14,6 +14,7 @@
   font-weight: bold;
   color: #1f2937; /* Gris foncé */
   margin-bottom: 1.5rem;
+  margin-top: 10vh;
 }
 
 /* Conteneur principal des sections */
@@ -229,4 +230,77 @@
   border-radius: 0.5rem;
   padding: 1rem;
   margin-bottom: 1rem;
+}
+
+.admin-panel{
+  width: 80%;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.admin-nav{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 12px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+
+.admin-table th {
+  background-color: #f4f4f4;
+  font-weight: bold;
+  color: #333;
+}
+
+.admin-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.admin-table tr:hover {
+  background-color: #e9ecef;
+}
+
+.admin-table td button.delete-btn {
+  padding: 8px 16px;
+  background-color: #ff4d4d;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  border-radius: 4px;
+}
+
+.admin-table td button.delete-btn:hover {
+  background-color: #ff1a1a;
+}
+
+.admin-table td button.delete-btn:focus {
+  outline: none;
+}
+
+.admin-table td button.delete-btn:disabled {
+  background-color: #ddd;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .admin-table {
+    font-size: 14px;
+  }
+
+  .admin-table th,
+  .admin-table td {
+    padding: 8px;
+  }
 }

@@ -54,7 +54,7 @@ const [reviewsError, setReviewsError] = useState(null);
         const data = await response.json();
 
         if (!response.ok) {
-          throw new Error(data.message || "Failed to fetch users");
+          throw new Error(data.message || "Échec de la récupération des utilisateurs");
         }
 
         setUsers(data);
@@ -82,7 +82,7 @@ const [reviewsError, setReviewsError] = useState(null);
         const data = await response.json();
 
         if (!response.ok) {
-          throw new Error(data.message || "Failed to fetch salons");
+          throw new Error(data.message || "Échec de la récupération des salons");
         }
 
         setSalons(data);
@@ -112,9 +112,9 @@ const [reviewsError, setReviewsError] = useState(null);
   
   // Delete review function
   const handleDeleteReview = async (reviewId) => {
-    if (window.confirm('Are you sure you want to delete this review?')) {
+    if (window.confirm('Êtes-vosu sûr de vouloir supprimer cet avis ?')) {
       try {
-        const token = localStorage.getItem('token'); // or your token storage method
+        const token = localStorage.getItem('token'); 
         
         const response = await fetch(`http://localhost:3001/reviews/${reviewId}`, {
           method: "DELETE",
@@ -133,22 +133,22 @@ const [reviewsError, setReviewsError] = useState(null);
         if (data.success) {
           setReviews(reviews.filter(review => review.id_review !== reviewId));
         } else {
-          console.error('Failed to delete review:', data.message);
+          console.error("Échec de la suppresion de l'avis", data.message);
         }
         
       } catch (error) {
-        console.error('Error deleting review:', error);
-        // Optionally show error to user
-        alert('Failed to delete review. Please try again.');
+        console.error("Erreur lors de la supression de l'avis", error);
+        
+        alert('Nous avons rencontré un problème lors de la suppression de l\'avis. Veuillez réessayer plus tard.');
       }
     }
   };
   
-  // Call fetchReviews in useEffect
+
   useEffect(() => {
     fetchReviews();
   }, []);
-  // Fetch user data from API
+
   useEffect(() => {
 
     const fetchUserData = async () => {//Ajout log pour débogage des données récupérées.Permet de vérifier la structure des données retournées.
@@ -163,8 +163,8 @@ const [reviewsError, setReviewsError] = useState(null);
         const data = await response.json();
 
         if (!response.ok) {
-          console.error("Backend error details:", data);
-          throw new Error(data.details || "Account fetch failed");
+          console.error("Détails de l'erreur en Back-End:", data);
+          throw new Error(data.details || "Erreur lors de la récupération des données utilisateur");
         }
 
         if (!data.id) {
@@ -174,7 +174,7 @@ const [reviewsError, setReviewsError] = useState(null);
         //Vérification de l'ID utilisateur dans la réponse. Si l'ID manquant, erreur est levée pour garantir les données sont valides.
         setUser(data);
       } catch (err) {
-        console.error("Full fetch error:", err);
+        console.error("Erreur complète du fetch:", err);
         setError(err.message);
       } finally {
         setLoading(false);
@@ -185,7 +185,7 @@ const [reviewsError, setReviewsError] = useState(null);
       fetchUserData();
     } else {
       setLoading(false);
-      setError("No authentication token found");
+      setError("Token manquant");
     }
   }, [token]);
 
@@ -210,7 +210,7 @@ const [reviewsError, setReviewsError] = useState(null);
   };
 
   const handleDeleteUser = async (id_user) => {
-    if (!window.confirm(`Are you sure you want to delete user #${id_user}?`))
+    if (!window.confirm(`Êtes-vous sûr de vouloir supprimer l'utilisateur #${id_user}?`))
       return;
 
     try {
@@ -224,7 +224,7 @@ const [reviewsError, setReviewsError] = useState(null);
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.message || "Deletion failed");
+        throw new Error(result.message || "Échec de la suppression de l'utilisateur");
       }
 
       // Refresh user list
@@ -244,7 +244,7 @@ const [reviewsError, setReviewsError] = useState(null);
   };
 
   const handleDeleteSalon = async (id_salon) => {
-    if (!window.confirm(`This will permanently delete the salon and ALL its associated data (services, appointments, reviews). Users associated with this salon will have their salon reference removed. Continue?`)) {
+    if (!window.confirm(`Cela supprimera définitivement le salon et toutes les données associées (services, rendez-vous, avis). Les utilisateurs associés à ce salon verront leur référencement supprimée. Continuer ?`)) {
         return;
     }
 
@@ -260,7 +260,7 @@ const [reviewsError, setReviewsError] = useState(null);
         const result = await response.json();
 
         if (!response.ok || !result.success) {
-            throw new Error(result.message || "Failed to delete salon");
+            throw new Error(result.message || "Échec de la suppression du salon");
         }
 
         // Optimistically update all related state
@@ -273,21 +273,21 @@ const [reviewsError, setReviewsError] = useState(null);
         });
         
     } catch (error) {
-        console.error("Delete error:", error);
+        console.error("Erreur de suppression", error);
         setMessage({
             type: "error",
-            text: error.message || "An unexpected error occurred"
+            text: error.message || "Erreur lors de la suppression du salon"
         });
     } finally {
         setTimeout(() => setMessage(null), 5000);
     }
 };
-  // Handle tab switching
+
   const handleSectionChange = (section) => {
     setSelectedSection(section);
   };
 
-  // Handle form changes
+  
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -430,8 +430,9 @@ const [reviewsError, setReviewsError] = useState(null);
 
   return (
     <>
+    <Header />
     <div className="container-account">
-      <Header />
+      
       {user && user.role !== "Admin" && (
         
         <>
@@ -661,47 +662,46 @@ const [reviewsError, setReviewsError] = useState(null);
       )}
        { user && user.role === "Admin" && (
       <>
-        <h1 className="page-title">Admin Dashboard</h1>
+        <h1 className="page-title">Panneau de gestion Administrateur</h1>
         <div className="admin-panel">
           <div className="admin-nav">
             <button
               className={selectedSection === "users" ? "active" : ""}
               onClick={() => handleSectionChange("users")}
             >
-              Manage Users
+              Gérer les utilisateurs
             </button>
             <button
               className={selectedSection === "salons" ? "active" : ""}
               onClick={() => handleSectionChange("salons")}
             >
-              Manage Salons
+              Gestion des Salons
             </button>
             <button
               className={selectedSection === "reviews" ? "active" : ""}
               onClick={() => handleSectionChange("reviews")}
             >
-              Manage Reviews
+              Gestion des Avis
             </button>
           </div>
 
           <div className="admin-content">
             {selectedSection === "users" && (
               <div className="admin-section">
-                <h2>User Management</h2>
-                {/* Add user management functionality here */}
-                <p>List of all users with delete options</p>
+                <h2>Gestion des utilisateurs</h2>
+                <p>Liste de tout les utilisateurs</p>
                 <table className="admin-table">
                   <thead>
                     <tr>
                       <th>ID</th>
                       <th>Role</th>
-                      <th>First Name</th>
-                      <th>Last Name</th>
+                      <th>Prénom</th>
+                      <th>Nom</th>
                       <th>Age</th>
                       <th>Email</th>
-                      <th>Phone</th>
-                      <th>City</th>
-                      <th>Created At</th>
+                      <th>Téléphone</th>
+                      <th>Ville</th>
+                      <th>Inscrit le</th>
                       <th>Actions</th>
                     </tr>
                   </thead>
@@ -726,7 +726,7 @@ const [reviewsError, setReviewsError] = useState(null);
                               handleDeleteUser(user.id_user || user.id)
                             }
                           >
-                            Delete
+                            Supprimer
                           </button>
                         </td>
                       </tr>
@@ -738,22 +738,22 @@ const [reviewsError, setReviewsError] = useState(null);
 
             {selectedSection === "salons" && (
               <div className="admin-section">
-                <h2>Salon Management</h2>
+                <h2>Gestion des Salons</h2>
                 {salonsLoading ? (
-                  <p>Loading salons...</p>
+                  <p>Chargement des salons...</p>
                 ) : salonsError ? (
-                  <p className="error">Error: {salonsError}</p>
+                  <p className="error">Erreur: {salonsError}</p>
                 ) : (
                   <table className="admin-table">
                     <thead>
                       <tr>
                         <th>ID</th>
-                        <th>Name</th>
-                        <th>Address</th>
-                        <th>City</th>
-                        <th>Category</th>
-                        <th>Owner</th>
-                        <th>Created At</th>
+                        <th>Nom</th>
+                        <th>Adresse</th>
+                        <th>Ville</th>
+                        <th>Catégorie</th>
+                        <th>Propriétaire</th>
+                        <th>Inscrit le</th>
                         <th>Actions</th>
                       </tr>
                     </thead>
@@ -771,7 +771,7 @@ const [reviewsError, setReviewsError] = useState(null);
                               ? "Barbier"
                               : salon.id_category === 3
                               ? "Manucure"
-                              : "Other"}
+                              : "Autre"}
                           </td>
                           <td>{salon.id_user || "N/A"}</td>
                           <td>
@@ -782,7 +782,7 @@ const [reviewsError, setReviewsError] = useState(null);
                               className="delete-btn"
                               onClick={() => handleDeleteSalon(salon.id_salon)}
                             >
-                              Delete
+                              Supprimer
                             </button>
                           </td>
                         </tr>
@@ -795,20 +795,20 @@ const [reviewsError, setReviewsError] = useState(null);
 
 {selectedSection === "reviews" && (
   <div className="admin-section">
-    <h2>Review Management</h2>
+    <h2>Gestions des Avis</h2>
     {reviewsLoading ? (
-      <p>Loading reviews...</p>
+      <p>Chargement des Avis...</p>
     ) : reviewsError ? (
-      <p className="error">Error: {reviewsError}</p>
+      <p className="error">Erreur: {reviewsError}</p>
     ) : (
       <table className="admin-table">
         <thead>
           <tr>
             <th>ID</th>
-            <th>Rating</th>
+            <th>Note</th>
             <th>Description</th>
             <th>Salon</th>
-            <th>Created At</th>
+            <th>Créer le</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -837,7 +837,7 @@ const [reviewsError, setReviewsError] = useState(null);
                   className="delete-btn"
                   onClick={() => handleDeleteReview(review.id_review)}
                 >
-                  Delete
+                  Supprimer
                 </button>
               </td>
             </tr>
@@ -851,14 +851,15 @@ const [reviewsError, setReviewsError] = useState(null);
 
           <div className="admin-actions">
             <button onClick={logout} className="admin-logout">
-              Logout
+              Déconnexion
             </button>
           </div>
         </div>
       </>
 )}
-      <Footer />
+      
     </div>
+    <Footer />
     </> 
   );
 }

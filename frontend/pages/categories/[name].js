@@ -103,7 +103,7 @@ export default function Categorie() {
             <div>
               <img src="/imgville.jpeg" alt="City" />
               <span>Découvrez nos</span>
-              <h3>{category.name} à {city}</h3>
+              <h3>{category.name && category.name.trim() !== "" ? `${category.name} à ${city}` : `Salons à ${city}`}</h3>
             </div>
           </a>
         ))}

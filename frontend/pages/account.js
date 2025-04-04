@@ -106,7 +106,6 @@ export default function Account() {
         });
 
         const data = await response.json();
-        console.log("User Data:", data); // Debugging
 
         if (!response.ok) {
           console.error("Backend error details:", data);
@@ -311,7 +310,6 @@ export default function Account() {
         picture: salonData.picture,
       });
 
-      console.log("Salon creation body:", body); // Debugging
       const response = await fetch(`http://localhost:3001/salons`, {
         method: "POST",
         headers: {

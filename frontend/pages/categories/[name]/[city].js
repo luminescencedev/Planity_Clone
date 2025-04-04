@@ -33,7 +33,6 @@ export default function SalonsParVille() {
 
   useEffect(() => {
     if (name && city && token) {
-      console.log('Token:', token); // Ajoute un log pour vérifier le token
       fetch(`http://localhost:3001/categories/${name}/salons?city=${city}`, {
         headers: {
           Authorization: `Bearer ${token}`,

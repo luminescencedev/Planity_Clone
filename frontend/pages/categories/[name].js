@@ -110,9 +110,9 @@ export default function Categorie() {
       </article>
       <section id="conseils">
         <h4>Où trouver un salon pour une technique particulière ?</h4>
-        <p>Les petits salons de coiffure dédiés spécialement à la gent masculine sont pris d’assaut...</p>
+        <p> Les petits salons de coiffure dédiés spécialement à la gent masculine sont pris d’assaut. Savant mélange entre le barbier et le salon de coiffure traditionnel, ces nouveaux salons taillent la barbe, pratiquent le rasage à l’ancienne et coupent les cheveux </p>
         <img src="/salonimg.jpeg" alt="Salon" />
-        <p>Mais le souci du détail ne s’arrête plus aux <b>cheveux et à la barbe</b>...</p>
+        <p>Mais le souci du détail ne s’arrête plus aux <b>cheveux et à la barbe</b> reste très sexy, mais à condition qu’elle soit maîtrisée, car elle demande de l’entretien au quotidien. Elle est déconseillée par les barbiers si votre pilosité est insuffisante. La barbe courte de 10 jours par contre, fait de plus en plus d’adeptes<br></br>Entre la barbiche et le bouc, il faut choisir ou alors les adopter tous les deux. Cette moustache qui entoure la bouche convient particulièrement au visage rond avec très peu d’angles. Pour réaliser la barbe sculptée, il faut le savoir-faire d’un barbier et de son rasoir ou sa tondeuse à barbe de précision. Pour un résultat net, il est préférable de faire appel à un coiffeur visagiste.</p>
         <h3>Recherches fréquentes</h3>
         <ul>
           <li><u>Soins de la barbe</u></li>

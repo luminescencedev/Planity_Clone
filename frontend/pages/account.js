@@ -491,7 +491,11 @@ const [reviewsError, setReviewsError] = useState(null);
                   ))}
                 </ul>
               ) : (
-                <p>Vous n'avez pas encore pris de rendez-vous.</p>
+                <> <p>Vous n'avez pas encore pris de rendez-vous.</p>
+                <button id="rdv-submit" onClick={() => router.push("/categories/Coiffeur")}>
+                Prendre RDV
+              </button></>
+               
               )}
             </div>
           )}

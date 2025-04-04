@@ -3,7 +3,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: #f3f4f6; /* Gris clair */
+  background-color: #f7f7f7;
   min-height: 100vh;
   margin-bottom: 20px;
 }
@@ -54,7 +54,7 @@
 }
 
 .left h4.active {
-  color: #2563eb; /* Bleu */
+  color: black; 
   font-weight: bold;
 }
 
@@ -65,7 +65,7 @@
 }
 
 #logout-submit {
-  background-color: #ef4444; /* Rouge */
+  background-color: #222222; 
   color: #ffffff; /* Blanc */
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
@@ -75,13 +75,14 @@
 }
 
 #logout-submit:hover {
-  background-color: #dc2626; /* Rouge foncé */
+  background-color: black; /* Rouge foncé */
 }
 
 .left button {
-  background-color: #2563eb; /* Bleu */
-  color: #ffffff; /* Blanc */
+  background-color: white;
+  color: black; 
   padding: 0.5rem 1rem;
+  border: 2px solid #000000; /* Gris clair */
   border-radius: 0.5rem;
   margin-top: 1rem;
   cursor: pointer;
@@ -89,7 +90,8 @@
 }
 
 .left button:hover {
-  background-color: #1d4ed8; /* Bleu foncé */
+  background-color: black;
+  color: white; 
 }
 
 /* Section droite (contenu) */
@@ -154,8 +156,7 @@
 .form-group input:focus,
 .form-group textarea:focus,
 .form-group select:focus {
-  border-color: #2563eb; /* Bleu */
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3); /* Anneau bleu clair */
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.618); /* Anneau bleu clair */
 }
 
 .form-group textarea {
@@ -170,20 +171,22 @@
 }
 
 .button-group button {
-  background-color: #e5e7eb; /* Gris clair */
-  color: #374151; /* Gris moyen */
+  background-color: white; /* Gris clair */
+  color: black; /* Gris moyen */
   padding: 0.5rem 1rem;
+  border: 2px solid black; /* Gris clair */
   border-radius: 0.5rem;
   cursor: pointer;
   transition: background-color 0.3s;
 }
 
 .button-group button:hover {
-  background-color: #d1d5db; /* Gris plus clair */
+  background-color: black;
+  color: white; /* Blanc */
 }
 
 #save-submit {
-  background-color: #2563eb; /* Bleu */
+  background-color: #222222;
   color: #ffffff; /* Blanc */
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
@@ -192,24 +195,26 @@
 }
 
 #save-submit:hover {
-  background-color: #1d4ed8; /* Bleu foncé */
+  background-color: black; /* Bleu foncé */
 }
 
 #rdv-submit {
-  background-color: #10b981; /* Vert */
-  color: #ffffff; /* Blanc */
+  background-color: white; 
+  color: black; /* Blanc */
   padding: 0.5rem 1rem;
+  border: 2px solid #000000; 
   border-radius: 0.5rem;
   cursor: pointer;
   transition: background-color 0.3s;
 }
 
 #rdv-submit:hover {
-  background-color: #059669; /* Vert foncé */
+  background-color: black;
+  color: white;
 }
 
 #salon-submit {
-  background-color: #2563eb; /* Bleu */
+  background-color: #222222; /* Bleu */
   color: #ffffff; /* Blanc */
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
@@ -218,7 +223,7 @@
 }
 
 #salon-submit:hover {
-  background-color: #1d4ed8; /* Bleu foncé */
+  background-color: black; /* Bleu foncé */
 }
 
 /* Messages */

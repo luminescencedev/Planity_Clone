@@ -7,7 +7,38 @@ Avant de commencer, assurez-vous d'avoir les éléments suivants installés sur 
 - **Node.js** (version 18 ou supérieure)
 - **npm** (inclus avec Node.js)
 - **PostgreSQL** (pour la base de données)
+- **pgAdmin** (pour gérer PostgreSQL facilement)
 - Un éditeur de texte comme **VS Code** (optionnel mais recommandé)
+
+## Installation de PostgreSQL et pgAdmin
+
+1. **Télécharger PostgreSQL :**
+   - Rendez-vous sur le site officiel : [https://www.postgresql.org/download/](https://www.postgresql.org/download/).
+   - Suivez les instructions pour installer PostgreSQL sur votre système d'exploitation.
+
+2. **Installer pgAdmin :**
+   - pgAdmin est inclus dans l'installation de PostgreSQL. Assurez-vous de cocher l'option pour installer pgAdmin lors de l'installation.
+
+3. **Configurer PostgreSQL :**
+   - Pendant l'installation, définissez un mot de passe pour l'utilisateur `postgres`. Notez ce mot de passe, car vous en aurez besoin pour configurer la base de données.
+
+4. **Lancer pgAdmin :**
+   - Ouvrez pgAdmin et connectez-vous avec l'utilisateur `postgres` et le mot de passe défini précédemment.
+
+## Configuration de la base de données
+
+1. **Créer la base de données :**
+   - Dans pgAdmin, faites un clic droit sur "Databases" > "Create" > "Database".
+   - Donnez le nom `planity` à la base de données et cliquez sur "Save".
+
+2. **Importer le fichier SQL :**
+   - Naviguez dans le dossier `bdd` du projet.
+   - Dans pgAdmin, sélectionnez la base de données `planity`, puis cliquez sur l'onglet "Query Tool".
+   - Ouvrez le fichier `Planity.sql` dans un éditeur de texte, copiez son contenu, et collez-le dans la "Query Tool".
+   - Cliquez sur le bouton "Execute" (icône en forme d'éclair) pour exécuter le script SQL.
+
+3. **Vérifier les tables :**
+   - Une fois le script exécuté, vérifiez que les tables ont été créées dans la base de données `planity`.
 
 ## Configuration
 
@@ -20,11 +51,11 @@ Avant de commencer, assurez-vous d'avoir les éléments suivants installés sur 
 2. **Créer un fichier `.env` dans le dossier `api` :**
    Ce fichier doit contenir les informations suivantes :
    ```
-   DB_HOST=<adresse_hôte_de_la_base_de_données>
-   DB_USER=<nom_utilisateur_de_la_base_de_données>
-   DB_PASSWORD=<mot_de_passe_de_la_base_de_données>
-   DB_NAME=<nom_de_la_base_de_données>
-   DB_PORT=<port_de_la_base_de_données>
+   DB_HOST=localhost
+   DB_USER=postgres
+   DB_PASSWORD=<votre_mot_de_passe_postgres>
+   DB_NAME=planity
+   DB_PORT=5432
    SECRET_KEY=<clé_secrète_pour_les_tokens_JWT>
    ```
 

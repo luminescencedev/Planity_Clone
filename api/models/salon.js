@@ -198,10 +198,58 @@ class Salons {
         return result.rows[0] || null;
       }
     
-      static async deleteSalon(id) {
-        const result = await pool.query("DELETE FROM Salons WHERE id_salon = $1 RETURNING *", [id]);
-        return result.rows[0] || null;
-      }
+      static async deleteSalon(id_salon) {
+        const client = await pool.connect();
+        try {
+            await client.query('BEGIN');
+    
+            // First set users' id_salon to NULL to avoid constraint violation
+            await client.query(
+                'UPDATE users SET id_salon = NULL WHERE id_salon = $1',
+                [id_salon]
+            );
+    
+            // Then delete the salon (will cascade to services, rendez_vous, reviews)
+            const result = await client.query(
+                'DELETE FROM salons WHERE id_salon = $1 RETURNING *',
+                [id_salon]
+            );
+    
+            if (result.rowCount === 0) {
+                await client.query('ROLLBACK');
+                return { 
+                    success: false, 
+                    status: 404, 
+                    message: "Salon not found" 
+                };
+            }
+    
+            await client.query('COMMIT');
+    
+            return { 
+                success: true, 
+                status: 200, 
+                message: "Salon and all related data deleted successfully",
+                data: result.rows[0]
+            };
+    
+        } catch (error) {
+            await client.query('ROLLBACK');
+            console.error("Database error:", error);
+            
+            return {
+                success: false,
+                status: 500,
+                message: error.message || "Database operation failed",
+                errorDetails: process.env.NODE_ENV === 'development' ? {
+                    error: error.toString(),
+                    stack: error.stack
+                } : undefined
+            };
+        } finally {
+            client.release();
+        }
+    }
 
 }
 

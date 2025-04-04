@@ -229,7 +229,7 @@ app.get('/reviewSalon', authenticate, async (req,res) =>{
 
 // /allSalons (Public, Admin, User) 
 
-app.get('/allSalons', authenticate, async (req,res) =>{
+app.get('/allSalons', async (req,res) =>{
     try {
       const salon = await Salon.getAllSalons();
       salon ? res.status(200).json(salon) : res.status(404).json({
@@ -557,63 +557,45 @@ app.delete('/deleteSalonDescription/:id', authenticate, async (req, res) => {
 
 // /deleteSalon (Admin, Salon Owner) 
 
-app.delete('/deleteSalon/:id', authenticate, async (req, res) => {
-    try {
-        await Salon.deleteSalon(req.params.id);
-        res.status(204).send();
-    } catch (error) {
-        res.status(500).json({ error: error.message })
-    }
-})
 
-app.delete('/deleteUser/:id', authenticate, async (req, res) => {
+
+app.delete('/users/:id', authenticate, async (req, res) => {
   const userId = req.params.id;
-  const currentUser = req.user; // From your auth middleware
+  const currentUserId = req.user.id_user;
 
   try {
-      // 1. Verify user exists
-      const user = await pool.query(
-          'SELECT id_user, role FROM Users WHERE id_user = $1', 
-          [userId]
-      );
-      
-      if (user.rows.length === 0) {
-          return res.status(404).json({ error: "User not found" });
-      }
-
-      // 2. Prevent self-deletion
-      if (currentUser.id_user === parseInt(userId)) {
-          return res.status(400).json({ error: "Cannot delete your own account" });
-      }
-
-      // 3. Check if user owns a salon
-      const salonResult = await pool.query(
-          'SELECT id_salon FROM Users WHERE id_user = $1 AND id_salon IS NOT NULL',
-          [userId]
-      );
-      
-      if (salonResult.rows.length > 0) {
-          return res.status(400).json({ 
-              error: "User owns a salon. Transfer ownership first." 
-          });
-      }
-
-      // 4. Delete user
-      await pool.query('DELETE FROM Users WHERE id_user = $1', [userId]);
-
-      res.status(204).send();
+    const result = await User.deleteUser(userId, currentUserId);
+    
+    if (result.success) {
+      return res.status(result.status).send();
+    } else {
+      return res.status(result.status).json({ 
+        error: result.message 
+      });
+    }
   } catch (error) {
-      console.error(`Error deleting user ${userId}:`, error);
-      
-      // Handle foreign key constraint
-      if (error.code === '23503') {
-          return res.status(400).json({ 
-              error: "User has related records (appointments, etc.)" 
-          });
-      }
-      
-      res.status(500).json({ 
-          error: error.message || "Failed to delete user" 
+    console.error(`Route error deleting user ${userId}:`, error);
+    res.status(500).json({ 
+      error: "Unexpected server error" 
+    });
+  }
+});
+
+app.delete('/salons/:id', authenticate, async (req, res) => {
+  const id_salon = req.params.id;
+  
+  // Verify requester is admin or salon owner
+  
+
+  try {
+      const result = await Salon.deleteSalon(id_salon);
+      return res.status(result.status).json(result);
+  } catch (error) {
+      console.error(`Error deleting salon ${id_salon}:`, error);
+      return res.status(500).json({
+          success: false,
+          message: "Internal server error",
+          details: process.env.NODE_ENV === 'development' ? error.message : undefined
       });
   }
 });

@@ -3,11 +3,13 @@ import { useRouter } from "next/router";
 import Header from '../component/header.js';
 import Footer from '../component/footer';
 
+// Composant de recherche de services beauté
 export default function Register() {
   const [nameSearch, setNameSearch] = useState("");
   const [localisation, setLocalisation] = useState("");
   const router = useRouter();
   
+  // Redirige vers la page de résultats
   const handleHome = async (e) => {
     e.preventDefault();
     router.push(`/categories/${nameSearch}/${localisation}`);

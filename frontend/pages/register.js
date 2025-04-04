@@ -31,7 +31,7 @@ export default function Register() {
     });
 
     if (response.ok) {
-      router.push("/login");
+      router.push("/login");// Redirection vers la page de connexion après inscription
     } else {
       console.error("Registration failed");
     }

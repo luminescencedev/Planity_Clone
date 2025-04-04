@@ -1,6 +1,8 @@
 import { useRouter } from "next/router";
 import { useEffect, useState, useContext } from "react";
 import AuthContext from "../../../../../context/AuthContext";
+import Header from '../../../../../component/header.js';
+import Footer from '../../../../../component/footer';
 
 export default function SalonPage() {
   const router = useRouter();
@@ -16,6 +18,7 @@ export default function SalonPage() {
   const [reviewSuccess, setReviewSuccess] = useState("");
 
   const [loading, setLoading] = useState(true);
+  // Vérifie si l'utilisateur est connecté, sinon redirige vers la page de connexion
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       if (token === undefined) return;
@@ -27,7 +30,7 @@ export default function SalonPage() {
     }, 10);
     return () => clearTimeout(timeoutId);
   }, [token, router]);
-
+  // Récupère les données du salon depuis l'API
   const fetchSalonData = async () => {
     if (salon && token) {
       try {
@@ -55,6 +58,7 @@ export default function SalonPage() {
     fetchSalonData();
   }, [salon, token, reviewSuccess]);
 
+  // Redirige vers la page de réservation avec les informations du service sélectionné
   const handleReservation = (serviceId) => {
     if (serviceId) {
       const encodedName = encodeURIComponent(name);
@@ -67,6 +71,7 @@ export default function SalonPage() {
     }
   };
 
+   // Gère les changements des champs du formulaire d'avis
   const handleReviewChange = (e) => {
     const { name, value } = e.target;
     setReviewForm((prev) => ({
@@ -120,23 +125,99 @@ export default function SalonPage() {
   if (!salonData) return <p>Chargement des données du salon...</p>;
 
   return (
-    <div>
-      <h1>{salonData.name}</h1>
-      <h1>{salonData.id_salon}</h1>
-      <p>{salonData.address}</p>
-      <p>{salonData.city}</p>
+    <>
+    <Header/>
+    <div id="rdv">
+      <h3>{salonData.name}</h3>
+      <span><img src="/map-pin.svg" alt="" /><u>{salonData.adress} {salonData.city}</u></span>
+      <span><img src="/star.svg" alt="" />{Number(salonData.moyenne_rating).toFixed(1)}</span>
       <img
-        src={salonData.picture}
+        src={`../../../../${salonData.picture}`}
         alt={salonData.name}
-        style={{ width: "200px", height: "200px" }}
       />
-      <p>{salonData.description}</p>
+      <h3>Réserver en ligne pour un RDV chez {salonData.name}</h3>
+      <span>24h24 - Confirmation immédiate</span>
 
-      {salonData.moyenne_rating && (
+      <article>
+      <section>
+      <h3>Choix de la prestation</h3>
+      {salonData.services?.length === 0 ? (
+        <p>Aucun service disponible pour ce salon.</p>
+      ) : (
+        <ul style={{ listStyle: "none", padding: 0 }}>
+          {salonData.services?.map((service) => (
+            <li
+              key={`service-${service.id_service}`}
+              style={{
+                marginBottom: "10px",
+                padding: "10px",
+                borderBottom: "1px solid #eee",
+              }}
+            >
+              <strong>{service.description}</strong>: {service.price} € -{" "}
+              {service.time} minutes
+              <button
+                onClick={() => handleReservation(service.id_service)}
+                style={{
+                  marginLeft: "10px",
+                  padding: "5px 10px",
+                  cursor: "pointer",
+                  background: "#0070f3",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "4px",
+                }}
+              >
+                Réserver
+              </button>
+            </li>
+          ))}
+        </ul>
+      )} 
+      </section>
+      <section>
+        <div>
+          <h4>Note globale</h4>
+          <p id="note_glob">{Number(salonData.moyenne_rating).toFixed(1)}</p>
+        </div>
+        <div>
+          <h4>Avis</h4>
+          {salonData.reviews?.length === 0 ? (
+        <p>Aucun avis disponible pour ce salon.</p>
+      ) : (
+        <ul style={{ listStyle: "none", padding: 0 }}>
+          {salonData.reviews?.map((review) => (
+            <li
+              key={`review-${review.id_review}`}
+              style={{
+                marginBottom: "15px",
+                padding: "10px",
+                borderBottom: "1px solid #eee",
+              }}
+            >
+              <strong>{review.rating}/5</strong> - {review.description}
+              <p style={{ color: "#666", fontSize: "0.8em" }}>
+                {new Date(review.created_at).toLocaleDateString()}
+              </p>
+            </li>
+          ))}
+        </ul>
+      )}
+          
+        </div>
+      </section>
+      </article>
+      <h3>À-propos</h3>
+      <div>
+        <p>{salonData.description}</p>
+      </div>
+      
+
+      {/* {salonData.moyenne_rating && (
         <h3>
           Note moyenne : {Number(salonData.moyenne_rating).toFixed(1)} / 5
         </h3>
-      )}
+      )} */}
 
       <div style={{ margin: "20px 0" }}>
         <h3>Ajouter un avis</h3>
@@ -185,64 +266,8 @@ export default function SalonPage() {
           </button>
         </form>
       </div>
-
-      <h3>Avis :</h3>
-      {salonData.reviews?.length === 0 ? (
-        <p>Aucun avis disponible pour ce salon.</p>
-      ) : (
-        <ul style={{ listStyle: "none", padding: 0 }}>
-          {salonData.reviews?.map((review) => (
-            <li
-              key={`review-${review.id_review}`}
-              style={{
-                marginBottom: "15px",
-                padding: "10px",
-                borderBottom: "1px solid #eee",
-              }}
-            >
-              <strong>{review.rating}/5</strong> - {review.description}
-              <p style={{ color: "#666", fontSize: "0.8em" }}>
-                {new Date(review.created_at).toLocaleDateString()}
-              </p>
-            </li>
-          ))}
-        </ul>
-      )}
-
-      <h3>Services :</h3>
-      {salonData.services?.length === 0 ? (
-        <p>Aucun service disponible pour ce salon.</p>
-      ) : (
-        <ul style={{ listStyle: "none", padding: 0 }}>
-          {salonData.services?.map((service) => (
-            <li
-              key={`service-${service.id_service}`}
-              style={{
-                marginBottom: "10px",
-                padding: "10px",
-                borderBottom: "1px solid #eee",
-              }}
-            >
-              <strong>{service.description}</strong>: {service.price} € -{" "}
-              {service.time} minutes
-              <button
-                onClick={() => handleReservation(service.id_service)}
-                style={{
-                  marginLeft: "10px",
-                  padding: "5px 10px",
-                  cursor: "pointer",
-                  background: "#0070f3",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "4px",
-                }}
-              >
-                Réserver
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
     </div>
+    <Footer/>
+    </>
   );
 }

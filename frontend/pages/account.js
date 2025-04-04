@@ -17,6 +17,9 @@ export default function Account() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const [selectedSection, setSelectedSection] = useState("informations"); // Default to "Mes rendez-vous"
+  const [appointments, setAppointments] = useState([]);
+  const [appointmentsError, setAppointmentsError] = useState(null);
+  const [loadingAppointments, setLoadingAppointments] = useState(false);
   const [message, setMessage] = useState("");
   const [formData, setFormData] = useState({
     first_name: "",
@@ -35,7 +38,7 @@ export default function Account() {
   });
 
   useEffect(() => {
-    const fetchAllUsers = async () => {
+    const fetchAllUsers = async () => { //gestion des erreurs pour la récupération des utilisateurs.erreur se produit, capturée et affichée dans l'état usersError
       setUsersLoading(true);
       setUsersError(null);
       try {
@@ -92,7 +95,8 @@ export default function Account() {
 
   // Fetch user data from API
   useEffect(() => {
-    const fetchUserData = async () => {
+
+    const fetchUserData = async () => {//Ajout log pour débogage des données récupérées.Permet de vérifier la structure des données retournées.
       try {
         const response = await fetch("http://localhost:3001/account", {
           headers: {
@@ -113,7 +117,7 @@ export default function Account() {
           console.error("ID utilisateur manquant dans la réponse !");
           throw new Error("ID utilisateur introuvable");
         }
-
+        //Vérification de l'ID utilisateur dans la réponse. Si l'ID manquant, erreur est levée pour garantir les données sont valides.
         setUser(data);
       } catch (err) {
         console.error("Full fetch error:", err);
@@ -142,6 +146,9 @@ export default function Account() {
       });
     }
   }, [user]);
+
+
+  
 
   const handleLogout = () => {
     logout(); // Appelle la fonction logout du contexte
@@ -329,6 +336,38 @@ export default function Account() {
     }
   };
 
+  useEffect(() => {
+  const fetchAppointments = async () => {
+    setLoadingAppointments(true);
+    setAppointmentsError(null);
+
+    try {
+      const response = await fetch("http://localhost:3001/rendez-vous", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Erreur lors de la récupération des rendez-vous");
+      }
+
+      const data = await response.json();
+      setAppointments(data);
+    } catch (err) {
+      console.error("Erreur lors de la récupération des rendez-vous :", err);
+      setAppointmentsError(err.message);
+    } finally {
+      setLoadingAppointments(false);
+    }
+  };
+
+  if (token) {
+    fetchAppointments();
+  }
+}, [token]);
+
   if (loading) return <div>Loading...</div>;
 
   return (
@@ -371,20 +410,39 @@ export default function Account() {
             <div className="right">
               {selectedSection === "rendez-vous" && (
                 <div className="box">
-                  <h2>Mes Rendez-Vous à venir</h2>
-                  <p>Vous n'avez pas encore pris de rendez-vous</p>
-                  <button
-                    id="rdv-submit"
-                    onClick={() => router.push("/categories/Coiffeur")}
-                  >
-                    Prendre RDV
-                  </button>
-                </div>
+              <h2>Mes Rendez-Vous</h2>
+              {loadingAppointments ? (
+                <p>Chargement des rendez-vous...</p>
+              ) : appointmentsError ? (
+                <p style={{ color: "red" }}>{appointmentsError}</p>
+              ) : appointments.length > 0 ? (
+                <ul>
+                  {appointments.map((rdv) => (
+                    <li key={rdv.id_rendezvous}>
+                      <p>
+                        <strong>Date :</strong> {new Date(rdv.date).toLocaleDateString()}
+                      </p>
+                      <p>
+                        <strong>Heure :</strong> {rdv.time}
+                      </p>
+                      <p>
+                        <strong>Salon :</strong> {rdv.salon_name}
+                      </p>
+                      <p>
+                        <strong>Service :</strong> {rdv.service_name}
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>Vous n'avez pas encore pris de rendez-vous.</p>
               )}
+            </div>
+          )}
 
-              {selectedSection === "informations" && (
-                <div className="box">
-                  <h2>Mes coordonnées</h2>
+          {selectedSection === "informations" && (
+            <div className="box">
+              <h2>Mes informations</h2>
                   <form onSubmit={handleSubmit}>
                     <div className="form-group">
                       <label>Prénom *</label>

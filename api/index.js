@@ -1,3 +1,14 @@
+const { Pool } = require('pg');
+require('dotenv').config();
+
+const pool = new Pool({
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  port: process.env.DB_PORT,
+});
+
 const express = require('express');
 const Category = require('./models/category');
 const User = require('./models/user');
@@ -368,24 +379,27 @@ app.get('/rendez-vous', authenticate, async (req, res) => {
     const userId = req.user.id;
     console.log('User ID:', userId);
 
-    // Vérification de la connexion à la base de données
-    console.log('Connexion à la base de données');
-    const result = await pool.query(
-      'SELECT * FROM rendez_vous WHERE id_user = $1 ORDER BY date ASC',
+     const result = await pool.query(
+      `SELECT rv.id_rendezvous, rv.date, rv.time, s.name AS salon_name, srv.description AS service_name
+       FROM Rendez_vous rv
+       JOIN Salons s ON rv.id_salon = s.id_salon
+       JOIN Services srv ON rv.id_service = srv.id_service
+       WHERE rv.id_user = $1
+       ORDER BY rv.date ASC, rv.time ASC`,
       [userId]
     );
 
     const appointments = result.rows;
-    console.log('Appointments:', appointments); // Affiche les rendez-vous récupérés
+    console.log('Appointments:', appointments);
 
     if (appointments.length === 0) {
       return res.status(404).json({ message: 'Aucun rendez-vous trouvé' });
     }
 
-    return res.json(appointments); // Retourne les rendez-vous en JSON
+    return res.json(appointments);
   } catch (err) {
-    console.error('Erreur lors de la récupération des rendez-vous:', err); // Ajoutez plus d'informations sur l'erreur
-    return res.status(500).send('Erreur serveur lors de la récupération des rendez-vous');
+    console.error('Erreur lors de la récupération des rendez-vous:', err);
+    return res.status(500).json({ error: 'Erreur serveur', details: err.message });
   }
 });
 
@@ -401,6 +415,24 @@ app.post("/rendez-vous", authenticate, async (req, res) => {
   }
 
   try {
+    // Vérifiez si l'utilisateur existe
+    const userExists = await pool.query('SELECT id_user FROM Users WHERE id_user = $1', [userId]);
+    if (userExists.rows.length === 0) {
+      return res.status(404).json({ error: "Utilisateur non trouvé" });
+    }
+
+    // Vérifiez si le salon existe
+    const salonExists = await pool.query('SELECT id_salon FROM Salons WHERE id_salon = $1', [salonId]);
+    if (salonExists.rows.length === 0) {
+      return res.status(404).json({ error: "Salon non trouvé" });
+    }
+
+    // Vérifiez si le service existe
+    const serviceExists = await pool.query('SELECT id_service FROM Services WHERE id_service = $1', [serviceId]);
+    if (serviceExists.rows.length === 0) {
+      return res.status(404).json({ error: "Service non trouvé" });
+    }
+
     const createdAt = new Date();
     const updatedAt = new Date();
 
@@ -418,10 +450,9 @@ app.post("/rendez-vous", authenticate, async (req, res) => {
       id_service: serviceId,
     });
 
-     res.status(201).json(newRdv);
+    res.status(201).json(newRdv);
   } catch (error) {
     console.error("Erreur lors de la réservation:", error.message);
-    console.error("Détails de l'erreur complète:", error);
     res.status(500).json({ error: "Erreur serveur", details: error.message });
   }
 });
